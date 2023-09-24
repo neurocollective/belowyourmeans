@@ -1,16 +1,25 @@
 insert into budget_category (name) values ('entertainment'),('healthcare'),
 	('grocery'),('transportation'),('eating out'),('clothing'),('other'),
 	('home maintenance'),('business'),('petcare'),('hobby'),('taxes'),('fees'),
-	('fitness & wellness'),('investment'),('rent'),('mortgage'),('Utility');
+	('fitness & wellness'),('investment'),('rent'),('mortgage'),('utility'),
+	('UNASSIGNED');
 
-insert into budget_user values (1,'david','ashe','david@neurocollective.io','password',
-	now(),now());
+insert into budget_user values (
+	nextval('budget_user_id_seq'),
+	'david',
+	'ashe',
+	'david@neurocollective.io',
+	'$5$hWvy8n69/SiNtC3d$rxYVgSbIlZC46tmMwZ/rE7fgz8iDemF7dIs8MCNkZB7',
+	now(),
+	now()
+);
 
-insert into budget values (1,null,null,null,'test model budget');
-insert into budget values (2,1,11,2017,'november test budget');
+insert into budget_concept values (nextval('budget_concept_id_seq'),1,null,null,'test model budget');
+insert into applied_budget values (nextval('budget_ideation_id_seq'),null,null,null,'test model budget');
+insert into budget_concept values (nextval('budget_concept_id_seq'),1,11,2017,'november test budget concept');
+insert into applied_budget values (nextval('budget_ideation_id_seq'),1,11,2017,'november test budget');
 
-
-insert into budget_category_assignment (budget_id, budget_category_id, dollar_allotment) 
+insert into applied_budget (budget_id, budget_category_id, dollar_allotment) 
 	select 2 as budget_id, id as budget_category_id, 5000 as dollar_allotment
 		from budget_category;
 
