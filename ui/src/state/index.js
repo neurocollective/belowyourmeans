@@ -1,15 +1,28 @@
-import reducers from './reducers';
+import stateChanges from './stateChanges';
 
-const { buildReducers } = reducers;
+const { buildStateChanges } = stateChanges;
 
-const buildStateManager = (state, useState) => {
+const buildStateManager = (state, setState) => {
+
+	const stateChanges = buildStateChanges(state, setState);
+	const operations = buildOperations(stateChanges);
 	return {
-		...buildReducers(state, useState),
+		state,
+		ops: operations,
+		changes: stateChanges, // the ideal might be to not expose this at all
 	};
 };
 
 const state =  {
-	INITIAL_STATE: {},
+	INITIAL_STATE: {
+		login: {
+			email: '',
+			password: '',
+			isLoggedIn: false,
+			user: '',
+			userDisplayName: '',
+		}
+	},
 	buildStateManager,
 };
 

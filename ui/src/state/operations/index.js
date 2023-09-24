@@ -11,10 +11,10 @@ const DEFAULT_REQUEST_CONFIG = {
 	credentials: 'same-origin',
 };
 
-const buildOperations = (reducers) => ({
+const buildOperations = (stateChanges) => ({
 	handleLoginSubmit: () => {
-		const { handleLoginSuccess, handleLoginFailure } = reducers;
-		jsonRequest("/login", DEFAULT_REQUEST_CONFIG, handleLoginSuccess, handleLoginFailure);
+		const { handleLoginSuccess, handleLoginFailure } = stateChanges;
+		return jsonRequest("/login", DEFAULT_REQUEST_CONFIG, handleLoginSuccess, handleLoginFailure);
 	},
 });
 
