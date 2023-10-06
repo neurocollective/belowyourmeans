@@ -6,3 +6,5 @@ ui/build:
 	@npm run build --prefix ./ui
 	@cp -r ./ui/build ./src/
 	@mv ./src/build ./src/public
+server/local:
+	go run ./src/main.go 
