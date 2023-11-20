@@ -12,3 +12,5 @@ react/build:
 	@mv ./src/build ./src/public
 server/local:
 	go run ./src/main.go
+parse/test:
+	@go test -v ./src/parsing
