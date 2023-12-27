@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	ncsql "github.com/neurocollective/go_utils/sql"
+	"neurocollective.io/neurocollective/belowyourmeans/src/db"
 )
 
 func main() {
@@ -14,10 +16,29 @@ func main() {
 
 	router.LoadHTMLGlob("src/templates/*")
 	//router.LoadHTMLFiles("templates/template1.html", "templates/template2.html")
+
+	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")		
+
+	if getClientError != nil {
+		log.Fatal("error getting client")
+	}
+
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Below Your Means",
 		})
+	})
+
+	router.GET("/user", func(c *gin.Context) {
+		query := db.USER_QUERY
+		args := []any{ 1 }
+
+		users, parseError := ncsql.QueryForStructs[db.User](client, db.ScanForUser, query, args...)
+
+		if parseError != nil {
+			log.Fatal("error!", parseError.Error())
+		}
+		c.JSON(http.StatusOK, gin.H{ "data": users })
 	})
 
 	router.GET("/bruh", func(c *gin.Context) {

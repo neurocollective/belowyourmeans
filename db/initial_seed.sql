@@ -8,8 +8,8 @@ insert into budget_user values (
 	now()
 );
 
-insert into budget_category (user_id, name) values 
-	(null, 'Entertainment',),
+insert into budget_category (user_id, display_name) values 
+	(null, 'Entertainment'),
 	(null, 'Healthcare'),
 	(null, 'Groceries'),
 	(null, 'Transportation'),
