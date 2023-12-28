@@ -8,7 +8,7 @@ import (
 
 const (
 	USER_QUERY = "SELECT id, first_name, last_name, email from budget_user where id = $1;"
-	EXPENDITURE_QUERY_STEM = "SELECT id, category_id, value, description, date_occurred from expenditure where user_id = $1"
+	EXPENDITURE_QUERY_STEM = "SELECT id, user_id, category_id, value, description, date_occurred from expenditure where user_id = $1"
 )
 
 type TestStruct struct {
@@ -65,6 +65,37 @@ func ScanForUser(rows *sql.Rows, user *User) error {
 	emailPointer := &user.Email
 
 	scanError := rows.Scan(idPointer, firstNamePointer, lastNamePointer, emailPointer)
+
+	if scanError != nil {
+		return scanError
+	}
+
+	return nil
+}
+
+type Expenditure struct {
+	Id int
+	UserId int
+	CategoryId *int
+	Value float32
+	Description string
+	DateOccurred string
+}
+
+func ScanForExpenditure(rows *sql.Rows, ex *Expenditure) error {
+
+	if rows == nil {
+		return errors.New("rows is nil inside ScanForUser")
+	}
+
+	idPointer := &ex.Id
+	userIdPointer := &ex.UserId
+	categoryIdPointer := &ex.CategoryId
+	valuePointer := &ex.Value
+	descriptionPointer := &ex.Description
+	dateOccurredPointer := &ex.DateOccurred
+
+	scanError := rows.Scan(idPointer, userIdPointer, categoryIdPointer, valuePointer, descriptionPointer, dateOccurredPointer)
 
 	if scanError != nil {
 		return scanError

@@ -28,7 +28,8 @@ insert into budget_category (user_id, display_name) values
 	(null, 'Mortgage'),
 	(null, 'Utilities');
 
--- insert into expenditure values 
--- 	(nextval('expenditure_id_seq'), 1, 20.99, to_timestamp(1699920860387), now(), now()),
--- 	(nextval('expenditure_id_seq'), 1, 199.98, to_timestamp(1699920848387), now(), now()),
--- 	(nextval('expenditure_id_seq'), 1, 3.99, to_timestamp(1699920836387), now(), now());
+insert into expenditure values 
+	(nextval('expenditure_id_seq'), 1, null, 20.99, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA', to_timestamp(1699920860387), now(), now()),
+	(nextval('expenditure_id_seq'), 1, null, 800.00, 'NOT cocaine', to_timestamp(1699920848387), now(), now()),
+	(nextval('expenditure_id_seq'), 1, null, 20000.00, 'Darkweb Hitman', to_timestamp(1699920836387), now(), now()
+);

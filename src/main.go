@@ -64,7 +64,7 @@ func main() {
 		queryStem := db.EXPENDITURE_QUERY_STEM
 		fullQuery := queryStem + queryWhereClauses
 
-		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForUser, query, args...)
+		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
 
 		if parseError != nil {
 			log.Fatal("error!", parseError.Error())

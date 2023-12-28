@@ -14,3 +14,7 @@ server/local:
 	go run ./src/main.go
 parse/test:
 	@go test -v ./src/parsing
+start/local:
+	go run src/main.go
+psql:
+	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
