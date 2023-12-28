@@ -41,6 +41,37 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{ "data": users })
 	})
 
+	router.GET("/expenditure", func(c *gin.Context) {
+
+		queryMap := c.Request.URL.Query()
+
+		queryWhereClauses := ""
+		argIndex := 2
+
+		args := []any{ 1 } // user id
+
+		for key, value := range queryMap {
+
+			connector := "and "
+
+			// ignore multiple query keys, only take first. Defies the spec but that's wacky, brah.
+			queryWhereClauses += connector + key + " = " + "$" + string(argIndex)
+
+			// TODO - validate `value[0] just in case of SQL injection attempts`
+			args = append(args, value[0])
+		}
+
+		queryStem := db.EXPENDITURE_QUERY_STEM
+		fullQuery := queryStem + queryWhereClauses
+
+		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForUser, query, args...)
+
+		if parseError != nil {
+			log.Fatal("error!", parseError.Error())
+		}
+		c.JSON(http.StatusOK, gin.H{ "data": expenditures })
+	})
+
 	router.GET("/bruh", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{ "message": "hello" })
 	})

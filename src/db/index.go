@@ -8,6 +8,7 @@ import (
 
 const (
 	USER_QUERY = "SELECT id, first_name, last_name, email from budget_user where id = $1;"
+	EXPENDITURE_QUERY_STEM = "SELECT id, category_id, value, description, date_occurred from expenditure where user_id = $1"
 )
 
 type TestStruct struct {
