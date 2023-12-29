@@ -82,10 +82,25 @@ type Expenditure struct {
 	DateOccurred string
 }
 
+func GetExpenditureColumnNameByQueryKey(key string) string {
+	if key == "amount" {
+		return "value"
+	} else if key == "user" {
+		return "user_id"
+	} else if key == "category" {
+		return "category_id"
+	}
+	return ""
+}
+
 func ScanForExpenditure(rows *sql.Rows, ex *Expenditure) error {
 
 	if rows == nil {
-		return errors.New("rows is nil inside ScanForUser")
+		return errors.New("rows is nil inside ScanForExpenditure")
+	}
+
+	if ex == nil {
+		return errors.New("ex is nil inside ScanForExpenditure")		
 	}
 
 	idPointer := &ex.Id
@@ -94,6 +109,10 @@ func ScanForExpenditure(rows *sql.Rows, ex *Expenditure) error {
 	valuePointer := &ex.Value
 	descriptionPointer := &ex.Description
 	dateOccurredPointer := &ex.DateOccurred
+
+	if ex.CategoryId != nil && *ex.CategoryId == 0 {
+		categoryIdPointer = nil
+	}
 
 	scanError := rows.Scan(idPointer, userIdPointer, categoryIdPointer, valuePointer, descriptionPointer, dateOccurredPointer)
 

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 	ncsql "github.com/neurocollective/go_utils/sql"
 	"neurocollective.io/neurocollective/belowyourmeans/src/db"
 )
@@ -18,6 +19,8 @@ func main() {
 	//router.LoadHTMLFiles("templates/template1.html", "templates/template2.html")
 
 	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")		
+
+	// connect to the db to test if connection is valid
 
 	if getClientError != nil {
 		log.Fatal("error getting client")
@@ -52,17 +55,26 @@ func main() {
 
 		for key, value := range queryMap {
 
-			connector := "and "
+			columnName := db.GetExpenditureColumnNameByQueryKey(key)
+
+			if columnName == "" {
+				continue
+			}
+
+			connector := " and "
 
 			// ignore multiple query keys, only take first. Defies the spec but that's wacky, brah.
-			queryWhereClauses += connector + key + " = " + "$" + string(argIndex)
+			queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)	
 
-			// TODO - validate `value[0] just in case of SQL injection attempts`
 			args = append(args, value[0])
+			argIndex++
 		}
 
 		queryStem := db.EXPENDITURE_QUERY_STEM
 		fullQuery := queryStem + queryWhereClauses
+
+		log.Println("fullQuery:", fullQuery)
+		log.Println("args:", args)
 
 		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
 
