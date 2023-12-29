@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 	ncsql "github.com/neurocollective/go_utils/sql"
@@ -66,22 +67,28 @@ func main() {
 			// ignore multiple query keys, only take first. Defies the spec but that's wacky, brah.
 
 			if columnName == "category_id" && value[0] == "-1" {
-				queryWhereClauses += connector + columnName + " is " + "null"
-				// args = append(args, nil)			
+				queryWhereClauses += connector + columnName + " is " + "null"		
+			} else if columnName == "value" {
+				impreciseFloat, parseError := strconv.ParseFloat(value[0], 32)
+				if parseError != nil {
+					log.Println(parseError.Error())
+					c.JSON(http.StatusBadRequest, gin.H{ "error": "amount is not a valid float" })
+					return				
+				}
+				preciseFloat := fmt.Sprintf("%.2f", impreciseFloat)
+
+				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)	
+				args = append(args, preciseFloat)
 			} else {
 				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)	
 				args = append(args, value[0])
 			}
 
-			// args = append(args, value[0])
 			argIndex++
 		}
 
 		queryStem := db.EXPENDITURE_QUERY_STEM
 		fullQuery := queryStem + queryWhereClauses + ";"
-
-		log.Println("fullQuery:", fullQuery)
-		log.Println("args:", args)
 
 		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
 
