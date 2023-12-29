@@ -64,14 +64,21 @@ func main() {
 			connector := " and "
 
 			// ignore multiple query keys, only take first. Defies the spec but that's wacky, brah.
-			queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)	
 
-			args = append(args, value[0])
+			if columnName == "category_id" && value[0] == "-1" {
+				queryWhereClauses += connector + columnName + " is " + "null"
+				// args = append(args, nil)			
+			} else {
+				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)	
+				args = append(args, value[0])
+			}
+
+			// args = append(args, value[0])
 			argIndex++
 		}
 
 		queryStem := db.EXPENDITURE_QUERY_STEM
-		fullQuery := queryStem + queryWhereClauses
+		fullQuery := queryStem + queryWhereClauses + ";"
 
 		log.Println("fullQuery:", fullQuery)
 		log.Println("args:", args)

@@ -110,9 +110,10 @@ func ScanForExpenditure(rows *sql.Rows, ex *Expenditure) error {
 	descriptionPointer := &ex.Description
 	dateOccurredPointer := &ex.DateOccurred
 
-	if ex.CategoryId != nil && *ex.CategoryId == 0 {
-		categoryIdPointer = nil
-	}
+	// send category_id = -1 in the query to ask for `NULL` entries.
+	// if ex.CategoryId != nil && *ex.CategoryId == 0 {
+	// 	categoryIdPointer = nil
+	// }
 
 	scanError := rows.Scan(idPointer, userIdPointer, categoryIdPointer, valuePointer, descriptionPointer, dateOccurredPointer)
 
