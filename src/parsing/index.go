@@ -2,18 +2,27 @@ package parsing
 
 import (
 	"os"
-	"fmt"
+	//"fmt"
 	"strings"
+)
+
+const (
+	CAPONE_ACCOUNT_NUMBER = "Account Number"
+	CAPONE_TRANSACTION_DATE = "Transaction Date"
+	CAPONE_TRANSACTION_AMOUNT = "Transaction Amount"
+	CAPONE_TRANSACTION_TYPE = "Transaction Type"
+	CAPONE_TRANSACTION_DESCRIPTION = "Transaction Description"
+	CAPONE_BALANCE = "Balance"
 )
 
 func GetCapitalOneCheckingCSVColumns() []string {
 	return []string{
-		"Account Number",
-		"Transaction Date",
-		"Transaction Amount",
-		"Transaction Type",
-		"Transaction Description",
-		"Balance",
+		CAPONE_ACCOUNT_NUMBER,
+		CAPONE_TRANSACTION_DATE,
+		CAPONE_TRANSACTION_AMOUNT,
+		CAPONE_TRANSACTION_TYPE,
+		CAPONE_TRANSACTION_DESCRIPTION,
+		CAPONE_BALANCE,
 	}
 }
 
@@ -38,28 +47,66 @@ func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
 
 	fileLines := strings.Split(fileAsString, "\n")
 
-	for lineIndex, line := range fileLines {
+	transactionCount := len(fileLines)
 
-		transaction := make(map[string]string)
+	transactions := make([]CapOneTransaction, transactionCount, transactionCount)
+
+	for index, line := range fileLines {
+
+		transaction := CapOneTransaction{}
 
 		for columnIndex, column := range strings.Split(line, ",") {
 
 			columnsNames := GetCapitalOneCheckingCSVColumns()
 
 			columnName := columnsNames[columnIndex]
-			transaction[columnName] = column
-		}
+			// transaction[columnName] = column
 
-		// just first line for now
-		if lineIndex > 0 {
-			fmt.Println("transaction", transaction)
-			break
+			if columnName == CAPONE_ACCOUNT_NUMBER {
+				transaction.AccountNumber = column
+			} else if columnName == CAPONE_TRANSACTION_DATE {
+				transaction.TransactionDate = column
+			} else if columnName == CAPONE_TRANSACTION_AMOUNT {
+				transaction.TransactionAmount = column
+			} else if columnName == CAPONE_TRANSACTION_TYPE {
+				transaction.TransactionType = column
+			} else if columnName == CAPONE_TRANSACTION_DESCRIPTION {
+				transaction.TransactionDescription = column
+			} else if columnName == CAPONE_BALANCE {
+				transaction.Balance = column
+			}
+			transactions[index] = transaction
 		}
 	}
+	return transactions, nil
+}
 
+func GetCustomAmexCheckingCSVColumns() []string {
+	return []string{
+		"Date",
+		"Description",
+		"Credits",
+		"Debits",
+		"Balance",
+	}
+}
+
+type CustomAmexCheckingTransaction struct {
+	Date string
+	Description string
+	CardMember string
+	AccountNumber string
+	Amount string
+}
+
+func ParseCustomAmexCheckingCSV(path string) ([]AmexTransaction, error) {
+
+	// read file
+	// fileBytes, readError := os.ReadFile(path)
 	// split on newline
 	// split on commas
-	return []CapOneTransaction{}, nil
+
+	return []AmexTransaction{}, nil
 }
 
 func GetAmexCardCSVColumns() []string {
@@ -80,7 +127,7 @@ type AmexTransaction struct {
 	Amount string
 }
 
-func ParseAmericanExpressCreditCardCSV(path string) ([]AmexTransaction, error) {
+func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 
 	// read file
 	// fileBytes, readError := os.ReadFile(path)

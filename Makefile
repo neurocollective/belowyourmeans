@@ -6,6 +6,8 @@ db/local:
 db/ahab:
 	@docker stop local-pg
 	@docker rm local-pg
+test/parse:
+	go test -v ./src/parsing
 react/build:
 	@npm run build --prefix ./ui
 	@cp -r ./ui/build ./src/
