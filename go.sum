@@ -45,6 +45,8 @@ github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9G
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/neurocollective/go_utils v0.0.0-20231227212810-667ea926ae5c h1:fLzPbULJxdWg9WXKGDwBkolKHsB1wVwCQYxGGgXr7tM=
 github.com/neurocollective/go_utils v0.0.0-20231227212810-667ea926ae5c/go.mod h1:+ON2XIgfjb5h5y3eaQMMhIEtEvxzLSsdkyU1AUrPfAg=
+github.com/neurocollective/go_utils v0.0.0-20231231180239-bbaf7d7490fb h1:l5ciufdBJnMLzGhKoc8Ai0QmabO2ju5SuDoR9tlu41o=
+github.com/neurocollective/go_utils v0.0.0-20231231180239-bbaf7d7490fb/go.mod h1:+ON2XIgfjb5h5y3eaQMMhIEtEvxzLSsdkyU1AUrPfAg=
 github.com/pelletier/go-toml/v2 v2.0.8 h1:0ctb6s9mE31h0/lhu+J6OPmVeDxJn+kYnJc2jZR9tGQ=
 github.com/pelletier/go-toml/v2 v2.0.8/go.mod h1:vuYfssBdrU2XDZ9bYydBu6t+6a6PYNcZljzZR9VXg+4=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

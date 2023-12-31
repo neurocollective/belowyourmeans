@@ -35,7 +35,9 @@ func main() {
 
 	router.GET("/user", func(c *gin.Context) {
 		query := db.USER_QUERY
-		args := []any{ 1 }
+
+		// userInURLQuery := c.Query("id")
+		args := []any{ 1 } // TODO: parse `userInURLQuery` from string to int, put into args instead of hardcoded 1
 
 		users, parseError := ncsql.QueryForStructs[db.User](client, db.ScanForUser, query, args...)
 
@@ -73,14 +75,14 @@ func main() {
 				if parseError != nil {
 					log.Println(parseError.Error())
 					c.JSON(http.StatusBadRequest, gin.H{ "error": "amount is not a valid float" })
-					return				
+					return
 				}
-				preciseFloat := fmt.Sprintf("%.2f", impreciseFloat)
+				preciseFloat := fmt.Sprintf("%.2f", impreciseFloat) // TODO - should this be a float32 ?
 
-				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)	
+				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
 				args = append(args, preciseFloat)
 			} else {
-				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)	
+				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
 				args = append(args, value[0])
 			}
 
@@ -98,13 +100,33 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{ "data": expenditures })
 	})
 
-	router.GET("/bruh", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{ "message": "hello" })
+	router.POST("/expenditure", func(c *gin.Context) {
+
+		user := c.PostForm("user")
+		category := c.PostForm("category")
+		amount := c.PostForm("amount")
+		description := c.PostForm("description")
+		date := c.PostForm("date")
+
+		fullQuery := db.CREATE_EXPENDITURE_QUERY_STEM
+
+		args := []any{ user, category, amount, description, date }
+
+		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
+		
+		if parseError != nil {
+			log.Fatal("error!", parseError.Error())
+		}
+		c.JSON(http.StatusOK, gin.H{ "data": expenditures })
 	})
 
-	router.GET("/rawhtml", func(c *gin.Context) {
-		c.Data(http.StatusOK, "text/html", []byte("<html><head><title>FROM GOLANG</title></head><body>yah brah</body></html>"))
-	})
+	// router.GET("/bruh", func(c *gin.Context) {
+	// 	c.JSON(http.StatusOK, gin.H{ "message": "hello" })
+	// })
+
+	// router.GET("/rawhtml", func(c *gin.Context) {
+	// 	c.Data(http.StatusOK, "text/html", []byte("<html><head><title>FROM GOLANG</title></head><body>yah brah</body></html>"))
+	// })
 
 	router.Run()
 }

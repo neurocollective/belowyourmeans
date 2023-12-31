@@ -4,9 +4,19 @@ import (
 	"testing"
 	"os"
 	"log"
+	ncsql "github.com/neurocollective/go_utils/sql"
 )
 
 func TestParseCapitalOneCSV(t *testing.T) {
+
+	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")		
+
+	// connect to the db to test if connection is valid
+
+	if getClientError != nil {
+		log.Fatal("error getting client")
+	}
+
 	cwd, _ := os.Getwd()
 
 	transactions, parseError := ParseCapitalOneCSV(cwd + "/../../sample_files/capone_checking_2023_11_5.csv")

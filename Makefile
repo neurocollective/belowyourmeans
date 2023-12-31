@@ -3,9 +3,8 @@ db/local:
 	@sleep 2
 	@psql -f db/create_tables.sql "postgresql://postgres:postgres@localhost:5432/postgres" 
 	@psql -f db/initial_seed.sql "postgresql://postgres:postgres@localhost:5432/postgres"
-db/ahab:
-	@docker stop local-pg
-	@docker rm local-pg
+ahab:
+	@docker rm -f local-pg
 test/parse:
 	go test -v ./src/parsing
 react/build:
