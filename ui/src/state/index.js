@@ -1,4 +1,5 @@
 import stateChanges from './stateChanges';
+import buildOperations from './operations';
 
 const { buildStateChanges } = stateChanges;
 

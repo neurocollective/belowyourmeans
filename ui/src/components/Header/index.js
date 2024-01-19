@@ -3,7 +3,7 @@ import React from 'react';
 const Header = ({ stateManager }) => {
 	return (
 		<div>
-			Heddur
+			Welcome To BelowYourMeans
 		</div>
 	);
 };

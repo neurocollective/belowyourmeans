@@ -10,6 +10,8 @@ function App() {
 
   const [state, setState] = useState(INITIAL_STATE);
 
+  console.log("state in App.js:", state);
+
   const stateManager = buildStateManager(state, setState);
 
   return (
@@ -18,11 +20,10 @@ function App() {
         <Header stateManager={stateManager} />
       </header>
       <main className="App">
-        mane
         <Login stateManager={stateManager} />
       </main>
-      <footer>
-        footur
+      <footer className="App-footer">
+        <a class="bym-link" href="mailto:david@neurocollective.io">Contact Us</a>
       </footer>
     </>
   );
