@@ -1,12 +1,11 @@
-import stateChanges from './stateChanges';
+import buildStateChanges from './stateChanges';
 import buildOperations from './operations';
-
-const { buildStateChanges } = stateChanges;
+import { LOGIN } from '../constants';
 
 const buildStateManager = (state, setState) => {
 
 	const stateChanges = buildStateChanges(state, setState);
-	const operations = buildOperations(stateChanges);
+	const operations = buildOperations(state, stateChanges);
 	return {
 		state,
 		ops: operations,
@@ -14,9 +13,9 @@ const buildStateManager = (state, setState) => {
 	};
 };
 
-const state =  {
+const StateStore =  {
 	INITIAL_STATE: {
-		login: {
+		[LOGIN]: {
 			email: '',
 			password: '',
 			isLoggedIn: false,
@@ -27,5 +26,5 @@ const state =  {
 	buildStateManager,
 };
 
-export default state;
+export default StateStore;
 

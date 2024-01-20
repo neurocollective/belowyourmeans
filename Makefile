@@ -11,7 +11,7 @@ react/build:
 	@npm run build --prefix ./ui
 	@cp -r ./ui/build ./src/
 	@mv ./src/build ./src/public
-server/local:
+serve/local:
 	go run ./src/main.go
 parse/test:
 	@go test -v ./src/parsing
@@ -19,3 +19,5 @@ serve/local:
 	go run src/main.go
 psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
+serve/ui:
+	npm start --prefix ./ui

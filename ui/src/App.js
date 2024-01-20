@@ -1,10 +1,10 @@
 import './App.css';
 import { useState } from 'react';
-import state from './state';
+import StateStore from './state';
 import Header from './components/Header';
 import Login from './components/Login';
 
-const { INITIAL_STATE, buildStateManager } = state;
+const { INITIAL_STATE, buildStateManager } = StateStore;
 
 function App() {
 
@@ -12,6 +12,7 @@ function App() {
 
   console.log("state in App.js:", state);
 
+  // stateManager = { state, ops, changes }
   const stateManager = buildStateManager(state, setState);
 
   return (
