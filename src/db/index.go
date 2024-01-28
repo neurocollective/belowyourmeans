@@ -9,6 +9,8 @@ const (
 	USER_QUERY = "SELECT id, first_name, last_name, email from budget_user where id = $1;"
 	EXPENDITURE_QUERY_STEM = "SELECT id, user_id, category_id, value, description, date_occurred from expenditure where user_id = $1"
 	CREATE_EXPENDITURE_QUERY_STEM = "insert into expenditure values (nextval('expenditure_id_seq'), $1, $2, $3, $4, $5, now(), now())"
+	CHECK_LOGIN_QUERY = "SELECT id, email, hashed_password from budget_user where email = $1;"
+	CREATE_USER_QUERY = "INSERT INTO budget_user VALUES (nextval('budget_user_id_seq'), $1, $2, $3, $4, now(), now()) RETURNING id;"
 )
 
 type User struct {
@@ -16,6 +18,7 @@ type User struct {
 	FirstName string
 	LastName string
 	Email string
+	HashedPassword string
 }
 
 func ScanForUser(rows *sql.Rows, user *User) error {
@@ -81,6 +84,50 @@ func ScanForExpenditure(rows *sql.Rows, ex *Expenditure) error {
 	// }
 
 	scanError := rows.Scan(idPointer, userIdPointer, categoryIdPointer, valuePointer, descriptionPointer, dateOccurredPointer)
+
+	if scanError != nil {
+		return scanError
+	}
+
+	return nil
+}
+
+func ScanForUserLoginData(rows *sql.Rows, user *User) error {
+
+	if rows == nil {
+		return errors.New("rows is nil inside ScanForUserLoginData")
+	}
+
+	if user == nil {
+		return errors.New("user is nil inside ScanForUserLoginData")	
+	}
+
+	idPointer := &user.Id
+	emailPointer := &user.Email
+	passwordPointer := &user.HashedPassword
+
+	scanError := rows.Scan(idPointer, emailPointer, passwordPointer)
+
+	if scanError != nil {
+		return scanError
+	}
+
+	return nil
+}
+
+func ScanForUserSignupData(rows *sql.Rows, user *User) error {
+
+	if rows == nil {
+		return errors.New("rows is nil inside ScanForUserLoginData")
+	}
+
+	if user == nil {
+		return errors.New("user is nil inside ScanForUserLoginData")	
+	}
+
+	idPointer := &user.Id
+
+	scanError := rows.Scan(idPointer)
 
 	if scanError != nil {
 		return scanError

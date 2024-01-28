@@ -12,12 +12,19 @@ react/build:
 	@cp -r ./ui/build ./src/
 	@mv ./src/build ./src/public
 serve/local:
-	go run ./src/main.go
+	@go run ./src/main.go
 parse/test:
 	@go test -v ./src/parsing
 serve/local:
-	go run src/main.go
+	@go run src/main.go
 psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
 serve/ui:
 	npm start --prefix ./ui
+dev:
+	@docker start local-pg
+	@node dev.js
+signup:
+	@curl -d '{ "email": "$(email)", "lastName": "$(lastName)", "firstName": "$(firstName)", "password": "$(password)" }' -H 'Accept: application/json' -H 'Content-Type: application/json' localhost:8080/signup
+fmt:
+	go fmt ./src

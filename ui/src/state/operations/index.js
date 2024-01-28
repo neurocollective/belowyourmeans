@@ -30,6 +30,8 @@ const buildOperations = (state, stateChanges) => ({
 	[LOGIN]: {
 		handleLoginSubmit: (e) => {
 
+			e.preventDefault();
+
 			const {
 				[LOGIN]: {
 					handleLoginSuccess,
@@ -46,7 +48,7 @@ const buildOperations = (state, stateChanges) => ({
 
 			const config = {
 				...DEFAULT_REQUEST_CONFIG,
-				body: { email, password },
+				body: JSON.stringify({ email, password }),
 				method: 'POST',
 			};
 			console.log('config', JSON.stringify(config));

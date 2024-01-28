@@ -7,7 +7,8 @@ CREATE TABLE budget_user (
 	email text,
 	hashed_password text,
 	create_date timestamp,
-	last_modified_date timestamp
+	last_modified_date timestamp,
+	UNIQUE(email)
 );
 
 -- EAV table
