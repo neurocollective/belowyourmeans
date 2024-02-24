@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import StateStore from './state';
 import Header from './components/Header';
 import Login from './components/Login';
@@ -9,11 +9,14 @@ const { INITIAL_STATE, buildStateManager } = StateStore;
 function App() {
 
   const [state, setState] = useState(INITIAL_STATE);
-
-  console.log("state in App.js:", state);
-
   // stateManager = { state, ops, changes }
   const stateManager = buildStateManager(state, setState);
+
+  useEffect(() => {
+    stateManager.f;
+  }, []);
+
+  console.log("state in App.js:", state);
 
   return (
     <>

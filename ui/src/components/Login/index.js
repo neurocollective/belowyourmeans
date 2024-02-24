@@ -8,6 +8,7 @@ const Login = ({ stateManager }) => {
 			[LOGIN]: {
 				email,
 				password,
+				isLoggedIn,
 			}
 		},
 		ops: {
@@ -23,8 +24,9 @@ const Login = ({ stateManager }) => {
 		},
 	} = stateManager;
 
-	console.log("email:", email);
-	console.log("password:", password);
+	if (isLoggedIn) {
+		return null;
+	}
 
 	return (
 		<div>

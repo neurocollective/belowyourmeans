@@ -59,6 +59,34 @@ const buildOperations = (state, stateChanges) => ({
 
 			return jsonRequest(fullURL, config, handleLoginSuccess, handleLoginFailure);
 		},
+		checkIfLoggedIn: () => {
+			const {
+				[LOGIN]: {
+					handleLoginSuccess,
+					handleLoginFailure, 
+				} 
+			} = stateChanges;
+
+			const {
+				[LOGIN]: {
+					email,
+					password,
+				}
+			} = state;
+
+			const config = {
+				...DEFAULT_REQUEST_CONFIG,
+				body: JSON.stringify({ email, password }),
+				method: 'POST',
+			};
+			console.log('config', JSON.stringify(config));
+			window.CONFIG = config;
+
+			const fullURL = getURL("/user");
+			console.log(`fetching to ${fullURL}`);
+
+			return jsonRequest(fullURL, config, handleLoginSuccess, handleLoginFailure);
+		},
 	}
 });
 

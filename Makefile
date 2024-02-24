@@ -12,11 +12,9 @@ react/build:
 	@cp -r ./ui/build ./src/
 	@mv ./src/build ./src/public
 serve/local:
-	@go run ./src/main.go
+	ENVIRONMENT=dev go run ./src/main.go ./src/password.go ./src/structs.go ./src/cookie.go
 parse/test:
 	@go test -v ./src/parsing
-serve/local:
-	@go run src/main.go
 psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
 serve/ui:

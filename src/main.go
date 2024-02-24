@@ -10,10 +10,48 @@ import (
 	"log"
 	"net/http"
 	"neurocollective.io/neurocollective/belowyourmeans/src/db"
+	"neurocollective.io/neurocollective/belowyourmeans/src/constants"
 	"strconv"
+	"strings"
 )
 
 func main() {
+
+	FAKE_REDIS := make(map[string]int)
+
+	authMiddleware := func(c *gin.Context) {
+		headers := c.Request.Header
+
+		cookieValues, present := headers["Cookie"]
+
+		firstCookie := cookieValues[0]
+
+		if !present {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		index := strings.Index(firstCookie, constants.COOKIE_KEY)
+
+		if index == -1 {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+
+		characterSlice := strings.Split(firstCookie, "")
+
+		afterKey := strings.Join(characterSlice[index+1:], "")
+
+		userId, present := FAKE_REDIS[afterKey]
+
+		if !present {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		c.Set(constants.USER_ID, userId)
+		c.Next()
+	}
 
 	log.Println("booting server...")
 
@@ -52,17 +90,6 @@ func main() {
 			"title": "Below Your Means",
 		})
 	})
-
-	type LoginPayload struct {
-		Email    string
-		Password string
-	}
-
-	type SignupPayload struct {
-		LoginPayload
-		FirstName string
-		LastName  string
-	}
 
 	router.POST("/login", func(c *gin.Context) {
 
@@ -105,22 +132,27 @@ func main() {
 			return
 		}
 
-		returnJson := map[string]int{"userId": users[0].Id}
+		userId := users[0].Id
+
+		returnJson := map[string]int{"userId": userId}
+
+		cookie, err := GenerateCookie()
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		c.Header("Set-Cookie", GetSetCookieHeaderValue(cookie))
+
+		FAKE_REDIS[cookie] = userId
 
 		c.JSON(http.StatusOK, gin.H{"data": returnJson})
 	})
 
 	router.POST("/signup", func(c *gin.Context) {
 
-		jsonBytes, err := io.ReadAll(c.Request.Body)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		payload := new(SignupPayload)
-
-		err = json.Unmarshal(jsonBytes, payload)
+		payload, err := GetSignupPayload(c)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -129,16 +161,18 @@ func main() {
 
 		query := db.CREATE_USER_QUERY
 
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
+		hashedPassword, err := HashPassword(payload.Password)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
 			return
 		}
 
+		// TODO - query for existing email first
+
 		args := []any{payload.FirstName, payload.LastName, payload.Email, string(hashedPassword)}
 
-		users, err := ncsql.QueryForStructs[db.User](client, db.ScanForUserLoginData, query, args...)
+		_, err = ncsql.QueryForStructs[db.User](client, db.ScanForUserLoginData, query, args...)
 
 		if err != nil {
 			log.Println(err.Error())
@@ -146,35 +180,62 @@ func main() {
 			return
 		}
 
-		userCount := len(users)
-
-		if userCount == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-			return
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "email already exists!"})
-			return
-		}
-
-		returnJson := map[string]int{"userId": users[0].Id}
-		c.JSON(http.StatusOK, gin.H{"data": returnJson})
+		c.JSON(http.StatusOK, gin.H{"staus": "success"})
 	})
 
-	router.GET("/user", func(c *gin.Context) {
+	router.GET("/user", authMiddleware, func(c *gin.Context) {
 		query := db.USER_QUERY
 
-		// userInURLQuery := c.Query("id")
-		args := []any{1} // TODO: parse `userInURLQuery` from string to int, put into args instead of hardcoded 1
+		userInURLQuery := c.Query("id")
 
-		users, parseError := ncsql.QueryForStructs[db.User](client, db.ScanForUser, query, args...)
+		id, err := strconv.Atoi(userInURLQuery)
 
-		if parseError != nil {
-			log.Fatal("error!", parseError.Error())
+		if err != nil {
+			log.Fatal("error!", err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id sent"})
+			return
 		}
-		c.JSON(http.StatusOK, gin.H{"data": users})
+
+		args := []any{ id }
+
+		users, err := ncsql.QueryForStructs[db.User](client, db.ScanForUser, query, args...)
+
+		if err != nil {
+			log.Fatal("error!", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		if len(users) == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return			
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": users[0]})
 	})
 
-	router.GET("/expenditure", func(c *gin.Context) {
+	router.POST("/password/hash", func(c *gin.Context) {
+
+		payload, err := GetSignupPayload(c)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		hashedPassword, err := HashPassword(payload.Password)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"password": hashedPassword})
+	})
+
+	router.GET("/expenditure", authMiddleware, func(c *gin.Context) {
 
 		queryMap := c.Request.URL.Query()
 
@@ -227,7 +288,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"data": expenditures})
 	})
 
-	router.POST("/expenditure", func(c *gin.Context) {
+	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {
 
 		user := c.PostForm("user")
 		category := c.PostForm("category")
@@ -246,14 +307,6 @@ func main() {
 		}
 		c.JSON(http.StatusOK, gin.H{"data": expenditures})
 	})
-
-	// router.GET("/bruh", func(c *gin.Context) {
-	// 	c.JSON(http.StatusOK, gin.H{ "message": "hello" })
-	// })
-
-	// router.GET("/rawhtml", func(c *gin.Context) {
-	// 	c.Data(http.StatusOK, "text/html", []byte("<html><head><title>FROM GOLANG</title></head><body>yah brah</body></html>"))
-	// })
 
 	router.Run()
 }
