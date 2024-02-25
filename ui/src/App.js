@@ -21,9 +21,7 @@ function App() {
 
   return (
     <>
-      <header className="App-header">
-        <Header stateManager={stateManager} />
-      </header>
+      <Header stateManager={stateManager} />
       <main className="App">
         <Login stateManager={stateManager} />
         <section>

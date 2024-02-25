@@ -26,3 +26,5 @@ signup:
 	@curl -d '{ "email": "$(email)", "lastName": "$(lastName)", "firstName": "$(firstName)", "password": "$(password)" }' -H 'Accept: application/json' -H 'Content-Type: application/json' localhost:8080/signup
 fmt:
 	go fmt ./src
+parse:
+	go run ./src/parse.go
