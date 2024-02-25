@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import StateStore from './state';
 import Header from './components/Header';
 import Login from './components/Login';
+import { LOGIN } from './constants';
 
 const { INITIAL_STATE, buildStateManager } = StateStore;
 
@@ -13,7 +14,7 @@ function App() {
   const stateManager = buildStateManager(state, setState);
 
   useEffect(() => {
-    stateManager.f;
+    stateManager.ops[LOGIN].checkIfLoggedIn();
   }, []);
 
   console.log("state in App.js:", state);

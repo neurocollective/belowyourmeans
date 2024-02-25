@@ -51,8 +51,6 @@ const buildOperations = (state, stateChanges) => ({
 				body: JSON.stringify({ email, password }),
 				method: 'POST',
 			};
-			console.log('config', JSON.stringify(config));
-			window.CONFIG = config;
 
 			const fullURL = getURL("/login");
 			console.log(`fetching to ${fullURL}`);
@@ -62,30 +60,27 @@ const buildOperations = (state, stateChanges) => ({
 		checkIfLoggedIn: () => {
 			const {
 				[LOGIN]: {
-					handleLoginSuccess,
-					handleLoginFailure, 
+					handleLoggedIn,
+					handleNotLoggedIn, 
 				} 
 			} = stateChanges;
 
-			const {
-				[LOGIN]: {
-					email,
-					password,
-				}
-			} = state;
+			// const {
+			// 	[LOGIN]: {
+			// 		email,
+			// 		password,
+			// 	}
+			// } = state;
 
 			const config = {
 				...DEFAULT_REQUEST_CONFIG,
-				body: JSON.stringify({ email, password }),
-				method: 'POST',
+				method: 'GET',
 			};
-			console.log('config', JSON.stringify(config));
-			window.CONFIG = config;
 
-			const fullURL = getURL("/user");
+			const fullURL = getURL("/auth");
 			console.log(`fetching to ${fullURL}`);
 
-			return jsonRequest(fullURL, config, handleLoginSuccess, handleLoginFailure);
+			return jsonRequest(fullURL, config, handleLoggedIn, handleNotLoggedIn);
 		},
 	}
 });

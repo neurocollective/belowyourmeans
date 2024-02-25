@@ -22,14 +22,18 @@ func main() {
 	authMiddleware := func(c *gin.Context) {
 		headers := c.Request.Header
 
-		cookieValues, present := headers["Cookie"]
+		log.Println("current redis:", FAKE_REDIS)
 
-		firstCookie := cookieValues[0]
+		cookieValues, present := headers["Cookie"]
 
 		if !present {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
+
+		firstCookie := cookieValues[0]
+
+		log.Println("firstCookie", firstCookie)
 
 		index := strings.Index(firstCookie, constants.COOKIE_KEY)
 
@@ -40,7 +44,13 @@ func main() {
 
 		characterSlice := strings.Split(firstCookie, "")
 
-		afterKey := strings.Join(characterSlice[index+1:], "")
+		log.Println("characterSlice", characterSlice)
+
+		keyLastIndex := index + len(constants.COOKIE_KEY) + 1
+
+		afterKey := strings.Join(characterSlice[keyLastIndex:], "")
+
+		log.Println("afterKey", afterKey)
 
 		userId, present := FAKE_REDIS[afterKey]
 
@@ -58,7 +68,6 @@ func main() {
 	router := gin.Default()
 
 	router.LoadHTMLGlob("src/templates/*")
-	//router.LoadHTMLFiles("templates/template1.html", "templates/template2.html")
 
 	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")
 
@@ -181,6 +190,10 @@ func main() {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"staus": "success"})
+	})
+
+	router.GET("/auth", authMiddleware, func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "loggedIn"})
 	})
 
 	router.GET("/user", authMiddleware, func(c *gin.Context) {

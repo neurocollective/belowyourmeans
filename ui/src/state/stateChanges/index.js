@@ -24,6 +24,16 @@ const buildStateChanges = (state, setState) => {
 				const newState = { ...state, login: { ...state.login, isLoggedIn: false } };
 				update(newState);
 			},
+			handleLoggedIn: (successPayload) => {
+				console.log('successPayload', successPayload);
+				const newState = { ...state, login: { ...state.login, isLoggedIn: true } };
+				update(newState);
+			},
+			handleNotLoggedIn: (failurePayload) => {
+				console.log('failurePayload', failurePayload);
+				const newState = { ...state, login: { ...state.login, isLoggedIn: false } };
+				update(newState);	
+			}, 
 		}
 	};
 };

@@ -24,7 +24,7 @@ func GetSetCookieHeaderValue(cookie string) string {
 	environment := os.Getenv("ENVIRONMENT")
 
 	if environment == "dev" {
-		return constants.COOKIE_KEY + "=" + cookie + "; HttpOnly; Max-Age=3600;"		
+		return constants.COOKIE_KEY + "=" + cookie		
 	}
 
 	return constants.COOKIE_KEY + "=" + cookie + "; HttpOnly; Max-Age=3600; SameSite=Strict; Secure"
