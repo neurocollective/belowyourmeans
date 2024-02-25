@@ -26,6 +26,15 @@ function App() {
       </header>
       <main className="App">
         <Login stateManager={stateManager} />
+        <section>
+          <br />
+          <br />
+          <br />
+          i am the main stuff
+          <br />
+          <br />
+          <br />
+        </section>
       </main>
       <footer className="App-footer">
         <a class="bym-link" href="mailto:david@neurocollective.io">Contact Us</a>

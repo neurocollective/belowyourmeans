@@ -1,6 +1,6 @@
 import buildStateChanges from './stateChanges';
 import buildOperations from './operations';
-import { LOGIN } from '../constants';
+import { LOGIN,EXPENDITURE } from '../constants';
 
 const buildStateManager = (state, setState) => {
 
@@ -21,6 +21,10 @@ const StateStore =  {
 			isLoggedIn: false,
 			user: '',
 			userDisplayName: '',
+		},
+		[EXPENDITURE]: {
+			expenditures: [],
+			month: new Date().getMonth(), // zero-indexed month integer
 		}
 	},
 	buildStateManager,

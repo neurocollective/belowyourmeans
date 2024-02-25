@@ -44,13 +44,9 @@ func main() {
 
 		characterSlice := strings.Split(firstCookie, "")
 
-		log.Println("characterSlice", characterSlice)
-
 		keyLastIndex := index + len(constants.COOKIE_KEY) + 1
 
 		afterKey := strings.Join(characterSlice[keyLastIndex:], "")
-
-		log.Println("afterKey", afterKey)
 
 		userId, present := FAKE_REDIS[afterKey]
 
