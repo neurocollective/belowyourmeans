@@ -12,7 +12,7 @@ react/build:
 	@cp -r ./ui/build ./src/
 	@mv ./src/build ./src/public
 serve/local:
-	ENVIRONMENT=dev go run ./src/main.go ./src/password.go ./src/structs.go ./src/cookie.go
+	ENVIRONMENT=dev go run -mod vendor ./src/main.go ./src/password.go ./src/structs.go ./src/cookie.go
 parse/test:
 	@go test -v ./src/parsing
 psql:
@@ -27,4 +27,4 @@ signup:
 fmt:
 	go fmt ./src
 parse:
-	go run ./src/parse.go
+	go run -mod vendor ./src/parse.go
