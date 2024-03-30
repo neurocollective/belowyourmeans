@@ -11,6 +11,11 @@ import (
 	"net/http"
 	"neurocollective.io/neurocollective/belowyourmeans/src/db"
 	"neurocollective.io/neurocollective/belowyourmeans/src/constants"
+	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
+	"neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
+	"neurocollective.io/neurocollective/belowyourmeans/src/parsing"
+	"neurocollective.io/neurocollective/belowyourmeans/src/cookie"
+	"neurocollective.io/neurocollective/belowyourmeans/src/password"
 	"strconv"
 	"strings"
 )
@@ -244,57 +249,73 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"password": hashedPassword})
 	})
 
-	router.GET("/expenditure", authMiddleware, func(c *gin.Context) {
+	// router.GET("/expenditure", authMiddleware, func(c *gin.Context) {
 
-		queryMap := c.Request.URL.Query()
+	// 	queryMap := c.Request.URL.Query()
 
-		queryWhereClauses := ""
-		argIndex := 2
+	// 	queryWhereClauses := ""
+	// 	argIndex := 2
 
-		args := []any{1} // user id
+	// 	args := []any{1} // user id
 
-		for key, value := range queryMap {
+	// 	for key, value := range queryMap {
 
-			columnName := db.GetExpenditureColumnNameByQueryKey(key)
+	// 		columnName := db.GetExpenditureColumnNameByQueryKey(key)
 
-			if columnName == "" {
-				continue
-			}
+	// 		if columnName == "" {
+	// 			continue
+	// 		}
 
-			connector := " and "
+	// 		connector := " and "
 
-			// ignore multiple query keys, only take first. Defies the spec but that's wacky, brah.
+	// 		// ignore multiple query keys, only take first. Defies the spec but that's wacky, brah.
 
-			if columnName == "category_id" && value[0] == "-1" {
-				queryWhereClauses += connector + columnName + " is " + "null"
-			} else if columnName == "value" {
-				impreciseFloat, parseError := strconv.ParseFloat(value[0], 32)
-				if parseError != nil {
-					log.Println(parseError.Error())
-					c.JSON(http.StatusBadRequest, gin.H{"error": "amount is not a valid float"})
-					return
-				}
-				preciseFloat := fmt.Sprintf("%.2f", impreciseFloat) // TODO - should this be a float32 ?
+	// 		if columnName == "category_id" && value[0] == "-1" {
+	// 			queryWhereClauses += connector + columnName + " is " + "null"
+	// 		} else if columnName == "value" {
+	// 			impreciseFloat, parseError := strconv.ParseFloat(value[0], 32)
+	// 			if parseError != nil {
+	// 				log.Println(parseError.Error())
+	// 				c.JSON(http.StatusBadRequest, gin.H{"error": "amount is not a valid float"})
+	// 				return
+	// 			}
+	// 			preciseFloat := fmt.Sprintf("%.2f", impreciseFloat) // TODO - should this be a float32 ?
 
-				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
-				args = append(args, preciseFloat)
-			} else {
-				queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
-				args = append(args, value[0])
-			}
+	// 			queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
+	// 			args = append(args, preciseFloat)
+	// 		} else {
+	// 			queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
+	// 			args = append(args, value[0])
+	// 		}
 
-			argIndex++
+	// 		argIndex++
+	// 	}
+
+	// 	queryStem := db.EXPENDITURE_QUERY_STEM
+	// 	fullQuery := queryStem + queryWhereClauses + ";"
+
+	// 	expenditures, err := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
+
+	// 	if err != nil {
+	// 		log.Fatal("error!", err.Error())
+	// 	}
+	// 	c.JSON(http.StatusOK, gin.H{"data": expenditures})
+	// })
+
+	router.Get("/expenditure", func(c *gin.Context) {
+
+		query := "select * from expenditure;"
+		args := make([]any)
+
+		expenditures, err := ncsql.MetaQuery[sql.Expenditure](client, query, args)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{ "error": "failed to reach db" })
+			return
 		}
 
-		queryStem := db.EXPENDITURE_QUERY_STEM
-		fullQuery := queryStem + queryWhereClauses + ";"
-
-		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
-
-		if parseError != nil {
-			log.Fatal("error!", parseError.Error())
-		}
-		c.JSON(http.StatusOK, gin.H{"data": expenditures})
+		c.JSON(http.StatusInternalServerError, gin.H{ "data": expenditures })
+		return
 	})
 
 	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {

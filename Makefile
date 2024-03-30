@@ -12,7 +12,8 @@ react/build:
 	@cp -r ./ui/build ./src/
 	@mv ./src/build ./src/public
 serve/local:
-	ENVIRONMENT=dev go run -mod vendor ./src/main.go ./src/password.go ./src/structs.go ./src/cookie.go
+# 	ENVIRONMENT=dev go run -mod vendor ./src/main.go ./src/password/password.go ./src/structs/structs.go ./src/cookie.go ./src/structs/sql/*.go 
+	ENVIRONMENT=dev go run -mod vendor ./src/main.go
 parse/test:
 	@go test -v ./src/parsing
 psql:
@@ -28,3 +29,6 @@ fmt:
 	go fmt ./src
 parse:
 	go run -mod vendor ./src/parse.go
+install:
+	rm -rf vendor/github.com/neurocollective/go_utils
+	cp -r ../go_utils vendor/github.com/neurocollective/

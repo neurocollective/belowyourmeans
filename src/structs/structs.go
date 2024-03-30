@@ -1,4 +1,4 @@
-package main
+package structs
 
 type LoginPayload struct {
 	Email    string

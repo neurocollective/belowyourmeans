@@ -33,6 +33,3 @@ Truist Bank
 Huntington bank
 KeyBank
 
-#### most common credit card issuers
-
-American Express

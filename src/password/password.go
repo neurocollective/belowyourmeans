@@ -1,10 +1,12 @@
-package main
+package password
 
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"io"
+
+	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
 )
 
 func HashPassword(password string) (string, error) {
@@ -19,14 +21,14 @@ func HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func GetSignupPayload(c *gin.Context) (*SignupPayload, error) {
+func GetSignupPayload(c *gin.Context) (*structs.SignupPayload, error) {
 
 	jsonBytes, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	payload := new(SignupPayload)
+	payload := new(structs.SignupPayload)
 
 	err = json.Unmarshal(jsonBytes, payload)
 
