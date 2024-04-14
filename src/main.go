@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	ncsql "github.com/neurocollective/go_utils/sql"
 	"golang.org/x/crypto/bcrypt"
@@ -12,7 +11,7 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/src/constants"
 	"neurocollective.io/neurocollective/belowyourmeans/src/cookie"
 	"neurocollective.io/neurocollective/belowyourmeans/src/db"
-	"neurocollective.io/neurocollective/belowyourmeans/src/parsing"
+	// "neurocollective.io/neurocollective/belowyourmeans/src/parsing"
 	"neurocollective.io/neurocollective/belowyourmeans/src/password"
 	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
 	bymsql "neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
@@ -122,7 +121,7 @@ func main() {
 
 		args := []any{payload.Email}
 
-		users, err := ncsql.QueryForStructs[bymsql.User](client, db.ScanForUserLoginData, query, args...)
+		users, err := ncsql.Select[bymsql.User](client, query, args)
 
 		if err != nil {
 			log.Fatal("error!", err.Error())
@@ -135,7 +134,7 @@ func main() {
 			return
 		}
 
-		err = bcrypt.CompareHashAndPassword([]byte(users[0].HashedPassword), []byte(payload.Password))
+		err = bcrypt.CompareHashAndPassword([]byte(*users[0].HashedPassword), []byte(payload.Password))
 
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -144,18 +143,18 @@ func main() {
 
 		userId := users[0].Id
 
-		returnJson := map[string]int{"userId": userId}
+		returnJson := map[string]int{"userId": *userId}
 
-		cookie, err := cookie.GenerateCookie()
+		cookieValue, err := cookie.GenerateCookie()
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
 			return
 		}
 
-		c.Header("Set-Cookie", cookie.GetSetCookieHeaderValue(cookie))
+		c.Header("Set-Cookie", cookie.GetSetCookieHeaderValue(cookieValue))
 
-		FAKE_REDIS[cookie] = userId
+		FAKE_REDIS[cookieValue] = *userId
 
 		c.JSON(http.StatusOK, gin.H{"data": returnJson})
 	})
@@ -182,7 +181,7 @@ func main() {
 
 		args := []any{payload.FirstName, payload.LastName, payload.Email, string(hashedPassword)}
 
-		_, err = ncsql.QueryForStructs[db.User](client, db.ScanForUserLoginData, query, args...)
+		_, err = ncsql.Select[bymsql.User](client, query, args)
 
 		if err != nil {
 			log.Println(err.Error())
@@ -212,7 +211,7 @@ func main() {
 
 		args := []any{id}
 
-		users, err := ncsql.QueryForStructs[db.User](client, db.ScanForUser, query, args...)
+		users, err := ncsql.Select[bymsql.User](client, query, args)
 
 		if err != nil {
 			log.Fatal("error!", err.Error())
@@ -230,7 +229,7 @@ func main() {
 
 	router.POST("/password/hash", func(c *gin.Context) {
 
-		payload, err := GetSignupPayload(c)
+		payload, err := password.GetSignupPayload(c)
 
 		if err != nil {
 			log.Println(err)
@@ -238,7 +237,7 @@ func main() {
 			return
 		}
 
-		hashedPassword, err := HashPassword(payload.Password)
+		hashedPassword, err := password.HashPassword(payload.Password)
 
 		if err != nil {
 			log.Println(err)
@@ -249,65 +248,12 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"password": hashedPassword})
 	})
 
-	// router.GET("/expenditure", authMiddleware, func(c *gin.Context) {
-
-	// 	queryMap := c.Request.URL.Query()
-
-	// 	queryWhereClauses := ""
-	// 	argIndex := 2
-
-	// 	args := []any{1} // user id
-
-	// 	for key, value := range queryMap {
-
-	// 		columnName := db.GetExpenditureColumnNameByQueryKey(key)
-
-	// 		if columnName == "" {
-	// 			continue
-	// 		}
-
-	// 		connector := " and "
-
-	// 		// ignore multiple query keys, only take first. Defies the spec but that's wacky, brah.
-
-	// 		if columnName == "category_id" && value[0] == "-1" {
-	// 			queryWhereClauses += connector + columnName + " is " + "null"
-	// 		} else if columnName == "value" {
-	// 			impreciseFloat, parseError := strconv.ParseFloat(value[0], 32)
-	// 			if parseError != nil {
-	// 				log.Println(parseError.Error())
-	// 				c.JSON(http.StatusBadRequest, gin.H{"error": "amount is not a valid float"})
-	// 				return
-	// 			}
-	// 			preciseFloat := fmt.Sprintf("%.2f", impreciseFloat) // TODO - should this be a float32 ?
-
-	// 			queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
-	// 			args = append(args, preciseFloat)
-	// 		} else {
-	// 			queryWhereClauses += connector + columnName + " = " + "$" + strconv.Itoa(argIndex)
-	// 			args = append(args, value[0])
-	// 		}
-
-	// 		argIndex++
-	// 	}
-
-	// 	queryStem := db.EXPENDITURE_QUERY_STEM
-	// 	fullQuery := queryStem + queryWhereClauses + ";"
-
-	// 	expenditures, err := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
-
-	// 	if err != nil {
-	// 		log.Fatal("error!", err.Error())
-	// 	}
-	// 	c.JSON(http.StatusOK, gin.H{"data": expenditures})
-	// })
-
-	router.Get("/expenditure", func(c *gin.Context) {
+	router.GET("/expenditure", func(c *gin.Context) {
 
 		query := "select * from expenditure;"
-		args := make([]any)
+		args := make([]any, 0)
 
-		expenditures, err := ncsql.MetaQuery[ncsql.Expenditure](client, query, args)
+		expenditures, err := ncsql.Select[ncsql.Expenditure](client, query, args)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
@@ -330,7 +276,7 @@ func main() {
 
 		args := []any{user, category, amount, description, date}
 
-		expenditures, parseError := ncsql.QueryForStructs[db.Expenditure](client, db.ScanForExpenditure, fullQuery, args...)
+		expenditures, parseError := ncsql.Select[ncsql.Expenditure](client, fullQuery, args)
 
 		if parseError != nil {
 			log.Fatal("error!", parseError.Error())
