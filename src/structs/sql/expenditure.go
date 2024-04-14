@@ -17,7 +17,7 @@ type Expenditure struct {
 	ModifiedDate *string    `ncsql:"modified_date",json:"modifiedDate"`
 }
 
-func (e Expenditure) Init() ncsql.SQLMetaStruct {
+func (e Expenditure) Zero() ncsql.SQLMetaStruct {
 
 	one := 0
 	two := 0
@@ -40,6 +40,10 @@ func (e Expenditure) Init() ncsql.SQLMetaStruct {
 	new.ModifiedDate = &eight
 
 	return new
+}
+
+func (e Expenditure) GetId() *int {
+	return e.Id
 }
 
 // this should be generated code, based on column names

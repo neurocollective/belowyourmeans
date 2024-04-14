@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"errors"
+	bymsql "neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
 )
 
 const (
@@ -13,15 +14,7 @@ const (
 	CREATE_USER_QUERY = "INSERT INTO budget_user VALUES (nextval('budget_user_id_seq'), $1, $2, $3, $4, now(), now()) RETURNING id;"
 )
 
-type User struct {
-	Id int
-	FirstName string
-	LastName string
-	Email string
-	HashedPassword string
-}
-
-func ScanForUser(rows *sql.Rows, user *User) error {
+func ScanForUser(rows *sql.Rows, user *bymsql.User) error {
 
 	if rows == nil {
 		return errors.New("rows is nil inside ScanForUser")
@@ -41,14 +34,14 @@ func ScanForUser(rows *sql.Rows, user *User) error {
 	return nil
 }
 
-type Expenditure struct {
-	Id int
-	UserId int
-	CategoryId *int
-	Value float32
-	Description string
-	DateOccurred string
-}
+// type Expenditure struct {
+// 	Id int
+// 	UserId int
+// 	CategoryId *int
+// 	Value float32
+// 	Description string
+// 	DateOccurred string
+// }
 
 func GetExpenditureColumnNameByQueryKey(key string) string {
 	if key == "amount" {
@@ -61,38 +54,38 @@ func GetExpenditureColumnNameByQueryKey(key string) string {
 	return ""
 }
 
-func ScanForExpenditure(rows *sql.Rows, ex *Expenditure) error {
+// func ScanForExpenditure(rows *sql.Rows, ex *Expenditure) error {
 
-	if rows == nil {
-		return errors.New("rows is nil inside ScanForExpenditure")
-	}
+// 	if rows == nil {
+// 		return errors.New("rows is nil inside ScanForExpenditure")
+// 	}
 
-	if ex == nil {
-		return errors.New("ex is nil inside ScanForExpenditure")		
-	}
+// 	if ex == nil {
+// 		return errors.New("ex is nil inside ScanForExpenditure")		
+// 	}
 
-	idPointer := &ex.Id
-	userIdPointer := &ex.UserId
-	categoryIdPointer := &ex.CategoryId
-	valuePointer := &ex.Value
-	descriptionPointer := &ex.Description
-	dateOccurredPointer := &ex.DateOccurred
+// 	idPointer := &ex.Id
+// 	userIdPointer := &ex.UserId
+// 	categoryIdPointer := &ex.CategoryId
+// 	valuePointer := &ex.Value
+// 	descriptionPointer := &ex.Description
+// 	dateOccurredPointer := &ex.DateOccurred
 
-	// send category_id = -1 in the query to ask for `NULL` entries.
-	// if ex.CategoryId != nil && *ex.CategoryId == 0 {
-	// 	categoryIdPointer = nil
-	// }
+// 	// send category_id = -1 in the query to ask for `NULL` entries.
+// 	// if ex.CategoryId != nil && *ex.CategoryId == 0 {
+// 	// 	categoryIdPointer = nil
+// 	// }
 
-	scanError := rows.Scan(idPointer, userIdPointer, categoryIdPointer, valuePointer, descriptionPointer, dateOccurredPointer)
+// 	scanError := rows.Scan(idPointer, userIdPointer, categoryIdPointer, valuePointer, descriptionPointer, dateOccurredPointer)
 
-	if scanError != nil {
-		return scanError
-	}
+// 	if scanError != nil {
+// 		return scanError
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func ScanForUserLoginData(rows *sql.Rows, user *User) error {
+func ScanForUserLoginData(rows *sql.Rows, user *bymsql.User) error {
 
 	if rows == nil {
 		return errors.New("rows is nil inside ScanForUserLoginData")
@@ -115,7 +108,7 @@ func ScanForUserLoginData(rows *sql.Rows, user *User) error {
 	return nil
 }
 
-func ScanForUserSignupData(rows *sql.Rows, user *User) error {
+func ScanForUserSignupData(rows *sql.Rows, user *bymsql.User) error {
 
 	if rows == nil {
 		return errors.New("rows is nil inside ScanForUserLoginData")

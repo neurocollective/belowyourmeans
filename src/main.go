@@ -15,7 +15,7 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/src/parsing"
 	"neurocollective.io/neurocollective/belowyourmeans/src/password"
 	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
-	"neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
+	bymsql "neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
 	"strconv"
 	"strings"
 )
@@ -109,7 +109,7 @@ func main() {
 			return
 		}
 
-		payload := new(LoginPayload)
+		payload := new(structs.LoginPayload)
 
 		err = json.Unmarshal(jsonBytes, payload)
 
@@ -122,7 +122,7 @@ func main() {
 
 		args := []any{payload.Email}
 
-		users, err := ncsql.QueryForStructs[db.User](client, db.ScanForUserLoginData, query, args...)
+		users, err := ncsql.QueryForStructs[bymsql.User](client, db.ScanForUserLoginData, query, args...)
 
 		if err != nil {
 			log.Fatal("error!", err.Error())
@@ -146,14 +146,14 @@ func main() {
 
 		returnJson := map[string]int{"userId": userId}
 
-		cookie, err := GenerateCookie()
+		cookie, err := cookie.GenerateCookie()
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
 			return
 		}
 
-		c.Header("Set-Cookie", GetSetCookieHeaderValue(cookie))
+		c.Header("Set-Cookie", cookie.GetSetCookieHeaderValue(cookie))
 
 		FAKE_REDIS[cookie] = userId
 
@@ -162,7 +162,7 @@ func main() {
 
 	router.POST("/signup", func(c *gin.Context) {
 
-		payload, err := GetSignupPayload(c)
+		payload, err := password.GetSignupPayload(c)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -171,7 +171,7 @@ func main() {
 
 		query := db.CREATE_USER_QUERY
 
-		hashedPassword, err := HashPassword(payload.Password)
+		hashedPassword, err := password.HashPassword(payload.Password)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
@@ -307,7 +307,7 @@ func main() {
 		query := "select * from expenditure;"
 		args := make([]any)
 
-		expenditures, err := ncsql.MetaQuery[sql.Expenditure](client, query, args)
+		expenditures, err := ncsql.MetaQuery[ncsql.Expenditure](client, query, args)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
