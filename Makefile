@@ -32,3 +32,4 @@ parse:
 install:
 	rm -rf vendor/github.com/neurocollective/go_utils
 	cp -r ../go_utils vendor/github.com/neurocollective/
+	rm -rf vendor/github.com/neurocollective/go_utils/.git

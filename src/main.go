@@ -9,13 +9,13 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"neurocollective.io/neurocollective/belowyourmeans/src/db"
 	"neurocollective.io/neurocollective/belowyourmeans/src/constants"
+	"neurocollective.io/neurocollective/belowyourmeans/src/cookie"
+	"neurocollective.io/neurocollective/belowyourmeans/src/db"
+	"neurocollective.io/neurocollective/belowyourmeans/src/parsing"
+	"neurocollective.io/neurocollective/belowyourmeans/src/password"
 	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
 	"neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
-	"neurocollective.io/neurocollective/belowyourmeans/src/parsing"
-	"neurocollective.io/neurocollective/belowyourmeans/src/cookie"
-	"neurocollective.io/neurocollective/belowyourmeans/src/password"
 	"strconv"
 	"strings"
 )
@@ -210,7 +210,7 @@ func main() {
 			return
 		}
 
-		args := []any{ id }
+		args := []any{id}
 
 		users, err := ncsql.QueryForStructs[db.User](client, db.ScanForUser, query, args...)
 
@@ -222,7 +222,7 @@ func main() {
 
 		if len(users) == 0 {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
-			return			
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{"data": users[0]})
@@ -310,11 +310,11 @@ func main() {
 		expenditures, err := ncsql.MetaQuery[sql.Expenditure](client, query, args)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{ "error": "failed to reach db" })
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{ "data": expenditures })
+		c.JSON(http.StatusInternalServerError, gin.H{"data": expenditures})
 		return
 	})
 
