@@ -35,7 +35,7 @@ function App() {
         </section>
       </main>
       <footer className="App-footer">
-        <a class="bym-link" href="mailto:david@neurocollective.io">Contact Us</a>
+        <a className="bym-link" href="mailto:david@neurocollective.io">Contact Us</a>
       </footer>
     </>
   );

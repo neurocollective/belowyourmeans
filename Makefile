@@ -3,6 +3,8 @@ db/local:
 	@sleep 2
 	@psql -f db/create_tables.sql "postgresql://postgres:postgres@localhost:5432/postgres" 
 	@psql -f db/initial_seed.sql "postgresql://postgres:postgres@localhost:5432/postgres"
+db/local/down:
+	@docker rm local-pg -f
 ahab:
 	@docker rm -f local-pg
 test/parse:

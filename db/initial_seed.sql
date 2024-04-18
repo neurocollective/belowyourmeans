@@ -3,7 +3,7 @@ insert into budget_user values (
 	'david',
 	'ashe',
 	'david@neurocollective.io',
-	'$5$hWvy8n69/SiNtC3d$rxYVgSbIlZC46tmMwZ/rE7fgz8iDemF7dIs8MCNkZB7', -- make it the hash of 'test123' for now
+	'$2a$10$8.lPRFurMUrF8Piv6hrhiOyyfwzTa1JafiF2mMLP.YnZefwTp/Qgu', -- make it the hash of 'password' for now
 	now(),
 	now()
 );

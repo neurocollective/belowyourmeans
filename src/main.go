@@ -130,6 +130,7 @@ func main() {
 		userCount := len(users)
 
 		if userCount == 0 {
+			log.Println("no users found for", payload.Email)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 			return
 		}
