@@ -84,7 +84,7 @@ github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.2
 ## explicit; go 1.12
 github.com/modern-go/reflect2
-# github.com/neurocollective/go_utils v0.0.0-20240414204735-6840e080f704
+# github.com/neurocollective/go_utils v0.0.0-20240418004404-a1851e59c774
 ## explicit; go 1.21
 github.com/neurocollective/go_utils/sql
 # github.com/pelletier/go-toml/v2 v2.0.8

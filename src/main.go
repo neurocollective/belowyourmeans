@@ -261,7 +261,7 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"data": expenditures})
+		c.JSON(http.StatusOk, gin.H{"data": expenditures})
 		return
 	})
 
