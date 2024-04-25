@@ -4,7 +4,7 @@ go 1.21.3
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/neurocollective/go_utils v0.0.0-20240418004404-a1851e59c774
+	github.com/neurocollective/go_utils v0.0.0-20240423010831-b8c86581ecb5
 	golang.org/x/crypto v0.21.0
 	golang.org/x/net v0.22.0
 )
