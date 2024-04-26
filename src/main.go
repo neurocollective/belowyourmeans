@@ -17,11 +17,30 @@ import (
 	bymsql "neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
 	"strconv"
 	"strings"
+	"errors"
 )
+
+func GetFromContext[T any](c *gin.Context, key string) (T, error) {
+	var empty T
+
+	value, exists := c.Get(key)
+
+	if !exists {
+		return empty, errors.New(key + " not in context")
+	}
+
+	assertedValue, ok := value.(T)
+
+	if !ok {
+		return empty, errors.New(key + " cannot be asserted to requested type")
+	}
+
+	return assertedValue, nil
+}
 
 func main() {
 
-	FAKE_REDIS := make(map[string]int)
+	FAKE_REDIS := make(map[string]string)
 
 	authMiddleware := func(c *gin.Context) {
 		headers := c.Request.Header
@@ -155,7 +174,7 @@ func main() {
 
 		c.Header("Set-Cookie", cookie.GetSetCookieHeaderValue(cookieValue))
 
-		FAKE_REDIS[cookieValue] = *userId
+		FAKE_REDIS[cookieValue] = strconv.Itoa(*userId)
 
 		c.JSON(http.StatusOK, gin.H{"data": returnJson})
 	})
@@ -249,7 +268,28 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"password": hashedPassword})
 	})
 
-	router.GET("/expenditure", func(c *gin.Context) {
+	router.GET("/expenditure", /* authMiddleware, */ func(c *gin.Context) {
+
+		userIdString, err := GetFromContext[string](c, constants.USER_ID)
+
+		log.Println("userId:", userIdString)
+
+		if err != nil {
+			log.Println("userId not received from auth middleware")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		userId, err := strconv.Atoi(userIdString)
+		if err != nil {
+			log.Println("userId un-convertable from string to int")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		if userId == 0 {
+			userId = 1
+		}
 
 		query := "select * from expenditure;"
 		args := make([]any, 0)

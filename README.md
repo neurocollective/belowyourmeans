@@ -1,6 +1,12 @@
 just the beginning
 
-yo
+### Auth
+
+Using a `map[string]string` for now, will be redis later.
+
+`cookie -> userId`
+
+cookie is stored in browser as `BelowYourMeans=$cookieToken`
 
 #### most common us banks for checking accounts
 
