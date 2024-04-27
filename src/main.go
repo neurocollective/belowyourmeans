@@ -82,6 +82,11 @@ func main() {
 		c.Next()
 	}
 
+	fakeAuthMiddleware := func(c *gin.Context) {
+		c.Set(constants.USER_ID, "1")
+		c.Next()
+	}
+
 	log.Println("booting server...")
 
 	router := gin.Default()
@@ -268,7 +273,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"password": hashedPassword})
 	})
 
-	router.GET("/expenditure", /* authMiddleware, */ func(c *gin.Context) {
+	router.GET("/expenditure", fakeAuthMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
