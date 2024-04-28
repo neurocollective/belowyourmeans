@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -175,6 +176,10 @@ func ScanRow[T SQLMetaStruct](rows *sql.Rows, object T) error {
 	values := object.ValuesAll()
 
 	err := rows.Scan(values...)
+
+	for i, value := range values {
+    	fmt.Printf("ScanRow...value at index %d : %T\n", i, value)
+	}
 
 	if err != nil {
 		log.Println("scan error during ScanRow[T ncsql.SQLMetaStruct](...)")

@@ -310,6 +310,22 @@ func main() {
 		return
 	})
 
+	router.GET("/expenditure/test", fakeAuthMiddleware, func(c *gin.Context) {
+
+		query := "select * from expenditure;"
+		args := make([]any, 0)
+
+		expenditures, err := db.GetExpenditures(client, query, args)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": expenditures})
+		return
+	})
+
 	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {
 
 		user := c.PostForm("user")
