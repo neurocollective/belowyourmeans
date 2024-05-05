@@ -4,6 +4,9 @@ import (
 	"os"
 	//"fmt"
 	"strings"
+	"strconv"
+	"log"
+	ncsql "github.com/neurocollective/go_utils/sql"
 )
 
 const (
@@ -33,6 +36,27 @@ type CapOneTransaction struct {
 	TransactionType string
 	TransactionDescription string
 	Balance string
+}
+
+func (t CapOneTransaction) ToExpenditure(userId *int) (*ncsql.Expenditure, error) {
+	e := ncsql.Expenditure{}
+
+	value, err := strconv.ParseFloat(t.TransactionAmount, 32)
+
+	if err != nil {
+		log.Println("CapOneTransactionsToExpenditures failed to parse value:", t.TransactionAmount)
+		return nil, err
+	}
+
+	asFloat32 := float32(value)
+	description := t.TransactionType + ": " + t.TransactionDescription
+
+	e.Value = &asFloat32
+	e.UserId = userId
+	e.Description = &description
+	e.DateOccurred = &t.TransactionDate
+
+	return &e, nil
 }
 
 func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
@@ -78,7 +102,7 @@ func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
 			transactions[index] = transaction
 		}
 	}
-	return transactions, nil
+	return transactions[1:], nil
 }
 
 func GetCustomAmexCheckingCSVColumns() []string {
@@ -135,4 +159,27 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 	// split on commas
 
 	return []AmexTransaction{}, nil
+}
+
+func CapOneTransactionsToExpenditures(transactions []CapOneTransaction, userId *int) ([]ncsql.Expenditure, error) {
+	size := len(transactions)
+
+	log.Println("size", size)
+
+	expenditures := make([]ncsql.Expenditure, size, size)
+
+	var index int
+
+	for _, transaction := range transactions {
+		expenditure, err := transaction.ToExpenditure(userId)
+		if err != nil {
+			log.Println("error calling transaction.ToExpenditure():", err.Error())
+			continue
+		}
+		log.Println("assigning index", index)
+		expenditures[index] = *expenditure
+		index++
+	}
+
+	return expenditures, nil
 }

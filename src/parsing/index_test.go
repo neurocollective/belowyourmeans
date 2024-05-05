@@ -19,16 +19,32 @@ func TestParseCapitalOneCSV(t *testing.T) {
 
 	cwd, _ := os.Getwd()
 
-	transactions, parseError := ParseCapitalOneCSV(cwd + "/../../sample_files/capone_checking_2023_11_5.csv")
+	transactions, err := ParseCapitalOneCSV(cwd + "/../../sample_files/capone_checking_2023_11_5.csv")
 
-	if parseError != nil {
-		t.Fatal("error!" + parseError.Error())
+	if err != nil {
+		t.Fatal("error!" + err.Error())
 	}
 
 	if len(transactions) > 10 {
 		log.Println(transactions[:9])
 	} else {
 		log.Println(transactions)		
+	}
+
+	userId := 1
+
+	expenditures, err := CapOneTransactionsToExpenditures(transactions, &userId)
+
+	if err != nil {
+		t.Fatal("error!" + err.Error())
+	}
+
+	insert := ncsql.Insert[ncsql.Expenditure]
+
+	err = insert(client, expenditures)
+
+	if err != nil {
+		t.Fatal("error!" + err.Error())		
 	}
 
 	// create query to insert transactions
