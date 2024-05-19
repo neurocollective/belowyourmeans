@@ -174,6 +174,7 @@ func CapOneTransactionsToExpenditures(transactions []CapOneTransaction, userId *
 		expenditure, err := transaction.ToExpenditure(userId)
 		if err != nil {
 			log.Println("error calling transaction.ToExpenditure():", err.Error())
+			log.Println("error was at index", index)
 			continue
 		}
 		log.Println("assigning index", index)
