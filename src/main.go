@@ -296,7 +296,7 @@ func main() {
 			userId = 1
 		}
 
-		query := "select * from expenditure;"
+		query := "select * from expenditure limit 1;"
 		args := make([]any, 0)
 
 		expenditures, err := ncsql.Select[ncsql.Expenditure](client, query, args)

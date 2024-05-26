@@ -3,57 +3,50 @@ package db
 import (
 	"database/sql"
 	"log"
-	ncsql "github.com/neurocollective/go_utils/sql"
+	// ncsql "github.com/neurocollective/go_utils/sql"
 )
 
-// a valid SQLReporter will need pointers as every field. `SQLReporter` implies this.
+type SQLGenerated interface {
+	GetId() sql.NullInt64            // get the id
+	Keys() []string         // get the struct pointer names as strings equal to column names, in db column order
+	Values() []sql.Null[any]           // get the struct pointer values in db column order
+	Get(string) (sql.Null[any], error) // get a struct field by string key - defined by `ncsql:"fieldName"` tag
+	TableName() string       // get the table name this struct targets
+}
+
+// type Expenditure struct {
+// 	Id           sql.NullInt64     `ncsql:"id",json:"id"`
+// 	UserId       sql.NullInt64     `ncsql:"user_id",json:"userId"`
+// 	CategoryId   sql.NullInt64     `ncsql:"category_id",json:"categoryId"`
+// 	Value        sql.NullFloat64   `ncsql:"value",json:"value"`
+// 	Description  sql.NullString    `ncsql:"description",json:"description"`
+// 	DateOccurred sql.NullTime      `ncsql:"date_occurred",json:"dateOccurred"`
+// 	CreateDate   sql.NullTime      `ncsql:"create_date",json:"createDate"`
+// 	ModifiedDate sql.NullTime      `ncsql:"modified_date",json:"modifiedDate"`
+// }
+
 type Expenditure struct {
-	Id           *int     `ncsql:"id",json:"id"`
-	UserId       *int     `ncsql:"user_id",json:"userId"`
-	CategoryId   *int     `ncsql:"category_id",json:"categoryId"`
-	Value        *float32 `ncsql:"value",json:"value"`
-	Description  *string  `ncsql:"description",json:"description"`
-	DateOccurred *string  `ncsql:"date_occurred",json:"dateOccurred"`
-	CreateDate   *string  `ncsql:"create_date",json:"createDate"`
-	ModifiedDate *string  `ncsql:"modified_date",json:"modifiedDate"`
+	Id           sql.Null[int64]    `ncsql:"id",json:"id"`
+	UserId       sql.Null[int64]    `ncsql:"user_id",json:"userId"`
+	CategoryId   sql.Null[int64]    `ncsql:"category_id",json:"categoryId"`
+	Value        sql.Null[float64]  `ncsql:"value",json:"value"`
+	Description  sql.Null[string]   `ncsql:"description",json:"description"`
+	DateOccurred sql.Null[string]   `ncsql:"date_occurred",json:"dateOccurred"`
+	CreateDate   sql.Null[string]   `ncsql:"create_date",json:"createDate"`
+	ModifiedDate sql.Null[string]   `ncsql:"modified_date",json:"modifiedDate"`
 }
 
-func (e Expenditure) Zero() Expenditure {
-
-	new := Expenditure{}
-
-	one := 0
-	two := 0
-	three := 0
-	four := float32(0)
-	five := ""
-	six := ""
-	seven := ""
-	eight := ""
-
-	new.Id = &one
-	new.UserId = &two
-	new.CategoryId = &three
-	new.Value = &four
-	new.Description = &five
-	new.DateOccurred = &six
-	new.CreateDate = &seven
-	new.ModifiedDate = &eight
-
-	return new
-}
-
-func ScanExpenditureRow(rows *sql.Rows, receiver *Expenditure) error {
+func ScanExpenditureRow(rows *sql.Rows, expenditure *Expenditure) error {
 
 	values := []any{
-		&receiver.Id,
-		&receiver.UserId,
-		&receiver.CategoryId,
-		&receiver.Value,
-		&receiver.Description,
-		&receiver.DateOccurred,
-		&receiver.CreateDate,
-		&receiver.ModifiedDate,
+		&expenditure.Id,
+		&expenditure.UserId,
+		&expenditure.CategoryId,
+		&expenditure.Value,
+		&expenditure.Description,
+		&expenditure.DateOccurred,
+		&expenditure.CreateDate,
+		&expenditure.ModifiedDate,
 	}
 
 	err := rows.Scan(values...) 
@@ -66,17 +59,12 @@ func ScanExpenditureRow(rows *sql.Rows, receiver *Expenditure) error {
 	return nil
 }
 
-func GetExpenditures(client ncsql.PGClient, query string, args []any) ([]Expenditure, error) {
+func SelectExpenditure(client ncsql.PGClient, query string, args []any) ([]Expenditure, error) {
 	rows, err := client.Query(query, args...)
 
 	if err != nil {
 		return []Expenditure{}, nil
 	}
-
-	// var empty Expenditure
-	// empty = empty.Zero()
-
-	// var empty []T
 
 	capacity := 100
 
@@ -86,7 +74,6 @@ func GetExpenditures(client ncsql.PGClient, query string, args []any) ([]Expendi
 	for rows.Next() {
 
 		var receiver Expenditure
-		// zeroedStruct := receiver.Zero()
 
 		if index == capacity-1 {
 			capacity += 100

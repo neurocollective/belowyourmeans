@@ -26,9 +26,15 @@ func TestParseCapitalOneCSV(t *testing.T) {
 	}
 
 	if len(transactions) > 10 {
-		log.Println(transactions[:9])
+		log.Println("trimming transactions")
+		transactions = transactions[:9]
+		
+		for _, transaction := range transactions {
+			log.Println(transaction.TransactionDate)
+			log.Println(transaction.TransactionDate)
+		}
 	} else {
-		log.Println(transactions)		
+		log.Println(transactions)
 	}
 
 	userId := 1
