@@ -15,6 +15,8 @@ const clientConfig = {
 };
 const client = new Client(clientConfig);
 
+// pg.types.setTypeParser(pg.types.builtins.DECIMAL, value => parseFloat(value));
+
 const boot = async () => {
 
 	await client.connect();
@@ -34,13 +36,15 @@ const boot = async () => {
 
 		const { rows } = dbRes;
 
+		console.log('rows', rows);
+
 		return res.json(rows);
 	});
 
 
 	app.post('/query', express.json(), async (req, res) => {
 
-		let { query, parameters } = (req.body ?? {});
+		let { query, parameters, specialRule } = (req.body ?? {});
 
 		console.log("req.body", req.body);
 		console.log("query:", query);
@@ -55,7 +59,22 @@ const boot = async () => {
 
 		const dbRes = await client.query(query, parameters);
 
-		const { rows = [] } = dbRes;
+		let { rows = [] } = dbRes;
+
+		if (specialRule === "mapExpenditures") {
+			rows = rows.map((row) => {
+				const newRow = { ...row };
+				try {
+					newRow.value = parseFloat(row.value);
+				} catch (err) {
+					console.error(err);
+					return row;
+				}
+				return newRow;
+			})
+		}
+
+		console.log('rows', rows);
 
 		return res.json(rows);
 	});

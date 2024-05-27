@@ -3,13 +3,13 @@ package db
 import (
 	"database/sql"
 	"log"
-	// ncsql "github.com/neurocollective/go_utils/sql"
+	ncsql "github.com/neurocollective/go_utils/sql"
 )
 
 type SQLGenerated interface {
 	GetId() sql.NullInt64            // get the id
 	Keys() []string         // get the struct pointer names as strings equal to column names, in db column order
-	Values() []sql.Null[any]           // get the struct pointer values in db column order
+	Values() []sql.Null[any]          // get the struct pointer values in db column order
 	Get(string) (sql.Null[any], error) // get a struct field by string key - defined by `ncsql:"fieldName"` tag
 	TableName() string       // get the table name this struct targets
 }

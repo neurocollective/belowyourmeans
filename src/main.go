@@ -12,12 +12,13 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/src/cookie"
 	"neurocollective.io/neurocollective/belowyourmeans/src/db"
 	// "neurocollective.io/neurocollective/belowyourmeans/src/parsing"
+	"bytes"
+	"errors"
 	"neurocollective.io/neurocollective/belowyourmeans/src/password"
 	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
 	bymsql "neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
 	"strconv"
 	"strings"
-	"errors"
 )
 
 func GetFromContext[T any](c *gin.Context, key string) (T, error) {
@@ -36,6 +37,67 @@ func GetFromContext[T any](c *gin.Context, key string) (T, error) {
 	}
 
 	return assertedValue, nil
+}
+
+type RawEx struct {
+	Id           int64   `json:"id"`
+	UserId       int64   `json:"user_id"`
+	CategoryId   int64   `json:"category_id"`
+	Value        float32 `json:"value"`
+	Description  string  `json:"description"`
+	DateOccurred string  `json:"date_occurred"`
+	CreateDate   string  `json:"create_date"`
+	ModifiedDate string  `json:"modified_date"`
+}
+
+func ExecuteNodeQuery[T any](query string, queryParams []any) ([]T, error) {
+
+	client := new(http.Client)
+
+	body := map[string]any{
+		"query":       query,
+		"queryParams": queryParams,
+		"specialRule": "mapExpenditures",
+	}
+
+	bodyBytes, err := json.Marshal(body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	bodyReader := bytes.NewReader(bodyBytes)
+	request, err := http.NewRequest(http.MethodPost, "http://localhost:3001/query", bodyReader)
+
+	request.Header.Add("Content-Type", "application/json")
+
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	results := []T{}
+
+	bytes, err := io.ReadAll(response.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("res:", string(bytes))
+
+	err = json.Unmarshal(bytes, &results)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }
 
 func main() {
@@ -315,9 +377,24 @@ func main() {
 		query := "select * from expenditure;"
 		args := make([]any, 0)
 
-		expenditures, err := db.GetExpenditures(client, query, args)
+		expenditures, err := db.SelectExpenditure(client, query, args)
 
 		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": expenditures})
+		return
+	})
+
+	router.GET("/x", func(c *gin.Context) {
+		args := []any{}
+		query := "select * from expenditure;"
+		expenditures, err := ExecuteNodeQuery[RawEx](query, args)
+
+		if err != nil {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
 			return
 		}
