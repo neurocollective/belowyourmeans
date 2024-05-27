@@ -3,7 +3,7 @@ const pg = require('pg');
 
 const {
 	env: {
-		PORT = 3000,
+		PORT = 3001,
 	}
 } = process;
 
@@ -74,7 +74,7 @@ const boot = async () => {
 			})
 		}
 
-		console.log('rows', rows);
+		console.log('rows[0:9]', rows.slice(0,9));
 
 		return res.json(rows);
 	});

@@ -56,7 +56,7 @@ func ExecuteNodeQuery[T any](query string, queryParams []any) ([]T, error) {
 
 	body := map[string]any{
 		"query":       query,
-		"queryParams": queryParams,
+		"parameters": queryParams,
 		"specialRule": "mapExpenditures",
 	}
 
@@ -88,8 +88,6 @@ func ExecuteNodeQuery[T any](query string, queryParams []any) ([]T, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println("res:", string(bytes))
 
 	err = json.Unmarshal(bytes, &results)
 
@@ -155,7 +153,9 @@ func main() {
 
 	router.LoadHTMLGlob("src/templates/*")
 
-	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")
+	connectionString := "user=postgres password=postgres dbname=postgres sslmode=disable"
+
+	client, getClientError := ncsql.BuildPostgresClient(connectionString)
 
 	// connect to the db to test if connection is valid
 
@@ -372,25 +372,56 @@ func main() {
 		return
 	})
 
-	router.GET("/expenditure/test", fakeAuthMiddleware, func(c *gin.Context) {
+	// router.GET("/expenditure/test", fakeAuthMiddleware, func(c *gin.Context) {
 
-		query := "select * from expenditure;"
-		args := make([]any, 0)
+	// 	query := "select * from expenditure;"
+	// 	args := make([]any, 0)
 
-		expenditures, err := db.SelectExpenditure(client, query, args)
+	// 	expenditures, err := db.SelectExpenditure(client, query, args)
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
+	// 	if err != nil {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
+	// 		return
+	// 	}
+
+	// 	c.JSON(http.StatusOK, gin.H{"data": expenditures})
+	// 	return
+	// })
+
+	router.GET("/ex", func(c *gin.Context) {
+
+		userIdString := c.Query("userId")
+
+		if userIdString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "userId required"})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"data": expenditures})
-		return
-	})
+		userId, err := strconv.Atoi(userIdString)
 
-	router.GET("/x", func(c *gin.Context) {
-		args := []any{}
-		query := "select * from expenditure;"
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad userId"})
+			return
+		}
+
+		monthString := c.Query("month")
+
+		if monthString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "monthString required"})
+			return
+		}
+
+		month, err := strconv.Atoi(monthString)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad month"})
+			return
+		}
+
+		args := []any{ userId, month }
+		query := "select * from expenditure where user_id = $1 and EXTRACT(MONTH FROM date_occurred) = $2;"
 		expenditures, err := ExecuteNodeQuery[RawEx](query, args)
 
 		if err != nil {
