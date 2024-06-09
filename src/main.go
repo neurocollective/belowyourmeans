@@ -186,6 +186,10 @@ func main() {
 		})
 	})
 
+	router.GET("/cache", func(c *gin.Context) {
+		c.JSON(http.StatusOK, FAKE_REDIS)
+	})
+
 	router.POST("/login", func(c *gin.Context) {
 
 		jsonBytes, err := io.ReadAll(c.Request.Body)
@@ -335,7 +339,8 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"password": hashedPassword})
 	})
 
-	router.GET("/expenditure", fakeAuthMiddleware, func(c *gin.Context) {
+	// old version
+	router.GET("/ex", fakeAuthMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
@@ -372,23 +377,7 @@ func main() {
 		return
 	})
 
-	// router.GET("/expenditure/test", fakeAuthMiddleware, func(c *gin.Context) {
-
-	// 	query := "select * from expenditure;"
-	// 	args := make([]any, 0)
-
-	// 	expenditures, err := db.SelectExpenditure(client, query, args)
-
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
-	// 		return
-	// 	}
-
-	// 	c.JSON(http.StatusOK, gin.H{"data": expenditures})
-	// 	return
-	// })
-
-	router.GET("/ex", func(c *gin.Context) {
+	router.GET("/expenditure", func(c *gin.Context) {
 
 		userIdString := c.Query("userId")
 

@@ -19,23 +19,23 @@ func TestParseCapitalOneCSV(t *testing.T) {
 
 	cwd, _ := os.Getwd()
 
-	transactions, err := ParseCapitalOneCSV(cwd + "/../../sample_files/capone_checking_2023_11_5.csv")
+	transactions, err := ParseCapitalOneCSV(cwd + "/../../sample_files/capone_checking_2023.csv")
 
 	if err != nil {
 		t.Fatal("error!" + err.Error())
 	}
 
-	if len(transactions) > 10 {
-		log.Println("trimming transactions")
-		transactions = transactions[:9]
+	// if len(transactions) > 10 {
+	// 	log.Println("trimming transactions")
+	// 	transactions = transactions[:9]
 		
-		for _, transaction := range transactions {
-			log.Println(transaction.TransactionDate)
-			log.Println(transaction.TransactionDate)
-		}
-	} else {
-		log.Println(transactions)
-	}
+	// 	for _, transaction := range transactions {
+	// 		log.Println(transaction.TransactionDate)
+	// 		log.Println(transaction.TransactionDate)
+	// 	}
+	// } else {
+	// 	log.Println(transactions)
+	// }
 
 	userId := 1
 

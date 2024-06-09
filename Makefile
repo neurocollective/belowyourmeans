@@ -22,6 +22,8 @@ psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
 serve/ui:
 	npm start --prefix ./ui
+serve/node:
+	node ./node/index.js
 dev:
 	@docker start local-pg
 	@node dev.js
