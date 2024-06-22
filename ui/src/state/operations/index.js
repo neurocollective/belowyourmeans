@@ -1,5 +1,5 @@
 import jsonRequest from '../../fetching';
-import { LOGIN } from '../../constants';
+import { LOGIN, NAVIGATION, HOME } from '../../constants';
 
 const DEFAULT_REQUEST_CONFIG = {
 	headers: {
@@ -26,63 +26,70 @@ const getURL = (path) => {
 	return origin + path;
 }
 
-const buildOperations = (state, stateChanges) => ({
-	[LOGIN]: {
-		handleLoginSubmit: (e) => {
+const buildNavigate = (stateChanges) => {
+	return (location) => {
+		stateChanges.setLocation(location);
+	};
+};
 
-			e.preventDefault();
+const buildOperations = (state, stateChanges) => {
 
-			const {
-				[LOGIN]: {
-					handleLoginSuccess,
-					handleLoginFailure, 
-				} 
-			} = stateChanges;
+	const navigate = buildNavigate(stateChanges);
 
-			const {
-				[LOGIN]: {
-					email,
-					password,
-				}
-			} = state;
+	return {
+		[LOGIN]: {
+			handleLoginSubmit: (e) => {
 
-			const config = {
-				...DEFAULT_REQUEST_CONFIG,
-				body: JSON.stringify({ email, password }),
-				method: 'POST',
-			};
+				e.preventDefault();
 
-			const fullURL = getURL("/login");
-			console.log(`fetching to ${fullURL}`);
+				const {
+					[LOGIN]: {
+						handleLoginSuccess,
+						handleLoginFailure, 
+					} 
+				} = stateChanges;
 
-			return jsonRequest(fullURL, config, handleLoginSuccess, handleLoginFailure);
+				const {
+					[LOGIN]: {
+						email,
+						password,
+					}
+				} = state;
+
+				const config = {
+					...DEFAULT_REQUEST_CONFIG,
+					body: JSON.stringify({ email, password }),
+					method: 'POST',
+				};
+
+				const fullURL = getURL("/login");
+				console.log(`fetching to ${fullURL}`);
+
+				return jsonRequest(fullURL, config, handleLoginSuccess, handleLoginFailure);
+			},
+			checkIfLoggedIn: () => {
+				const {
+					[LOGIN]: {
+						handleLoggedIn,
+						handleNotLoggedIn, 
+					} 
+				} = stateChanges;
+
+				const config = {
+					...DEFAULT_REQUEST_CONFIG,
+					method: 'GET',
+				};
+
+				const fullURL = getURL("/auth");
+				console.log(`fetching to ${fullURL}`);
+
+				return jsonRequest(fullURL, config, handleLoggedIn, handleNotLoggedIn);
+			},
 		},
-		checkIfLoggedIn: () => {
-			const {
-				[LOGIN]: {
-					handleLoggedIn,
-					handleNotLoggedIn, 
-				} 
-			} = stateChanges;
-
-			// const {
-			// 	[LOGIN]: {
-			// 		email,
-			// 		password,
-			// 	}
-			// } = state;
-
-			const config = {
-				...DEFAULT_REQUEST_CONFIG,
-				method: 'GET',
-			};
-
-			const fullURL = getURL("/auth");
-			console.log(`fetching to ${fullURL}`);
-
-			return jsonRequest(fullURL, config, handleLoggedIn, handleNotLoggedIn);
+		[NAVIGATION]: {
+			navigate,
 		},
-	}
-});
+	};
+};
 
 export default buildOperations;

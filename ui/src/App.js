@@ -3,14 +3,17 @@ import { useState, useEffect } from 'react';
 import StateStore from './state';
 import Header from './components/Header';
 import Login from './components/Login';
-import { LOGIN } from './constants';
+import Home from './components/Home';
+import Router from './components/Router';
+import Loading from './components/Loading';
+import Footer from './components/Footer';
+import { LOGIN, LOADING, HOME } from './constants';
 
 const { INITIAL_STATE, buildStateManager } = StateStore;
 
 function App() {
 
   const [state, setState] = useState(INITIAL_STATE);
-  // stateManager = { state, ops, changes }
   const stateManager = buildStateManager(state, setState);
 
   useEffect(() => {
@@ -23,20 +26,13 @@ function App() {
     <>
       <Header stateManager={stateManager} />
       <main className="App">
-        <Login stateManager={stateManager} />
-        <section>
-          <br />
-          <br />
-          <br />
-          i am the main stuff
-          <br />
-          <br />
-          <br />
-        </section>
+        <Router stateManager={stateManager}>
+          <Login stateManager={stateManager} navigation={LOGIN} />
+          <Home stateManager={stateManager} navigation={HOME} />
+          <Loading stateManager={stateManager} navigation={LOADING} />
+        </Router>
       </main>
-      <footer className="App-footer">
-        <a className="bym-link" href="mailto:david@neurocollective.io">Contact Us</a>
-      </footer>
+      <Footer stateManager={stateManager} />
     </>
   );
 }

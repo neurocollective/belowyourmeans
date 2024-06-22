@@ -1,8 +1,19 @@
-import { LOGIN } from '../../constants';
+import { LOGIN, NAVIGATION, HOME } from '../../constants';
 
-const buildStateChanges = (state, setState) => {
+const buildStateChanges = (state, setState, getInitialState) => {
 
 	const update = newState => setState(oldState => ({ ...oldState, ...newState }));
+
+	const navigate = (location) => {
+		const newState = {
+			...state,
+			[NAVIGATION] : {
+				...state[NAVIGATION],
+				current: location,
+			},
+		}
+		update(newState);
+	};
 
 	return {
 		[LOGIN]: {
@@ -19,6 +30,7 @@ const buildStateChanges = (state, setState) => {
 			handleLoginSuccess: (successPayload) => {
 				const newState = { ...state, login: { ...state.login, isLoggedIn: true } };
 				update(newState);
+				navigate(HOME);
 			},
 			handleLoginFailure: (failurePayload) => {
 				const newState = { ...state, login: { ...state.login, isLoggedIn: false } };
@@ -28,13 +40,42 @@ const buildStateChanges = (state, setState) => {
 				console.log('successPayload', successPayload);
 				const newState = { ...state, login: { ...state.login, isLoggedIn: true } };
 				update(newState);
+				navigate(HOME);
 			},
 			handleNotLoggedIn: (failurePayload) => {
 				console.log('failurePayload', failurePayload);
 				const newState = { ...state, login: { ...state.login, isLoggedIn: false } };
-				update(newState);	
-			}, 
-		}
+				update(newState);
+				navigate(LOGIN);
+			},
+			handleLogoutSuccess: (successPayload) => {
+				console.log('successPayload', successPayload);
+				const newState = {
+					...state,
+					login: {
+						...getInitialState()[LOGIN],
+						isLoggedIn: false,
+					},
+				};
+				update(newState);
+				navigate(LOGIN);
+			},
+			handleLogoutFailure: (failurePayload) => {
+				console.log('failurePayload', failurePayload);
+				const newState = {
+					...state,
+					login: {
+						...getInitialState()[LOGIN],
+						isLoggedIn: false,
+					},
+				};
+				update(newState);
+				navigate(LOGIN);
+			},
+		},
+		[NAVIGATION]: {
+			navigate,
+		},
 	};
 };
 

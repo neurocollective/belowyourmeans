@@ -1,32 +1,41 @@
 import buildStateChanges from './stateChanges';
 import buildOperations from './operations';
-import { LOGIN,EXPENDITURE } from '../constants';
+import { LOADING, LOGIN, EXPENDITURE, NAVIGATION, HOME } from '../constants';
+
+const INITIAL_STATE = {
+	[LOGIN]: {
+		email: '',
+		password: '',
+		isLoggedIn: false,
+		user: '',
+		userDisplayName: '',
+	},
+	[EXPENDITURE]: {
+		expenditures: [],
+		month: new Date().getMonth(), // zero-indexed month integer
+	},
+	[NAVIGATION]: {
+		current: LOADING,
+		default: HOME,
+	},
+};
+
+const getInitialState = () => INITIAL_STATE;
 
 const buildStateManager = (state, setState) => {
 
-	const stateChanges = buildStateChanges(state, setState);
+	const stateChanges = buildStateChanges(state, setState, getInitialState);
 	const operations = buildOperations(state, stateChanges);
 	return {
 		state,
 		ops: operations,
 		changes: stateChanges, // the ideal might be to not expose this at all
+		getInitialState,
 	};
 };
 
 const StateStore =  {
-	INITIAL_STATE: {
-		[LOGIN]: {
-			email: '',
-			password: '',
-			isLoggedIn: false,
-			user: '',
-			userDisplayName: '',
-		},
-		[EXPENDITURE]: {
-			expenditures: [],
-			month: new Date().getMonth(), // zero-indexed month integer
-		}
-	},
+	INITIAL_STATE,
 	buildStateManager,
 };
 
