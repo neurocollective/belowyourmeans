@@ -1,5 +1,5 @@
 import jsonRequest from '../../fetching';
-import { LOGIN, NAVIGATION, HOME, EXPENDITURES } from '../../constants';
+import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIZE } from '../../constants';
 
 const DEFAULT_REQUEST_CONFIG = {
 	headers: {
@@ -85,9 +85,32 @@ const buildOperations = (state, stateChanges) => {
 
 				return jsonRequest(fullURL, config, handleLoggedIn, handleNotLoggedIn);
 			},
+			logout: () => {
+				console.log('logout coming soon?');
+				// const {
+				// 	[LOGIN]: {
+				// 		handleLogoutSuccess,
+				// 		handleLogoutFailure, 
+				// 	} 
+				// } = stateChanges;
+
+				// const config = {
+				// 	...DEFAULT_REQUEST_CONFIG,
+				// };
+
+				// const fullURL = getURL("/auth");
+				// console.log(`fetching to ${fullURL}`);
+
+				// return jsonRequest(fullURL, config, handleLogoutSuccess, handleLogoutFailure);
+			},
 		},
 		[NAVIGATION]: {
 			navigate,
+		},
+		[CATEGORIZE]: {
+			getUncategorizedExpenditures: () => {
+
+			},
 		},
 		[EXPENDITURES]: {
 			getExpenditures: () => {

@@ -8,7 +8,8 @@ import Router from './components/Router';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import Expenditures from './components/Expenditures';
-import { LOGIN, LOADING, HOME, EXPENDITURES } from './constants';
+import Categorize from './components/Categorize';
+import { LOGIN, LOADING, HOME, EXPENDITURES, CATEGORIZE } from './constants';
 
 const { INITIAL_STATE, buildStateManager } = StateStore;
 
@@ -32,6 +33,7 @@ function App() {
           <Home stateManager={stateManager} navigation={HOME} />
           <Loading stateManager={stateManager} navigation={LOADING} />
           <Expenditures stateManager={stateManager} navigation={EXPENDITURES} />
+          <Categorize stateManager={stateManager} navigation={CATEGORIZE} />
         </Router>
       </main>
       <Footer stateManager={stateManager} />

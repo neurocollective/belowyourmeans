@@ -1,6 +1,6 @@
 import buildStateChanges from './stateChanges';
 import buildOperations from './operations';
-import { LOADING, LOGIN, EXPENDITURES, NAVIGATION, HOME } from '../constants';
+import { LOADING, LOGIN, EXPENDITURES, NAVIGATION, HOME, CATEGORIZE } from '../constants';
 
 const INITIAL_STATE = {
 	[LOGIN]: {
@@ -9,6 +9,9 @@ const INITIAL_STATE = {
 		isLoggedIn: false,
 		user: '',
 		userDisplayName: '',
+	},
+	[CATEGORIZE]: {
+		test: 'bruh',
 	},
 	[EXPENDITURES]: {
 		expenditures: [],

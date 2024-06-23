@@ -411,7 +411,53 @@ func main() {
 		}
 
 		args := []any{ userId, month }
-		query := "select * from expenditure where user_id = $1 and EXTRACT(MONTH FROM date_occurred) = $2;"
+		query := "select * from expenditure where user_id = $1 and EXTRACT(MONTH FROM date_occurred) = $2 and value < 0;"
+		expenditures, err := ExecuteNodeQuery[RawEx](query, args)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": expenditures})
+		return
+	})
+
+	router.GET("/categorize", func(c *gin.Context) {
+
+		userIdString := c.Query("userId")
+
+		if userIdString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "userId required"})
+			return
+		}
+
+		userId, err := strconv.Atoi(userIdString)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad userId"})
+			return
+		}
+
+		monthString := c.Query("month")
+
+		if monthString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "monthString required"})
+			return
+		}
+
+		month, err := strconv.Atoi(monthString)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad month"})
+			return
+		}
+
+		args := []any{ userId }
+		query := "select DISTINCT id, description from expenditure where user_id = $1 and value < 0 and category_id is null;"
 		expenditures, err := ExecuteNodeQuery[RawEx](query, args)
 
 		if err != nil {

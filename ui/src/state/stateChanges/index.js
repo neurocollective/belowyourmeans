@@ -17,6 +17,7 @@ const buildStateChanges = (state, setState, getInitialState) => {
 				update(newState);
 			},
 			handleLoginSuccess: (successPayload) => {
+				const { userId } = successPayload;
 				const newState = {
 					...state,
 					[LOGIN]: {
@@ -24,6 +25,7 @@ const buildStateChanges = (state, setState, getInitialState) => {
 						isLoggedIn: true,
 						email: '',
 						password: '',
+						user: userId,
 					},
 					[NAVIGATION]: {
 						current: HOME,
