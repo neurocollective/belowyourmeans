@@ -284,7 +284,8 @@ func main() {
 	})
 
 	router.GET("/auth", authMiddleware, func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "loggedIn"})
+		userId := c.GetString(constants.USER_ID)
+		c.JSON(http.StatusOK, gin.H{"status": "loggedIn", "userId": userId })
 	})
 
 	router.GET("/user", authMiddleware, func(c *gin.Context) {

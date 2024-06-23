@@ -1,5 +1,5 @@
 import jsonRequest from '../../fetching';
-import { LOGIN, NAVIGATION, HOME } from '../../constants';
+import { LOGIN, NAVIGATION, HOME, EXPENDITURES } from '../../constants';
 
 const DEFAULT_REQUEST_CONFIG = {
 	headers: {
@@ -20,7 +20,7 @@ const getURL = (path) => {
 		}
 	} = window;
 
-	if (hostname == "localhost") {
+	if (hostname === "localhost") {
 		return `http://${hostname}:8080${path}`;
 	}
 	return origin + path;
@@ -28,7 +28,7 @@ const getURL = (path) => {
 
 const buildNavigate = (stateChanges) => {
 	return (location) => {
-		stateChanges.setLocation(location);
+		stateChanges[NAVIGATION].setLocation(location);
 	};
 };
 
@@ -88,6 +88,32 @@ const buildOperations = (state, stateChanges) => {
 		},
 		[NAVIGATION]: {
 			navigate,
+		},
+		[EXPENDITURES]: {
+			getExpenditures: () => {
+
+				const {
+					[EXPENDITURES]: {
+						handleExpenditureNavigationSuccess: ok,
+						handleExpenditureNavigationFailure: fail, 
+					}
+				} = stateChanges;
+
+				const {
+					[LOGIN]: {
+						user: userId
+					},
+					[EXPENDITURES]: {
+						month,
+					}
+				} = state;
+
+				const config = DEFAULT_REQUEST_CONFIG;
+
+				const fullURL = getURL(`/expenditure?userId=${userId}&month=${month}`);
+
+				return jsonRequest(fullURL, config, ok, fail);
+			},
 		},
 	};
 };

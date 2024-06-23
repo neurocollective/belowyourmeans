@@ -1,6 +1,6 @@
 import buildStateChanges from './stateChanges';
 import buildOperations from './operations';
-import { LOADING, LOGIN, EXPENDITURE, NAVIGATION, HOME } from '../constants';
+import { LOADING, LOGIN, EXPENDITURES, NAVIGATION, HOME } from '../constants';
 
 const INITIAL_STATE = {
 	[LOGIN]: {
@@ -10,7 +10,7 @@ const INITIAL_STATE = {
 		user: '',
 		userDisplayName: '',
 	},
-	[EXPENDITURE]: {
+	[EXPENDITURES]: {
 		expenditures: [],
 		month: new Date().getMonth(), // zero-indexed month integer
 	},

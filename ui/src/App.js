@@ -7,7 +7,8 @@ import Home from './components/Home';
 import Router from './components/Router';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
-import { LOGIN, LOADING, HOME } from './constants';
+import Expenditures from './components/Expenditures';
+import { LOGIN, LOADING, HOME, EXPENDITURES } from './constants';
 
 const { INITIAL_STATE, buildStateManager } = StateStore;
 
@@ -30,6 +31,7 @@ function App() {
           <Login stateManager={stateManager} navigation={LOGIN} />
           <Home stateManager={stateManager} navigation={HOME} />
           <Loading stateManager={stateManager} navigation={LOADING} />
+          <Expenditures stateManager={stateManager} navigation={EXPENDITURES} />
         </Router>
       </main>
       <Footer stateManager={stateManager} />
