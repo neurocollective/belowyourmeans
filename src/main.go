@@ -424,51 +424,22 @@ func main() {
 		return
 	})
 
-	router.GET("/categorize", func(c *gin.Context) {
+	router.GET("/categories", func(c *gin.Context) {
 
 		userIdString := c.Query("userId")
 
-		if userIdString == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "userId required"})
-			return
-		}
-
-		userId, err := strconv.Atoi(userIdString)
-
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad userId"})
-			return
-		}
-
-		monthString := c.Query("month")
-
-		if monthString == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "monthString required"})
-			return
-		}
-
-		month, err := strconv.Atoi(monthString)
-
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad month"})
-			return
-		}
-
-		args := []any{ userId }
-		query := "select DISTINCT id, description from expenditure where user_id = $1 and value < 0 and category_id is null;"
-		expenditures, err := ExecuteNodeQuery[RawEx](query, args)
-
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"data": expenditures})
 		return
 	})
+
+	router.POST("/categorize", func(c *gin.Context) {
+
+		userIdString := c.Query("userId")
+		expenditureIdString := c.Query("userId")
+		categoryIdString := c.Query("userId")
+
+		return
+	})
+
 
 	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {
 
