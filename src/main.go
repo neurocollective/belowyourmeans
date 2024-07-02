@@ -378,6 +378,7 @@ func main() {
 		return
 	})
 
+	// TODO - use `authMiddleware`
 	router.GET("/expenditure", func(c *gin.Context) {
 
 		userIdString := c.Query("userId")
@@ -428,17 +429,38 @@ func main() {
 
 		userIdString := c.Query("userId")
 
+		userId, err := strconv.Atoi(userIdString)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad userId"})
+			return
+		}
+
+		args := []any{ userId }
+		query := "select * from budget_category where user_id = $1;"
+		categories, err := ExecuteNodeQuery[structs.BudgetCategory](query, args)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": categories})
 		return
 	})
 
-	router.POST("/categorize", func(c *gin.Context) {
+	// router.POST("/category-item", func(c *gin.Context) {
 
-		userIdString := c.Query("userId")
-		expenditureIdString := c.Query("userId")
-		categoryIdString := c.Query("userId")
+	// 	bodyBytes, err := io.Readall(c.Request.Body)
 
-		return
-	})
+	// 	payload := new(CategoryItemPayload)
+
+	// 	err := json.Unmarshal(bodyBytes, payload)
+
+	// 	return
+	// })
 
 
 	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {

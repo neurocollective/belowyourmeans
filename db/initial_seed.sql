@@ -28,13 +28,16 @@ insert into starter_budget_category (display_name, description) values
 	('Hobby', 'just for fun'),
 	('Taxes', 'when ur rich u wont pay em'),
 	('Fees', 'death, taxes, and fees'),
-	('Fitness & Wellness', 'sharpen the axe'),
+	('Fitness and Wellness', 'sharpen the axe'),
 	('Investment', 'someday i want to be that guy'),
 	('Rent', 'gotta sleep somewhere'),
 	('Mortgage', 'gotta sleep somewhere - with the bank''s permission'),
 	('Utilities', 'keep the lights on');
 
 insert into budget_category (select nextval('budget_category_id_seq'), 1, sbc.display_name, sbc.description, now(), now() from starter_budget_category sbc);
+
+-- use this when a new user is created
+-- insert into budget_category (select nextval('budget_category_id_seq'), $1, sbc.display_name, sbc.description, now(), now() from starter_budget_category sbc);
 
 insert into expenditure values 
 	(nextval('expenditure_id_seq'), 1, null, 20.99, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA', to_timestamp(1699920860387), now(), now()),
@@ -45,3 +48,8 @@ insert into expenditure values
 insert into budget_category_items values (
 	nextval('budget_category_items_id_seq'), 1, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA', now(), now()
 );
+
+-- send in user_id, description
+-- insert into budget_category_items values (
+-- 	nextval('budget_category_items_id_seq'), $1, $2, now(), now()
+-- );
