@@ -131,11 +131,22 @@ const buildOperations = (state, stateChanges) => {
 					}
 				} = state;
 
+				if (!userId) {
+					console.error('no user id in getExpenditures!');
+					return;
+				} else {
+					console.log('userId in getExpenditures:', userId);
+				}
+
 				const config = DEFAULT_REQUEST_CONFIG;
 
 				const fullURL = getURL(`/expenditure?userId=${userId}&month=${month}`);
 
 				return jsonRequest(fullURL, config, ok, fail);
+			},
+			setMonth: (monthIndex) => {
+				const { [EXPENDITURES]: { setMonth } } = stateChanges;
+				setMonth(monthIndex);			
 			},
 		},
 	};

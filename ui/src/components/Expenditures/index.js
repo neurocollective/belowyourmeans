@@ -1,29 +1,67 @@
 import React, { useEffect } from 'react';
-import { NAVIGATION, HOME, EXPENDITURES, LOGIN, REPORTS } from '../../constants';
+import { MONTHS, NAVIGATION, HOME, EXPENDITURES, LOGIN, REPORTS } from '../../constants';
 
 
-const DisplayExpenditures = ({ expenditures, expenditurePage }) => {
+const DisplayExpenditures = ({ stateManager }) => {
+
+    const {
+      ops: {
+        [EXPENDITURES]: {
+          setMonth,
+        },
+      },
+      state: {
+        [EXPENDITURES]: {
+          expenditures,
+          expenditurePage = 1,
+          month,
+          loading,
+        }
+      }
+    } = stateManager;
+
+    if (loading) {
+      return (
+        <div>
+          Loading...
+        </div>
+      );
+    }
+
   return (
-    <ul>
-      {expenditures.map((ex) => {
+    <div>
+      <div>
+        <span>Month:</span>
+        &nbsp;
+        <select value={month} onChange={(e) => setMonth(e.target.value)}>
+          {MONTHS.map((monthName, index) => <option value={index}>{monthName}</option>)}
+        </select>
+      </div>
+      <div>
+        {expenditures.length} results
+      </div>
+      {expenditures.length ? <div>Page {expenditurePage}</div> : null}
+      <ul>
+        {expenditures.map((ex) => {
 
-        const { value, description, category = 'uncategorized' } = ex;
+          const { value, description, category = 'uncategorized' } = ex;
 
-        return (
-          <li>
-            <div>
-              {String(value).replace("-", "")}
-            </div>
-            <div>
-              {description}
-            </div>
-            <div>
-              {category}
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+          return (
+            <li>
+              <div>
+                {String(value).replace("-", "")}
+              </div>
+              <div>
+                {description}
+              </div>
+              <div>
+                {category}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 };
 
@@ -48,18 +86,19 @@ const Expenditures = ({ stateManager }) => {
         [EXPENDITURES]: {
           expenditures,
           expenditurePage = 1,
+          month,
         }
       }
     } = stateManager;
 
   useEffect(() => {
     getExpenditures();
-  }, []);
+  }, [month]);
 
   return (
-    <div className="flex centered header-nav">
-      <DisplayExpenditures expenditures={expenditures} page={expenditurePage} />
-    </div>
+    <section className="flex centered header-nav">
+      <DisplayExpenditures stateManager={stateManager} />
+    </section>
   );
 }
 

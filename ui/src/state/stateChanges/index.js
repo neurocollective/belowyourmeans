@@ -125,7 +125,17 @@ const buildStateChanges = (state, setState, getInitialState) => {
 					},
 				};
 				update(newState);
-			}, 
+			},
+			setMonth: (month) => {
+				const newState = {
+					...state,
+					[EXPENDITURES]: {
+						...state[EXPENDITURES],
+						month,
+					},
+				};
+				update(newState);
+			},
 		},
 		[NAVIGATION]: {
 			setLocation: (location) => {
