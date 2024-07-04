@@ -50,14 +50,18 @@ type RawEx struct {
 	ModifiedDate string  `json:"modified_date"`
 }
 
-func ExecuteNodeQuery[T any](query string, queryParams []any) ([]T, error) {
+func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string) ([]T, error) {
 
 	client := new(http.Client)
 
 	body := map[string]any{
 		"query":       query,
 		"parameters": queryParams,
-		"specialRule": "mapExpenditures",
+		// "specialRule": "mapExpenditures",
+	}
+
+	if specialRule != "" {
+		body["specialRule"] = specialRule
 	}
 
 	bodyBytes, err := json.Marshal(body)
@@ -69,15 +73,17 @@ func ExecuteNodeQuery[T any](query string, queryParams []any) ([]T, error) {
 	bodyReader := bytes.NewReader(bodyBytes)
 	request, err := http.NewRequest(http.MethodPost, "http://localhost:3001/query", bodyReader)
 
-	request.Header.Add("Content-Type", "application/json")
-
 	if err != nil {
+		log.Println("creating node request FAILED")
 		return nil, err
 	}
+
+	request.Header.Add("Content-Type", "application/json")
 
 	response, err := client.Do(request)
 
 	if err != nil {
+		log.Println("request to node server FAILED")
 		return nil, err
 	}
 
@@ -86,12 +92,14 @@ func ExecuteNodeQuery[T any](query string, queryParams []any) ([]T, error) {
 	bytes, err := io.ReadAll(response.Body)
 
 	if err != nil {
+		log.Println("reading node query response body FAILED")
 		return nil, err
 	}
 
 	err = json.Unmarshal(bytes, &results)
 
 	if err != nil {
+		log.Println("unmarshaling node query response body FAILED")
 		return nil, err
 	}
 
@@ -413,7 +421,7 @@ func main() {
 
 		args := []any{ userId, month }
 		query := "select * from expenditure where user_id = $1 and EXTRACT(MONTH FROM date_occurred) = $2 and value < 0;"
-		expenditures, err := ExecuteNodeQuery[RawEx](query, args)
+		expenditures, err := ExecuteNodeQuery[RawEx](query, args, "mapExpenditures")
 
 		if err != nil {
 			log.Println(err)
@@ -439,7 +447,7 @@ func main() {
 
 		args := []any{ userId }
 		query := "select * from budget_category where user_id = $1;"
-		categories, err := ExecuteNodeQuery[structs.BudgetCategory](query, args)
+		categories, err := ExecuteNodeQuery[structs.BudgetCategory](query, args, "")
 
 		if err != nil {
 			log.Println(err)
@@ -451,16 +459,83 @@ func main() {
 		return
 	})
 
-	// router.POST("/category-item", func(c *gin.Context) {
+	router.POST("/category-item", func(c *gin.Context) {
 
-	// 	bodyBytes, err := io.Readall(c.Request.Body)
+		bodyBytes, err := io.ReadAll(c.Request.Body)
 
-	// 	payload := new(CategoryItemPayload)
+		payload := new(structs.CategoryItemPayload)
 
-	// 	err := json.Unmarshal(bodyBytes, payload)
+		err = json.Unmarshal(bodyBytes, payload)
 
-	// 	return
-	// })
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		args := []any{ payload.CategoryId, payload.DisplayName }
+		query := "insert into budget_category_items (category_id, display_name) values ($1, $2);"
+		_, err = ExecuteNodeQuery[any](query, args, "")
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{})
+		return
+	})
+
+	router.PUT("/category-item", func(c *gin.Context) {
+
+		bodyBytes, err := io.ReadAll(c.Request.Body)
+
+		payload := new(structs.CategoryItemPayload)
+
+		err = json.Unmarshal(bodyBytes, payload)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		args := []any{ payload.CategoryId, payload.DisplayName }
+		query := "update budget_category_items set category_id = $1 where display_name = $2;"
+		_, err = ExecuteNodeQuery[any](query, args, "")
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		c.JSON(http.StatusNoContent, gin.H{})
+		return
+	})
+
+	router.DELETE("/category-item", func(c *gin.Context) {
+
+		bodyBytes, err := io.ReadAll(c.Request.Body)
+
+		payload := new(structs.CategoryItemPayload)
+
+		err = json.Unmarshal(bodyBytes, payload)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		args := []any{ payload.CategoryId, payload.DisplayName }
+		query := "delete from budget_category_items where category_id = $1 and display_name = $2;"
+		_, err = ExecuteNodeQuery[any](query, args, "")
+
+		c.JSON(http.StatusNoContent, gin.H{})
+		return
+	})
 
 
 	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {

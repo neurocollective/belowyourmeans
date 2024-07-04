@@ -46,7 +46,7 @@ insert into expenditure values
 );
 
 insert into budget_category_items values (
-	nextval('budget_category_items_id_seq'), 1, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA', now(), now()
+	1, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA', now(), now()
 );
 
 -- send in user_id, description

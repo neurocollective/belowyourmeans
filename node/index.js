@@ -57,7 +57,14 @@ const boot = async () => {
 			parameters = [];
 		}
 
-		const dbRes = await client.query(query, parameters);
+		let dbRes;
+		try {
+			dbRes = await client.query(query, parameters);
+		} catch (err) {
+			console.log('QUERY ERROR!');
+			console.error(err);
+			return res.status(500).json({ error: err.message });
+		}
 
 		let { rows = [] } = dbRes;
 
@@ -72,6 +79,10 @@ const boot = async () => {
 				}
 				return newRow;
 			})
+		} else if (!specialRule) {
+			console.log(`no specialRule sent`);
+		} else {
+			console.log(`ignoring specialRule "${specialRule}"`);
 		}
 
 		console.log('rows[0:9]', rows.slice(0,9));

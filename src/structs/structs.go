@@ -13,8 +13,8 @@ type SignupPayload struct {
 }
 
 type CategoryItemPayload struct {
-	UserId int `json:"userId"`
-	Description string `json:"description"`
+	CategoryId int `json:"categoryId"`
+	DisplayName string `json:"displayName"`
 }
 
 type BudgetCategory struct {
