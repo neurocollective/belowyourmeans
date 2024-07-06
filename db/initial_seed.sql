@@ -32,9 +32,18 @@ insert into starter_budget_category (display_name, description) values
 	('Investment', 'someday i want to be that guy'),
 	('Rent', 'gotta sleep somewhere'),
 	('Mortgage', 'gotta sleep somewhere - with the bank''s permission'),
-	('Utilities', 'keep the lights on');
+	('Utilities', 'keep the lights on'),
+	('IGNORED', 'expenditures that should not be included in totals');
 
-insert into budget_category (select nextval('budget_category_id_seq'), 1, sbc.display_name, sbc.description, now(), now() from starter_budget_category sbc);
+insert into budget_category (
+	select nextval('budget_category_id_seq'),
+	1,
+	sbc.display_name,
+	sbc.description,
+	FALSE,
+	now(),
+	now() from starter_budget_category sbc
+);
 
 -- use this when a new user is created
 -- insert into budget_category (select nextval('budget_category_id_seq'), $1, sbc.display_name, sbc.description, now(), now() from starter_budget_category sbc);

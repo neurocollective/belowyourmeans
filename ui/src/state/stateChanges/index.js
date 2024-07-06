@@ -1,4 +1,4 @@
-import { LOGIN, NAVIGATION, HOME, EXPENDITURES } from '../../constants';
+import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES } from '../../constants';
 
 const buildStateChanges = (state, setState, getInitialState) => {
 
@@ -17,7 +17,8 @@ const buildStateChanges = (state, setState, getInitialState) => {
 				update(newState);
 			},
 			handleLoginSuccess: (successPayload) => {
-				const { userId } = successPayload;
+				console.log('handleLoginSuccess successPayload:', successPayload);
+				const { data: { userId } } = successPayload;
 				const newState = {
 					...state,
 					[LOGIN]: {
@@ -145,8 +146,24 @@ const buildStateChanges = (state, setState, getInitialState) => {
 						current: location,
 					},
 				};
-				update(newState);				
+				update(newState);	
 			}
+		},
+		[CATEGORIES]: {
+			handleGetCategoriesSuccess: (successPayload) => {
+				const { data: categories } = successPayload;
+				const newState = {
+					...state,
+					[CATEGORIES]: {
+						...state[CATEGORIES],
+						categories,
+					},
+				};
+				update(newState);
+			},
+			handleGetCategoriesFailure: (failurePayload) => {
+				console.error('ruh roh error payload in handleGetCategoriesFailure:', failurePayload);
+			},
 		}
 	};
 };

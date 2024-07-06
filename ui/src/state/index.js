@@ -1,6 +1,6 @@
 import buildStateChanges from './stateChanges';
 import buildOperations from './operations';
-import { LOADING, LOGIN, EXPENDITURES, NAVIGATION, HOME, CATEGORIZE } from '../constants';
+import { LOADING, LOGIN, EXPENDITURES, NAVIGATION, HOME, CATEGORIES } from '../constants';
 
 const INITIAL_STATE = {
 	[LOGIN]: {
@@ -10,12 +10,12 @@ const INITIAL_STATE = {
 		user: '',
 		userDisplayName: '',
 	},
-	[CATEGORIZE]: {
-		test: 'bruh',
+	[CATEGORIES]: {
+		categories: [],
 	},
 	[EXPENDITURES]: {
 		expenditures: [],
-		month: new Date().getMonth(), // zero-indexed month integer
+		month: new Date().getMonth(), // zero-indexed month integer,
 	},
 	[NAVIGATION]: {
 		current: LOADING,

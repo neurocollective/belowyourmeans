@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"os"
-	"neurocollective.io/neurocollective/belowyourmeans/src/constants"
+	"neurocollective.io/neurocollective/belowyourmeans/server/constants"
 )
 
 func GenerateCookie() (string, error) {

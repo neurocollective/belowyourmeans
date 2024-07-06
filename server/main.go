@@ -8,15 +8,16 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"neurocollective.io/neurocollective/belowyourmeans/src/constants"
-	"neurocollective.io/neurocollective/belowyourmeans/src/cookie"
-	"neurocollective.io/neurocollective/belowyourmeans/src/db"
-	// "neurocollective.io/neurocollective/belowyourmeans/src/parsing"
+	"neurocollective.io/neurocollective/belowyourmeans/server/constants"
+	"neurocollective.io/neurocollective/belowyourmeans/server/cookie"
+	"neurocollective.io/neurocollective/belowyourmeans/server/db"
+	"neurocollective.io/neurocollective/belowyourmeans/server/db/queries"
+	// "neurocollective.io/neurocollective/belowyourmeans/server/parsing"
 	"bytes"
 	"errors"
-	"neurocollective.io/neurocollective/belowyourmeans/src/password"
-	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
-	bymsql "neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
+	"neurocollective.io/neurocollective/belowyourmeans/server/password"
+	"neurocollective.io/neurocollective/belowyourmeans/server/structs"
+	bymsql "neurocollective.io/neurocollective/belowyourmeans/server/structs/sql"
 	"strconv"
 	"strings"
 )
@@ -37,17 +38,6 @@ func GetFromContext[T any](c *gin.Context, key string) (T, error) {
 	}
 
 	return assertedValue, nil
-}
-
-type RawEx struct {
-	Id           int64   `json:"id"`
-	UserId       int64   `json:"user_id"`
-	CategoryId   int64   `json:"category_id"`
-	Value        float32 `json:"value"`
-	Description  string  `json:"description"`
-	DateOccurred string  `json:"date_occurred"`
-	CreateDate   string  `json:"create_date"`
-	ModifiedDate string  `json:"modified_date"`
 }
 
 func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string) ([]T, error) {
@@ -159,7 +149,7 @@ func main() {
 
 	router := gin.Default()
 
-	router.LoadHTMLGlob("src/templates/*")
+	router.LoadHTMLGlob("server/templates/*")
 
 	connectionString := "user=postgres password=postgres dbname=postgres sslmode=disable"
 
@@ -419,9 +409,10 @@ func main() {
 			return
 		}
 
+		query := queries.SelectExpendituresWithCategoryNameByUserAndMonth()
+		executeQuery := ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
 		args := []any{ userId, month }
-		query := "select * from expenditure where user_id = $1 and EXTRACT(MONTH FROM date_occurred) = $2 and value < 0;"
-		expenditures, err := ExecuteNodeQuery[RawEx](query, args, "mapExpenditures")
+		expenditures, err := executeQuery(query, args, "mapExpenditures")
 
 		if err != nil {
 			log.Println(err)

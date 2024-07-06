@@ -21,3 +21,11 @@ type BudgetCategory struct {
 	DisplayName string `json:"display_name"`
 	Description string `json:"description"`
 }
+
+type ExpenditureWithCategoryName struct {
+	Id           int64   `json:"id"`
+	Value        float32 `json:"value"`
+	Description  string  `json:"description"`
+	DateOccurred string  `json:"date_occurred"`
+	CategoryName string  `json:"category_name"`
+}

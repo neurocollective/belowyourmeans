@@ -1,5 +1,5 @@
 import jsonRequest from '../../fetching';
-import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIZE } from '../../constants';
+import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES } from '../../constants';
 
 const DEFAULT_REQUEST_CONFIG = {
 	headers: {
@@ -107,8 +107,31 @@ const buildOperations = (state, stateChanges) => {
 		[NAVIGATION]: {
 			navigate,
 		},
-		[CATEGORIZE]: {
+		[CATEGORIES]: {
 			getUncategorizedExpenditures: () => {
+
+			},
+			getCategories: () => {
+				const {
+					[LOGIN]: {
+						user: userId
+					}
+				} = state;
+				const {
+					[CATEGORIES]: {
+						handleGetCategoriesSuccess,
+						handleGetCategoriesFailure,
+					}
+				} = stateChanges;
+				const fullURL = getURL(`/categories?userId=${userId}`);
+				const ok = handleGetCategoriesSuccess;
+				const fail = handleGetCategoriesFailure;
+				return jsonRequest(fullURL, DEFAULT_REQUEST_CONFIG, ok, fail);
+			},
+			createCategory: () => {
+
+			},
+			updateCategory: () => {
 
 			},
 		},

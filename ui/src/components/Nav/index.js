@@ -1,5 +1,5 @@
 import React from 'react';
-import { NAVIGATION, HOME, EXPENDITURES, LOGIN, REPORTS, CATEGORIZE } from '../../constants';
+import { NAVIGATION, HOME, EXPENDITURES, LOGIN, REPORTS, CATEGORIES } from '../../constants';
 
 const Nav = ({ stateManager }) => {
 
@@ -17,8 +17,8 @@ const Nav = ({ stateManager }) => {
   return (
     <nav className="flex centered header-nav">
       <div className="nav-link-container">
-        <a className="nav-link" href="#" onClick={(e) => {e.preventDefault(); navigate(CATEGORIZE);}}>
-          Categorize
+        <a className="nav-link" href="#" onClick={(e) => {e.preventDefault(); navigate(CATEGORIES);}}>
+          Categories
         </a>
       </div>
       <div className="nav-link-container">

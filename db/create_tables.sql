@@ -34,6 +34,7 @@ CREATE TABLE budget_category (
 	user_id int REFERENCES budget_user(id) default null, --nullable
 	display_name text NOT NULL,
 	description text,
+	ignored boolean NOT NULL default FALSE,
 	create_date timestamp default now(),
 	modified_date timestamp default now()
 );

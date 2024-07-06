@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
-import { NAVIGATION, HOME, EXPENDITURES, LOGIN, REPORTS, CATEGORIZE } from '../../constants';
+import { NAVIGATION, HOME, EXPENDITURES, LOGIN, REPORTS, CATEGORIES } from '../../constants';
 
-const Categorize = ({ stateManager }) => {
+const Categories = ({ stateManager }) => {
 
     const {
       ops: {
-        [CATEGORIZE]: {
+        [CATEGORIES]: {
           getUncategorizedExpenditures,
           // setExpenditurePage,
         }
       },
       state: {
-        [CATEGORIZE]: {
+        [CATEGORIES]: {
           test,
         }
       }
@@ -28,4 +28,4 @@ const Categorize = ({ stateManager }) => {
   );
 }
 
-export default Categorize;
+export default Categories;

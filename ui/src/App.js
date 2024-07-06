@@ -8,8 +8,8 @@ import Router from './components/Router';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import Expenditures from './components/Expenditures';
-import Categorize from './components/Categorize';
-import { LOGIN, LOADING, HOME, EXPENDITURES, CATEGORIZE } from './constants';
+import Categories from './components/Categories';
+import { LOGIN, LOADING, HOME, EXPENDITURES, CATEGORIES } from './constants';
 
 const { INITIAL_STATE, buildStateManager } = StateStore;
 
@@ -18,8 +18,16 @@ function App() {
   const [state, setState] = useState(INITIAL_STATE);
   const stateManager = buildStateManager(state, setState);
 
+  const {
+    ops: {
+      [LOGIN]: {
+        checkIfLoggedIn,
+      }
+    }
+  } = stateManager;
+
   useEffect(() => {
-    stateManager.ops[LOGIN].checkIfLoggedIn();
+    checkIfLoggedIn();
   }, []);
 
   console.log("state in App.js:", state);
@@ -33,7 +41,7 @@ function App() {
           <Home stateManager={stateManager} navigation={HOME} />
           <Loading stateManager={stateManager} navigation={LOADING} />
           <Expenditures stateManager={stateManager} navigation={EXPENDITURES} />
-          <Categorize stateManager={stateManager} navigation={CATEGORIZE} />
+          <Categories stateManager={stateManager} navigation={CATEGORIES} />
         </Router>
       </main>
       <Footer stateManager={stateManager} />

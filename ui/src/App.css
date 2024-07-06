@@ -53,3 +53,28 @@ body {
 .nav-link {
   color: white;
 }
+
+.expenditure-list {
+  list-style: none;
+}
+
+.expenditure-list-item {
+  min-width: 40vw; /* good idea? */
+  max-width: 70vw;
+  margin-bottom: 10px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.expenditure-list-item-details-container {
+  display: flex;
+}
+
+.expenditure-amount {
+  font-size: 30px;
+}
+
+.expenditure-line {
+  margin: 5px 0;
+}

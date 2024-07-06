@@ -8,16 +8,16 @@ db/local/down:
 ahab:
 	@docker rm -f local-pg
 test/parse:
-	go test -v ./src/parsing
+	go test -v ./server/parsing
 react/build:
 	@npm run build --prefix ./ui
-	@cp -r ./ui/build ./src/
-	@mv ./src/build ./src/public
+	@cp -r ./ui/build ./server/
+	@mv ./server/build ./server/public
 serve/local:
-# 	ENVIRONMENT=dev go run -mod vendor ./src/main.go ./src/password/password.go ./src/structs/structs.go ./src/cookie.go ./src/structs/sql/*.go 
-	ENVIRONMENT=dev go run -mod vendor ./src/main.go
+# 	ENVIRONMENT=dev go run -mod vendor ./server/main.go ./server/password/password.go ./server/structs/structs.go ./server/cookie.go ./server/structs/sql/*.go 
+	ENVIRONMENT=dev go run -mod vendor ./server/main.go
 parse/test:
-	@go test -v ./src/parsing
+	@go test -v ./server/parsing
 psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
 serve/ui:
@@ -32,7 +32,7 @@ signup:
 fmt:
 	go fmt ./src
 parse:
-	go run -mod vendor ./src/parse.go
+	go run -mod vendor ./server/parse.go
 install:
 	rm -rf vendor/github.com/neurocollective/go_utils
 	cp -r ../go_utils vendor/github.com/neurocollective/

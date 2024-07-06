@@ -6,7 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"io"
 
-	"neurocollective.io/neurocollective/belowyourmeans/src/structs"
+	"neurocollective.io/neurocollective/belowyourmeans/server/structs"
 )
 
 func HashPassword(password string) (string, error) {

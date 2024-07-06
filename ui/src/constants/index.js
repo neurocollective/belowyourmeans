@@ -5,7 +5,8 @@ export const HOME = "home";
 export const LOADING = "loading";
 export const EXPENDITURES = "expenditures";
 export const REPORTS = 'reports';
-export const CATEGORIZE = 'categorize';
+export const CATEGORIES = 'categories';
+export const IGNORED = 'IGNORED';
 export const MONTHS = [
 	'January',
 	'February',

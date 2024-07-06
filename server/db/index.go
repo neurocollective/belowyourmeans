@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"errors"
-	bymsql "neurocollective.io/neurocollective/belowyourmeans/src/structs/sql"
+	bymsql "neurocollective.io/neurocollective/belowyourmeans/server/structs/sql"
 )
 
 const (
