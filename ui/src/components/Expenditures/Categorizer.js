@@ -29,7 +29,6 @@ const CategoryContent = (props) => {
     const selectedCategory = selectionsMap[expenditureId] || "default"
 
     const submit = () => {
-      console.log('CLICK, motherfucker');
       updateCategoryForExpenditure(expenditureDescription, categoryName, expenditureId);
     };
     const select = (e) => setSelectedCategory(expenditureId, e.target.value);

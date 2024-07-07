@@ -469,7 +469,7 @@ func main() {
 		}
 
 		args := []any{userId}
-		query := "select * from budget_category where user_id = $1;"
+		query := "select id, display_name, description, ignored from budget_category where user_id = $1;"
 		categories, err := ExecuteNodeQuery[structs.BudgetCategory](query, args, "")
 
 		if err != nil {

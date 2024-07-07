@@ -44,7 +44,7 @@ const DisplayExpenditures = ({ stateManager }) => {
         <span>Month:</span>
         &nbsp;
         <select value={month} onChange={(e) => setMonth(e.target.value)}>
-          {MONTHS.map((monthName, index) => <option value={index}>{monthName}</option>)}
+          {MONTHS.map((monthName, index) => <option key={monthName} value={index}>{monthName}</option>)}
         </select>
       </div>
       <div>
@@ -57,18 +57,18 @@ const DisplayExpenditures = ({ stateManager }) => {
           const { value, description, ['category_name']: categoryName } = ex;
 
           return (
-            <li class="expenditure-list-item" key={ex.id}>
-              <div class="expenditure-list-item-details-container">
+            <li className="expenditure-list-item" key={ex.id}>
+              <div className="expenditure-list-item-details-container">
                 <div>
-                  <div class="expenditure-line expenditure-amount">
+                  <div className="expenditure-line expenditure-amount">
                     ${String(value).replace("-", "")}
                   </div>
-                  <div class="expenditure-line">
+                  <div className="expenditure-line">
                     {description}
                   </div>
                 </div>
               </div>
-              <div class="expenditure-line">
+              <div className="expenditure-line">
                 <Categorizer
                   categoryName={categoryName}
                   expenditureDescription={description}

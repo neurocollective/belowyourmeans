@@ -21,6 +21,7 @@ type BudgetCategory struct {
 	Id          int    `json:"id"`
 	DisplayName string `json:"display_name"`
 	Description string `json:"description"`
+	Ignored bool       `json:"ignored"`
 }
 
 type ExpenditureWithCategoryName struct {

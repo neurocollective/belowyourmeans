@@ -174,11 +174,12 @@ const buildOperations = (state, stateChanges) => {
 				const {
 					[CATEGORIES]: {
 						categories,
+						selectionsMap,
 					}
 				} = state;
 
 				const { id: categoryId } = {} = categories.find((c) => {
-					return c['display_name'] = categoryName;
+					return c['display_name'] === selectionsMap[expenditureId];
 				});
 
 				if (!categoryId) {

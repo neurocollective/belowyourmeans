@@ -10,5 +10,5 @@ serverProcess.stderr.on('data', data => console.log(`[server stderr] ${data}`));
 uiProcess.stdout.on('data', data => console.log(`[ui stdout] ${data}`));
 uiProcess.stderr.on('data', data => console.log(`[ui stderr] ${data}`));
 
-nodeProcess.stdout.on('data', data => console.log(`[node stdout] ${data}`));
-nodeProcess.stderr.on('data', data => console.log(`[node stderr] ${data}`));
+// nodeProcess.stdout.on('data', data => console.log(`[node stdout] ${data}`));
+// nodeProcess.stderr.on('data', data => console.log(`[node stderr] ${data}`));
