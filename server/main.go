@@ -45,7 +45,7 @@ func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string
 	client := new(http.Client)
 
 	body := map[string]any{
-		"query":       query,
+		"query":      query,
 		"parameters": queryParams,
 		// "specialRule": "mapExpenditures",
 	}
@@ -278,12 +278,12 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"staus": "success"})
+		c.JSON(http.StatusOK, gin.H{"status": "success"})
 	})
 
 	router.GET("/auth", authMiddleware, func(c *gin.Context) {
 		userId := c.GetString(constants.USER_ID)
-		c.JSON(http.StatusOK, gin.H{"status": "loggedIn", "userId": userId })
+		c.JSON(http.StatusOK, gin.H{"status": "loggedIn", "userId": userId})
 	})
 
 	router.GET("/user", authMiddleware, func(c *gin.Context) {
@@ -411,7 +411,7 @@ func main() {
 
 		query := queries.SelectExpendituresWithCategoryNameByUserAndMonth()
 		executeQuery := ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
-		args := []any{ userId, month }
+		args := []any{userId, month}
 		expenditures, err := executeQuery(query, args, "mapExpenditures")
 
 		if err != nil {
@@ -421,6 +421,38 @@ func main() {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"data": expenditures})
+		return
+	})
+
+	router.PUT("/expenditure", authMiddleware, func(c *gin.Context) {
+
+		jsonBytes, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		payload := new(structs.CategorizeExpenditurePayload)
+
+		err = json.Unmarshal(jsonBytes, payload)
+
+		expenditureId := payload.ExpenditureId
+		categoryId := payload.CategoryId
+
+		log.Println("expenditureId", expenditureId)
+		log.Println("categoryId", categoryId)
+
+		args := []any{categoryId, expenditureId}
+		query := "update expenditure set category_id = $1 where id = $2;"
+		_, err = ExecuteNodeQuery[any](query, args, "")
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"status": "success"})
 		return
 	})
 
@@ -436,7 +468,7 @@ func main() {
 			return
 		}
 
-		args := []any{ userId }
+		args := []any{userId}
 		query := "select * from budget_category where user_id = $1;"
 		categories, err := ExecuteNodeQuery[structs.BudgetCategory](query, args, "")
 
@@ -450,9 +482,15 @@ func main() {
 		return
 	})
 
-	router.POST("/category-item", func(c *gin.Context) {
+	router.POST("/category-item", authMiddleware, func(c *gin.Context) {
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not read request body"})
+			return
+		}
 
 		payload := new(structs.CategoryItemPayload)
 
@@ -460,11 +498,11 @@ func main() {
 
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not parse payload"})
 			return
 		}
 
-		args := []any{ payload.CategoryId, payload.DisplayName }
+		args := []any{payload.CategoryId, payload.DisplayName}
 		query := "insert into budget_category_items (category_id, display_name) values ($1, $2);"
 		_, err = ExecuteNodeQuery[any](query, args, "")
 
@@ -492,7 +530,7 @@ func main() {
 			return
 		}
 
-		args := []any{ payload.CategoryId, payload.DisplayName }
+		args := []any{payload.CategoryId, payload.DisplayName}
 		query := "update budget_category_items set category_id = $1 where display_name = $2;"
 		_, err = ExecuteNodeQuery[any](query, args, "")
 
@@ -520,14 +558,13 @@ func main() {
 			return
 		}
 
-		args := []any{ payload.CategoryId, payload.DisplayName }
+		args := []any{payload.CategoryId, payload.DisplayName}
 		query := "delete from budget_category_items where category_id = $1 and display_name = $2;"
 		_, err = ExecuteNodeQuery[any](query, args, "")
 
 		c.JSON(http.StatusNoContent, gin.H{})
 		return
 	})
-
 
 	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {
 

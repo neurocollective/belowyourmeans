@@ -3,8 +3,8 @@ package cookie
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"os"
 	"neurocollective.io/neurocollective/belowyourmeans/server/constants"
+	"os"
 )
 
 func GenerateCookie() (string, error) {
@@ -24,7 +24,7 @@ func GetSetCookieHeaderValue(cookie string) string {
 	environment := os.Getenv("ENVIRONMENT")
 
 	if environment == "dev" {
-		return constants.COOKIE_KEY + "=" + cookie		
+		return constants.COOKIE_KEY + "=" + cookie
 	}
 
 	return constants.COOKIE_KEY + "=" + cookie + "; HttpOnly; Max-Age=3600; SameSite=Strict; Secure"

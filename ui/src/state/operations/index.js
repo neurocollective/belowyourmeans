@@ -36,6 +36,38 @@ const buildOperations = (state, stateChanges) => {
 
 	const navigate = buildNavigate(stateChanges);
 
+	const getExpenditures = () => {
+
+		const {
+			[EXPENDITURES]: {
+				handleExpenditureNavigationSuccess: ok,
+				handleExpenditureNavigationFailure: fail, 
+			}
+		} = stateChanges;
+
+		const {
+			[LOGIN]: {
+				user: userId
+			},
+			[EXPENDITURES]: {
+				month,
+			}
+		} = state;
+
+		if (!userId) {
+			console.error('no user id in getExpenditures!');
+			return;
+		} else {
+			console.log('userId in getExpenditures:', userId);
+		}
+
+		const config = DEFAULT_REQUEST_CONFIG;
+
+		const fullURL = getURL(`/expenditure?userId=${userId}&month=${month}`);
+
+		return jsonRequest(fullURL, config, ok, fail);
+	};
+
 	return {
 		[LOGIN]: {
 			handleLoginSubmit: (e) => {
@@ -128,48 +160,54 @@ const buildOperations = (state, stateChanges) => {
 				const fail = handleGetCategoriesFailure;
 				return jsonRequest(fullURL, DEFAULT_REQUEST_CONFIG, ok, fail);
 			},
-			createCategory: () => {
-
+			setSelectedCategory: (expenditureId, categoryName) => {
+				return stateChanges[CATEGORIES].setSelectedCategory(expenditureId, categoryName)
 			},
-			updateCategory: () => {
-
-			},
-		},
-		[EXPENDITURES]: {
-			getExpenditures: () => {
-
+			updateCategoryForExpenditure: (expenditureDescription, categoryName, expenditureId) => {
 				const {
-					[EXPENDITURES]: {
-						handleExpenditureNavigationSuccess: ok,
-						handleExpenditureNavigationFailure: fail, 
+					[CATEGORIES]: {
+						// handleUpdateExpenditureSuccess,
+						handleUpdateExpenditureFailure,
 					}
 				} = stateChanges;
 
 				const {
-					[LOGIN]: {
-						user: userId
-					},
-					[EXPENDITURES]: {
-						month,
+					[CATEGORIES]: {
+						categories,
 					}
 				} = state;
 
-				if (!userId) {
-					console.error('no user id in getExpenditures!');
+				const { id: categoryId } = {} = categories.find((c) => {
+					return c['display_name'] = categoryName;
+				});
+
+				if (!categoryId) {
+					console.error(`could not find id for ${categoryName}!`);
 					return;
-				} else {
-					console.log('userId in getExpenditures:', userId);
 				}
 
-				const config = DEFAULT_REQUEST_CONFIG;
+				console.log('categoryId:', categoryId);
+				console.log('expenditureId:', expenditureId)
 
-				const fullURL = getURL(`/expenditure?userId=${userId}&month=${month}`);
+				const fullURL = getURL(`/expenditure`);
 
-				return jsonRequest(fullURL, config, ok, fail);
+				const fail = handleUpdateExpenditureFailure;
+				const config = {
+					...DEFAULT_REQUEST_CONFIG,
+					method: 'PUT',
+					body: JSON.stringify({ categoryId, expenditureId }),
+				}
+
+				console.log('updateCategory boutta make API call');
+
+				return jsonRequest(fullURL, config, getExpenditures, fail);
 			},
+		},
+		[EXPENDITURES]: {
+			getExpenditures,
 			setMonth: (monthIndex) => {
 				const { [EXPENDITURES]: { setMonth } } = stateChanges;
-				setMonth(monthIndex);			
+				setMonth(monthIndex);
 			},
 		},
 	};

@@ -13,20 +13,12 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
 .App-footer {
   background-color: #282c34;
   min-height: 10vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-}
-
-.bym-link {
   color: white;
 }
 
@@ -77,4 +69,34 @@ body {
 
 .expenditure-line {
   margin: 5px 0;
+}
+
+.set-category-button {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+.set-category-button:hover {
+  background-color: #006600;
+}
+
+.set-category-dropdown {
+  font-size: 18px;
+  padding: 10px;
+}
+
+.display-category {
+  margin-bottom: 5px;
+}
+
+.display-category-default {
+  font-size: 14px;
+}
+
+.display-category-uncategorized {
+  font-size: 16px;
+  font-style: italic;
 }

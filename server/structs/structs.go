@@ -6,18 +6,19 @@ type LoginPayload struct {
 }
 
 type SignupPayload struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
 
 type CategoryItemPayload struct {
-	CategoryId int `json:"categoryId"`
+	CategoryId  int    `json:"categoryId"`
 	DisplayName string `json:"displayName"`
 }
 
 type BudgetCategory struct {
+	Id          int    `json:"id"`
 	DisplayName string `json:"display_name"`
 	Description string `json:"description"`
 }
@@ -28,4 +29,9 @@ type ExpenditureWithCategoryName struct {
 	Description  string  `json:"description"`
 	DateOccurred string  `json:"date_occurred"`
 	CategoryName string  `json:"category_name"`
+}
+
+type CategorizeExpenditurePayload struct {
+	ExpenditureId int `json:"expenditureId"`
+	CategoryId    int `json:"categoryId"`
 }

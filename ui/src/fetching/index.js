@@ -2,7 +2,9 @@
 const jsonRequest = (url, config, success, failure) => fetch(url, config)
 	.then((response) => {
 
+		console.log('jsonRequest got status code', response.status, 'from url', url);
 		if (!response.ok) {
+			console.log('response NOT OK');
 			return response.json().then(json => Promise.reject(json));
 		}
 

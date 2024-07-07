@@ -7,6 +7,7 @@ export const EXPENDITURES = "expenditures";
 export const REPORTS = 'reports';
 export const CATEGORIES = 'categories';
 export const IGNORED = 'IGNORED';
+export const UNCATEGORIZED = 'uncategorized';
 export const MONTHS = [
 	'January',
 	'February',

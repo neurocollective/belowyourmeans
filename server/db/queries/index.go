@@ -1,5 +1,6 @@
 package queries
 
+// this query needs a review, probably more complicated than necessary
 func SelectExpendituresWithCategoryNameByUserAndMonth() string {
 	return `
 		select e.*, bc.display_name as category_name from expenditure e
@@ -16,3 +17,4 @@ func SelectExpendituresWithCategoryNameByUserAndMonth() string {
 		and e.category_id IS NULL;
 	`
 }
+

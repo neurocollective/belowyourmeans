@@ -164,6 +164,32 @@ const buildStateChanges = (state, setState, getInitialState) => {
 			handleGetCategoriesFailure: (failurePayload) => {
 				console.error('ruh roh error payload in handleGetCategoriesFailure:', failurePayload);
 			},
+			setSelectedCategory: (expenditureId, categoryName) => {
+
+				const selectionsMap = { ...state[CATEGORIES].selectionsMap };
+
+				selectionsMap[expenditureId] = categoryName;
+
+				const newState = {
+					...state,
+					[CATEGORIES]: {
+						...state[CATEGORIES],
+						selectionsMap,
+					},
+				};
+				update(newState);				
+			},
+			handleUpdateExpenditureFailure: (failurePayload) => {
+				console.error('OH NOES BROES:', failurePayload);
+				const newState = {
+					...state,
+					[CATEGORIES]: {
+						...state[CATEGORIES],
+						error: 'failed to update category for expenditure',
+					},
+				};
+				update(newState);					
+			},
 		}
 	};
 };
