@@ -12,84 +12,13 @@ import {
   UNCATEGORIZED,
 } from '../../constants';
 
-const DisplayExpenditures = ({ stateManager }) => {
-
-    const {
-      ops: {
-        [EXPENDITURES]: {
-          setMonth,
-        },
-      },
-      state: {
-        [EXPENDITURES]: {
-          expenditures,
-          expenditurePage = 1,
-          month,
-          loading,
-        }
-      }
-    } = stateManager;
-
-    if (loading) {
-      return (
-        <div>
-          Loading...
-        </div>
-      );
-    }
-
-  return (
-    <div>
-      <div>
-        <span>Month:</span>
-        &nbsp;
-        <select value={month} onChange={(e) => setMonth(e.target.value)}>
-          {MONTHS.map((monthName, index) => <option key={monthName} value={index}>{monthName}</option>)}
-        </select>
-      </div>
-      <div>
-        {expenditures.length} results
-      </div>
-      {expenditures.length ? <div>Page {expenditurePage}</div> : null}
-      <ul class="expenditure-list">
-        {expenditures.map((ex, index) => {
-
-          const { value, description, ['category_name']: categoryName } = ex;
-
-          return (
-            <li className="expenditure-list-item" key={ex.id}>
-              <div className="expenditure-list-item-details-container">
-                <div>
-                  <div className="expenditure-line expenditure-amount">
-                    ${String(value).replace("-", "")}
-                  </div>
-                  <div className="expenditure-line">
-                    {description}
-                  </div>
-                </div>
-              </div>
-              <div className="expenditure-line">
-                <Categorizer
-                  categoryName={categoryName}
-                  expenditureDescription={description}
-                  expenditureId={ex.id}
-                  stateManager={stateManager}
-                />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-};
-
 const Expenditures = ({ stateManager }) => {
 
     const {
       ops: {
         [EXPENDITURES]: {
-          expenditures,
+          // expenditures,
+          setMonth,
           getExpenditures,
         },
         [CATEGORIES]: {
@@ -99,6 +28,8 @@ const Expenditures = ({ stateManager }) => {
       },
       state: {
         [EXPENDITURES]: {
+          expenditures,
+          expenditurePage = 1,
           month,
           loading,
         }
@@ -123,7 +54,48 @@ const Expenditures = ({ stateManager }) => {
 
   return (
     <section className="flex centered header-nav">
-      <DisplayExpenditures stateManager={stateManager} />
+      <div>
+        <div>
+          <span>Month:</span>
+          &nbsp;
+          <select value={month} onChange={(e) => setMonth(e.target.value)}>
+            {MONTHS.map((monthName, index) => <option key={monthName} value={index}>{monthName}</option>)}
+          </select>
+        </div>
+        <div>
+          {expenditures.length} results
+        </div>
+        {expenditures.length ? <div>Page {expenditurePage}</div> : null}
+        <ul class="expenditure-list">
+          {expenditures.map((ex, index) => {
+
+            const { value, description, ['category_name']: categoryName } = ex;
+
+            return (
+              <li className="expenditure-list-item" key={ex.id}>
+                <div className="expenditure-list-item-details-container">
+                  <div>
+                    <div className="expenditure-line expenditure-amount">
+                      ${String(value).replace("-", "")}
+                    </div>
+                    <div className="expenditure-line">
+                      {description}
+                    </div>
+                  </div>
+                </div>
+                <div className="expenditure-line">
+                  <Categorizer
+                    categoryName={categoryName}
+                    expenditureDescription={description}
+                    expenditureId={ex.id}
+                    stateManager={stateManager}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </section>
   );
 }

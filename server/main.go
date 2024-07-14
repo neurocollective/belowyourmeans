@@ -40,63 +40,6 @@ func GetFromContext[T any](c *gin.Context, key string) (T, error) {
 	return assertedValue, nil
 }
 
-func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string) ([]T, error) {
-
-	client := new(http.Client)
-
-	body := map[string]any{
-		"query":      query,
-		"parameters": queryParams,
-		// "specialRule": "mapExpenditures",
-	}
-
-	if specialRule != "" {
-		body["specialRule"] = specialRule
-	}
-
-	bodyBytes, err := json.Marshal(body)
-
-	if err != nil {
-		return nil, err
-	}
-
-	bodyReader := bytes.NewReader(bodyBytes)
-	request, err := http.NewRequest(http.MethodPost, "http://localhost:3001/query", bodyReader)
-
-	if err != nil {
-		log.Println("creating node request FAILED")
-		return nil, err
-	}
-
-	request.Header.Add("Content-Type", "application/json")
-
-	response, err := client.Do(request)
-
-	if err != nil {
-		log.Println("request to node server FAILED")
-		return nil, err
-	}
-
-	results := []T{}
-
-	bytes, err := io.ReadAll(response.Body)
-
-	if err != nil {
-		log.Println("reading node query response body FAILED")
-		return nil, err
-	}
-
-	err = json.Unmarshal(bytes, &results)
-
-	if err != nil {
-		log.Println("unmarshaling node query response body FAILED, response payload was:")
-		log.Println(string(bytes))
-		return nil, err
-	}
-
-	return results, nil
-}
-
 func main() {
 
 	FAKE_REDIS := make(map[string]string)
@@ -411,7 +354,7 @@ func main() {
 		}
 
 		query := queries.SelectExpendituresWithCategoryNameByUserAndMonth()
-		executeQuery := ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
+		executeQuery := db.ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
 		args := []any{userId, month}
 		expenditures, err := executeQuery(query, args, "mapExpenditures")
 
@@ -445,7 +388,7 @@ func main() {
 
 		args := []any{categoryId, expenditureId}
 		query := "update expenditure set category_id = $1 where id = $2;"
-		_, err = ExecuteNodeQuery[any](query, args, "")
+		_, err = db.ExecuteNodeQuery[any](query, args, "")
 
 		if err != nil {
 			log.Println(err)
@@ -471,7 +414,7 @@ func main() {
 
 		args := []any{userId}
 		query := "select id, display_name, description, ignored from budget_category where user_id = $1;"
-		categories, err := ExecuteNodeQuery[structs.BudgetCategory](query, args, "")
+		categories, err := db.ExecuteNodeQuery[structs.BudgetCategory](query, args, "")
 
 		if err != nil {
 			log.Println(err)
@@ -504,7 +447,7 @@ func main() {
 
 		args := []any{userId}
 		query := queries.SelectExpendituresWithCategoryNameByUserUnique()
-		execute := ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
+		execute := db.ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
 		categories, err := execute(query, args, "mapExpenditures")
 
 		if err != nil {
@@ -518,6 +461,23 @@ func main() {
 	})
 
 	router.POST("/category-item", authMiddleware, func(c *gin.Context) {
+
+		userIdString, err := GetFromContext[string](c, constants.USER_ID)
+
+		log.Println("userId:", userIdString)
+
+		if err != nil {
+			log.Println("userId not received from auth middleware for POST /category-item")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		userId, err := strconv.Atoi(userIdString)
+		if err != nil {
+			log.Println("userId un-convertable from string to int for POST /category-item")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
 
@@ -537,9 +497,18 @@ func main() {
 			return
 		}
 
-		args := []any{payload.CategoryId, payload.DisplayName}
-		query := "insert into budget_category_items (category_id, display_name) values ($1, $2);"
-		_, err = ExecuteNodeQuery[any](query, args, "")
+		args := []any{payload.CategoryId, payload.Description}
+		query := "insert into budget_category_items (category_id, description) values ($1, $2);"
+		_, err = db.ExecuteNodeQuery[any](query, args, "")
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		args := []any{userId, payload.CategoryId, payload.Description}
+		err = db.ApplyBudgetCategoryItems(args)
 
 		if err != nil {
 			log.Println(err)
@@ -567,7 +536,7 @@ func main() {
 
 		args := []any{payload.CategoryId, payload.DisplayName}
 		query := "update budget_category_items set category_id = $1 where display_name = $2;"
-		_, err = ExecuteNodeQuery[any](query, args, "")
+		_, err = db.ExecuteNodeQuery[any](query, args, "")
 
 		if err != nil {
 			log.Println(err)
@@ -595,7 +564,7 @@ func main() {
 
 		args := []any{payload.CategoryId, payload.DisplayName}
 		query := "delete from budget_category_items where category_id = $1 and display_name = $2;"
-		_, err = ExecuteNodeQuery[any](query, args, "")
+		_, err = db.ExecuteNodeQuery[any](query, args, "")
 
 		c.JSON(http.StatusNoContent, gin.H{})
 		return

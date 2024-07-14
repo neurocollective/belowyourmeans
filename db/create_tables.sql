@@ -40,11 +40,11 @@ CREATE TABLE budget_category (
 );
 
 -- entries to be associated with a category. Example - 
--- `budget_category_items.display_name = "Digital Card Purchase - NETFLIX COM LOS GATOS CA"` should 
+-- `budget_category_items.description = "Digital Card Purchase - NETFLIX COM LOS GATOS CA"` should 
 -- relate to `category.dislay_name = "entertainment"`.
 CREATE TABLE budget_category_items (
 	category_id int REFERENCES budget_category(id) default null, --nullable
-	display_name text NOT NULL,
+	description text NOT NULL,
 	create_date timestamp default now(),
 	modified_date timestamp default now(),
 	PRIMARY KEY (category_id, display_name)
