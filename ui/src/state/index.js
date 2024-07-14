@@ -13,6 +13,9 @@ const INITIAL_STATE = {
 	[CATEGORIES]: {
 		categories: [],
 		selectionsMap: {},
+		expenditureNames: [],
+		expenditureNamePage: 0,
+		error: null,
 	},
 	[EXPENDITURES]: {
 		expenditures: [],

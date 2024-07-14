@@ -190,6 +190,28 @@ const buildStateChanges = (state, setState, getInitialState) => {
 				};
 				update(newState);					
 			},
+			handleGetUncategorizedExpendituresSuccess: (successPayload) => {
+				const { data: expenditureNames } = successPayload;
+				const newState = {
+					...state,
+					[CATEGORIES]: {
+						...state[CATEGORIES],
+						expenditureNames,
+					},
+				};
+				update(newState);
+			},
+			handleGetUncategorizedExpendituresFailure: (failurePayload) => {
+				const { error } = failurePayload;
+				const newState = {
+					...state,
+					[CATEGORIES]: {
+						...state[CATEGORIES],
+						error,
+					},
+				};
+				update(newState);
+			},
 		}
 	};
 };

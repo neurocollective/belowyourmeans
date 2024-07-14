@@ -10,55 +10,56 @@ import {
   IGNORED,
   UNCATEGORIZED,
 } from '../../constants';
+import SetCategory from '../SetCategory';
 
-const CategoryContent = (props) => {
+// const CategoryContent = (props) => {
 
-  const {
-    setSelectedCategory,
-    updateCategoryForExpenditure,
-    notCategorized,
-    categories,
-    categoryName,
-    expenditureId,
-    expenditureDescription,
-    selectionsMap,
-  } = props;
+//   const {
+//     setSelectedCategory,
+//     updateCategoryForExpenditure,
+//     notCategorized,
+//     categories,
+//     categoryName,
+//     expenditureId,
+//     expenditureDescription,
+//     selectionsMap,
+//   } = props;
 
-  if (notCategorized) {
+//   if (notCategorized) {
 
-    const selectedCategory = selectionsMap[expenditureId] || "default"
+//     const selectedCategory = selectionsMap[expenditureId] || "default"
 
-    const submit = () => {
-      updateCategoryForExpenditure(expenditureDescription, categoryName, expenditureId);
-    };
-    const select = (e) => setSelectedCategory(expenditureId, e.target.value);
+//     const submit = () => {
+//       updateCategoryForExpenditure(expenditureDescription, categoryName, expenditureId);
+//     };
+//     const select = (e) => setSelectedCategory(expenditureId, e.target.value);
 
-    return (
-      <React.Fragment>
-        <select
-          className="set-category-dropdown"
-          value={selectedCategory}
-          onChange={select}
-        >
-          <option disabled value="default">Select A Category</option>
-          {categories.map((c) => {
-            const name = c["display_name"]
-            return <option key={c.id} value={name}>{name}</option>
-          })}
-        </select>
-        &nbsp;
-        <button
-          className="set-category-button"
-          onClick={submit}
-        >
-          Set Category
-        </button>
-      </React.Fragment>
-    );
-  }
+//     return (
+//       <React.Fragment>
+//         <select
+//           className="set-category-dropdown"
+//           value={selectedCategory}
+//           onChange={select}
+//         >
+//           <option disabled value="default">Select A Category</option>
+//           {categories.map((c) => {
+//             const name = c["display_name"]
+//             return <option key={c.id} value={name}>{name}</option>
+//           })}
+//         </select>
+//         &nbsp;
+//         <button
+//           className="set-category-button"
+//           onClick={submit}
+//         >
+//           Set Category
+//         </button>
+//       </React.Fragment>
+//     );
+//   }
 
-  return null;
-}
+//   return null;
+// }
 const Categorizer = ({ stateManager, categoryName, expenditureId, expenditureDescription }) => {
 
   const {
@@ -90,11 +91,11 @@ const Categorizer = ({ stateManager, categoryName, expenditureId, expenditureDes
         <span className={categoryClass}>{categoryName}</span>
       </div>
       <div>
-        <CategoryContent
+        <SetCategory
           notCategorized={notCategorized}
           categoryName={categoryName}
-          setSelectedCategory={setSelectedCategory}
-          updateCategoryForExpenditure={updateCategoryForExpenditure}
+          select={setSelectedCategory}
+          update={updateCategoryForExpenditure}
           categories={categories}
           expenditureId={expenditureId}
           expenditureDescription={expenditureDescription}

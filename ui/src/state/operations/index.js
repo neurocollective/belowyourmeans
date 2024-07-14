@@ -141,7 +141,19 @@ const buildOperations = (state, stateChanges) => {
 		},
 		[CATEGORIES]: {
 			getUncategorizedExpenditures: () => {
-
+				const {
+					[LOGIN]: {
+						user: userId
+					}
+				} = state;
+				const {
+					[CATEGORIES]: {
+						handleGetUncategorizedExpendituresSuccess: ok,
+						handleGetUncategorizedExpendituresFailure: fail,
+					}
+				} = stateChanges;
+				const fullURL = getURL("/categories/expenditures/names");
+				return jsonRequest(fullURL, DEFAULT_REQUEST_CONFIG, ok, fail);
 			},
 			getCategories: () => {
 				const {

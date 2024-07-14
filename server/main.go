@@ -89,7 +89,8 @@ func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string
 	err = json.Unmarshal(bytes, &results)
 
 	if err != nil {
-		log.Println("unmarshaling node query response body FAILED")
+		log.Println("unmarshaling node query response body FAILED, response payload was:")
+		log.Println(string(bytes))
 		return nil, err
 	}
 
@@ -471,6 +472,40 @@ func main() {
 		args := []any{userId}
 		query := "select id, display_name, description, ignored from budget_category where user_id = $1;"
 		categories, err := ExecuteNodeQuery[structs.BudgetCategory](query, args, "")
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": categories})
+		return
+	})
+
+	router.GET("/categories/expenditures/names", authMiddleware, func(c *gin.Context) {
+
+		userIdString, err := GetFromContext[string](c, constants.USER_ID)
+
+		log.Println("userId:", userIdString)
+
+		if err != nil {
+			log.Println("userId not received from auth middleware")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		userId, err := strconv.Atoi(userIdString)
+		if err != nil {
+			log.Println("userId un-convertable from string to int")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		args := []any{userId}
+		query := queries.SelectExpendituresWithCategoryNameByUserUnique()
+		execute := ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
+		categories, err := execute(query, args, "mapExpenditures")
 
 		if err != nil {
 			log.Println(err)

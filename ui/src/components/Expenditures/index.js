@@ -94,6 +94,7 @@ const Expenditures = ({ stateManager }) => {
         },
         [CATEGORIES]: {
           getCategories,
+          categories,
         }
       },
       state: {
@@ -110,7 +111,7 @@ const Expenditures = ({ stateManager }) => {
 
   useEffect(() => {
     getCategories();
-  }, [])
+  }, [categories]);
 
   if (loading) {
     return (

@@ -18,3 +18,14 @@ func SelectExpendituresWithCategoryNameByUserAndMonth() string {
 	`
 }
 
+func SelectExpendituresWithCategoryNameByUserUnique() string {
+	// "select DISTINCT ON (description), id, description, category_id from expenditure where user_id = $1;"
+	//"select description from expenditure where user_id = $1 and category_id IS NULL GROUP BY description HAVING count(description) > 1;"
+	return `select id, description from expenditure where description in (
+		select description from expenditure
+		where user_id = $1
+		and category_id IS NULL
+		GROUP BY description HAVING count(description) > 1
+	) and user_id = $1;`
+}
+
