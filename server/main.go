@@ -13,7 +13,7 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/server/db"
 	"neurocollective.io/neurocollective/belowyourmeans/server/db/queries"
 	// "neurocollective.io/neurocollective/belowyourmeans/server/parsing"
-	"bytes"
+	// "bytes"
 	"errors"
 	"neurocollective.io/neurocollective/belowyourmeans/server/password"
 	"neurocollective.io/neurocollective/belowyourmeans/server/structs"
@@ -460,6 +460,8 @@ func main() {
 		return
 	})
 
+	// not just creaeting a new row - creating it and then running
+	// an update in expenditure table
 	router.POST("/category-item", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
@@ -507,7 +509,7 @@ func main() {
 			return
 		}
 
-		args := []any{userId, payload.CategoryId, payload.Description}
+		args = []any{userId, payload.CategoryId, payload.Description}
 		err = db.ApplyBudgetCategoryItems(args)
 
 		if err != nil {
@@ -534,7 +536,7 @@ func main() {
 			return
 		}
 
-		args := []any{payload.CategoryId, payload.DisplayName}
+		args := []any{payload.CategoryId, payload.Description}
 		query := "update budget_category_items set category_id = $1 where display_name = $2;"
 		_, err = db.ExecuteNodeQuery[any](query, args, "")
 
@@ -562,7 +564,7 @@ func main() {
 			return
 		}
 
-		args := []any{payload.CategoryId, payload.DisplayName}
+		args := []any{payload.CategoryId, payload.Description}
 		query := "delete from budget_category_items where category_id = $1 and display_name = $2;"
 		_, err = db.ExecuteNodeQuery[any](query, args, "")
 

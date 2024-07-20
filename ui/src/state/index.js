@@ -12,7 +12,8 @@ const INITIAL_STATE = {
 	},
 	[CATEGORIES]: {
 		categories: [],
-		selectionsMap: {},
+		selectionsMap: {}, // categorize specific expenditures
+		broadSelectionsMap: {}, // categorize all expenditures w/ a description
 		expenditureNames: [],
 		expenditureNamePage: 0,
 		error: null,

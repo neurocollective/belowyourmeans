@@ -14,7 +14,7 @@ type SignupPayload struct {
 
 type CategoryItemPayload struct {
 	CategoryId  int    `json:"categoryId"`
-	description string `json:"description"`
+	Description string `json:"description"`
 }
 
 type BudgetCategory struct {

@@ -1,8 +1,14 @@
 package db
 
 import (
+	"net/http"
+	"encoding/json"
 	"database/sql"
 	"errors"
+	"log"
+	"io"
+	"bytes"
+
 	bymsql "neurocollective.io/neurocollective/belowyourmeans/server/structs/sql"
 )
 
@@ -129,7 +135,7 @@ func ScanForUserSignupData(rows *sql.Rows, user *bymsql.User) error {
 	return nil
 }
 
-type NodeQueryExecutor func[T any](query string, queryParams []any, specialRule string) ([]T, error)
+// type NodeQueryExecutor func[T any](query string, queryParams []any, specialRule string) ([]T, error)
 
 func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string) ([]T, error) {
 
@@ -192,7 +198,7 @@ func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string
 func ApplyBudgetCategoryItems(args []any) error {
 
 	query := "update expenditure set category_id = $3 where userId = $1 and description = $2;"
-	_, err = ExecuteNodeQuery[any](query, args, "")
+	_, err := ExecuteNodeQuery[any](query, args, "")
 
 	if err != nil {
 		return err

@@ -14,10 +14,12 @@ const Categories = ({ stateManager }) => {
       },
       state: {
         [CATEGORIES]: {
+          loading,
           test,
           categories,
           expenditureNames,
           expenditureNamePage,
+          broadSelectionsMap,
         }
       }
     } = stateManager;
@@ -34,25 +36,48 @@ const Categories = ({ stateManager }) => {
 
   const expenditurePage = expenditureNames.slice(pageTimesTen, pageTimesTen + 10);
 
+  if (loading) {
+    return (
+      <div className="flex centered header-nav">
+        LOADING...
+      </div>
+    );
+  }
+
   return (
     <div className="flex centered header-nav">
       <div>
         <div>
           <ul style={{ "listStyle": "none" }}>
             {expenditurePage.map((expenditure) => {
+
+              const { description } = expenditure;
+
+              const select = (id, value) => {
+                console.log(value);
+              };
+
+              const applyCategories = (expenditureDescription, categoryName, expenditureId) => {
+                console.log(expenditureDescription, categoryName, expenditureId);
+              };
+
               return (
                 <li key={expenditure.id}>
-                  {expenditure.description}
-                  {/*<SetCategory
-                    notCategorized={notCategorized}
-                    categoryName={categoryName}
-                    select={setSelectedCategory}
-                    update={updateCategoryForExpenditure}
-                    categories={categories}
-                    expenditureId={expenditureId}
-                    expenditureDescription={expenditureDescription}
-                    selectionsMap={selectionsMap}
-                  />*/}
+                  <div>
+                    {expenditure.description}
+                  </div>
+                  <div>
+                    <SetCategory
+                      notCategorized={true}
+                      categoryName={broadSelectionsMap[description] || "default"}
+                      select={select}
+                      update={applyCategories}
+                      categories={categories}
+                      expenditureId={null}
+                      expenditureDescription={description}
+                      selectionsMap={broadSelectionsMap}
+                    />
+                  </div>
                 </li>
               );
             })}
