@@ -47,7 +47,7 @@ CREATE TABLE budget_category_items (
 	description text NOT NULL,
 	create_date timestamp default now(),
 	modified_date timestamp default now(),
-	PRIMARY KEY (category_id, display_name)
+	PRIMARY KEY (category_id, description)
 );
 
 -- regex input to be associated with a category.

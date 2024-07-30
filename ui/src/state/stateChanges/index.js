@@ -212,6 +212,12 @@ const buildStateChanges = (state, setState, getInitialState) => {
 				};
 				update(newState);
 			},
+			handleApplyCategoryItemSuccess: () => {
+
+			},
+			handleApplyCategoryItemFailure: () => {
+
+			},
 		}
 	};
 };

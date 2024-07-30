@@ -462,7 +462,7 @@ func main() {
 
 	// not just creaeting a new row - creating it and then running
 	// an update in expenditure table
-	router.POST("/category-item", authMiddleware, func(c *gin.Context) {
+	router.POST("/category-item/apply", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 

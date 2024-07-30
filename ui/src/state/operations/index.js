@@ -140,6 +140,29 @@ const buildOperations = (state, stateChanges) => {
 			navigate,
 		},
 		[CATEGORIES]: {
+			applyCategoryItem: () => {
+				const {
+					[LOGIN]: {
+						user: userId
+					},
+					[CATEGORIES]: {
+						bruh,
+					}
+				} = state;
+				const {
+					[CATEGORIES]: {
+						handleApplyCategoryItemSuccess: ok,
+						handleApplyCategoryItemFailure: fail,
+					}
+				} = stateChanges;
+				const fullURL = getURL("/category-item/apply");
+				const config = {
+					...DEFAULT_REQUEST_CONFIG,
+					method: 'POST',
+					body: JSON.stringify({}),
+				};
+				return jsonRequest(fullURL, config, ok, fail);
+			},
 			getUncategorizedExpenditures: () => {
 				const {
 					[LOGIN]: {
@@ -200,7 +223,7 @@ const buildOperations = (state, stateChanges) => {
 				}
 
 				console.log('categoryId:', categoryId);
-				console.log('expenditureId:', expenditureId)
+				console.log('expenditureId:', expenditureId);
 
 				const fullURL = getURL(`/expenditure`);
 
