@@ -462,28 +462,28 @@ func main() {
 
 	// not just creaeting a new row - creating it and then running
 	// an update in expenditure table
-	router.POST("/category-item/apply", authMiddleware, func(c *gin.Context) {
+	router.POST("/category-preassignment/apply", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
 		log.Println("userId:", userIdString)
 
 		if err != nil {
-			log.Println("userId not received from auth middleware for POST /category-item")
+			log.Println("userId not received from auth middleware for POST /category-preassignment/apply")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
 			return
 		}
 
 		userId, err := strconv.Atoi(userIdString)
 		if err != nil {
-			log.Println("userId un-convertable from string to int for POST /category-item")
+			log.Println("userId un-convertable from string to int for POST /category-preassignment/apply")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
 			return
 		}
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
 
-		log.Println("apply budget category bodyBytes:", string(bodyBytes))
+		log.Println("apply budget category preassignment bodyBytes:", string(bodyBytes))
 
 		if err != nil {
 			log.Println(err)
@@ -502,7 +502,7 @@ func main() {
 		}
 
 		args := []any{payload.CategoryId, payload.Description}
-		query := "insert into budget_category_items (category_id, description) values ($1, $2);"
+		query := "insert into budget_category_preassignment (category_id, description) values ($1, $2);"
 		_, err = db.ExecuteNodeQuery[any](query, args, "")
 
 		if err != nil {
@@ -524,7 +524,7 @@ func main() {
 		return
 	})
 
-	router.PUT("/category-item", func(c *gin.Context) {
+	router.PUT("/category-preassignment", func(c *gin.Context) {
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
 
@@ -539,7 +539,7 @@ func main() {
 		}
 
 		args := []any{payload.CategoryId, payload.Description}
-		query := "update budget_category_items set category_id = $1 where display_name = $2;"
+		query := "update budget_category_preassignment set category_id = $1 where display_name = $2;"
 		_, err = db.ExecuteNodeQuery[any](query, args, "")
 
 		if err != nil {
@@ -552,7 +552,7 @@ func main() {
 		return
 	})
 
-	router.DELETE("/category-item", func(c *gin.Context) {
+	router.DELETE("/category-preassignment", func(c *gin.Context) {
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
 
@@ -567,7 +567,7 @@ func main() {
 		}
 
 		args := []any{payload.CategoryId, payload.Description}
-		query := "delete from budget_category_items where category_id = $1 and display_name = $2;"
+		query := "delete from budget_category_preassignment where category_id = $1 and display_name = $2;"
 		_, err = db.ExecuteNodeQuery[any](query, args, "")
 
 		c.JSON(http.StatusNoContent, gin.H{})

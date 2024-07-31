@@ -160,7 +160,7 @@ const buildOperations = (state, stateChanges) => {
 					return name === categoryName;
 				});
 
-				const fullURL = getURL("/category-item/apply");
+				const fullURL = getURL("/category-preassignment/apply");
 				const config = {
 					...DEFAULT_REQUEST_CONFIG,
 					method: 'POST',
