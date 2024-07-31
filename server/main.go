@@ -113,7 +113,7 @@ func main() {
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
+			c.AbortWithStatus(200)
 			return
 		}
 
@@ -483,13 +483,15 @@ func main() {
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
 
+		log.Println("apply budget category bodyBytes:", string(bodyBytes))
+
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not read request body"})
 			return
 		}
 
-		payload := new(structs.CategoryItemPayload)
+		payload := new(structs.ApplyBudgetCategoryItemPayload)
 
 		err = json.Unmarshal(bodyBytes, payload)
 
@@ -509,7 +511,7 @@ func main() {
 			return
 		}
 
-		args = []any{userId, payload.CategoryId, payload.Description}
+		args = []any{payload.CategoryId, userId, payload.Description}
 		err = db.ApplyBudgetCategoryItems(args)
 
 		if err != nil {

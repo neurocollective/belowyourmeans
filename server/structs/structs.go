@@ -36,3 +36,10 @@ type CategorizeExpenditurePayload struct {
 	ExpenditureId int  `json:"expenditureId"`
 	CategoryId    int  `json:"categoryId"`
 }
+
+type ApplyBudgetCategoryItemPayload struct {
+	Description  string    `json:"expenditureDescription"`
+	CategoryName string `json:"categoryName"`
+	CategoryId int `json:"categoryId"`
+	ExpenditureId int `json:"expenditureId"`
+}

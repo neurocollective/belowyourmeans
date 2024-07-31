@@ -9,6 +9,8 @@ const Categories = ({ stateManager }) => {
         [CATEGORIES]: {
           getUncategorizedExpenditures,
           getCategories,
+          setSelectedBroadCategory,
+          applyCategoryItem
           // setExpenditurePage,
         }
       },
@@ -54,11 +56,12 @@ const Categories = ({ stateManager }) => {
               const { description } = expenditure;
 
               const select = (id, value) => {
-                console.log(value);
+                setSelectedBroadCategory(id, value);
               };
 
               const applyCategories = (expenditureDescription, categoryName, expenditureId) => {
                 console.log(expenditureDescription, categoryName, expenditureId);
+                applyCategoryItem(expenditureDescription, categoryName, expenditureId);
               };
 
               return (
@@ -69,11 +72,11 @@ const Categories = ({ stateManager }) => {
                   <div>
                     <SetCategory
                       notCategorized={true}
-                      categoryName={broadSelectionsMap[description] || "default"}
+                      categoryName={broadSelectionsMap[expenditure.id] || "default"}
                       select={select}
                       update={applyCategories}
                       categories={categories}
-                      expenditureId={null}
+                      expenditureId={expenditure.id}
                       expenditureDescription={description}
                       selectionsMap={broadSelectionsMap}
                     />

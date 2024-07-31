@@ -140,13 +140,13 @@ const buildOperations = (state, stateChanges) => {
 			navigate,
 		},
 		[CATEGORIES]: {
-			applyCategoryItem: () => {
+			applyCategoryItem: (expenditureDescription, categoryName, expenditureId) => {
 				const {
 					[LOGIN]: {
 						user: userId
 					},
 					[CATEGORIES]: {
-						bruh,
+						categories,
 					}
 				} = state;
 				const {
@@ -155,13 +155,28 @@ const buildOperations = (state, stateChanges) => {
 						handleApplyCategoryItemFailure: fail,
 					}
 				} = stateChanges;
+
+				const { id: categoryId } = categories.find(({ ['display_name']: name }) => {
+					return name === categoryName;
+				});
+
 				const fullURL = getURL("/category-item/apply");
 				const config = {
 					...DEFAULT_REQUEST_CONFIG,
 					method: 'POST',
-					body: JSON.stringify({}),
+					body: JSON.stringify({
+						expenditureDescription, categoryName, expenditureId, categoryId,
+					}),
 				};
 				return jsonRequest(fullURL, config, ok, fail);
+			},
+			setSelectedBroadCategory: (exenditureId, selectedCategoryName) => {
+				const {
+					[CATEGORIES]: {
+						updateBroadSelection,
+					}
+				} = stateChanges;
+				updateBroadSelection(exenditureId, selectedCategoryName);
 			},
 			getUncategorizedExpenditures: () => {
 				const {

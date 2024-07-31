@@ -194,10 +194,10 @@ func ExecuteNodeQuery[T any](query string, queryParams []any, specialRule string
 	return results, nil
 }
 
-// args -> []any{userId, categoryId, description} -> `int,string,string`
+// args -> []any{categoryId, userId, description} -> `int,int,string`
 func ApplyBudgetCategoryItems(args []any) error {
 
-	query := "update expenditure set category_id = $3 where userId = $1 and description = $2;"
+	query := "update expenditure set category_id = $1 where user_id = $2 and description = $3;"
 	_, err := ExecuteNodeQuery[any](query, args, "")
 
 	if err != nil {

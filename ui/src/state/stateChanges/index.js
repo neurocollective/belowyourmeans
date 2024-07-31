@@ -150,6 +150,20 @@ const buildStateChanges = (state, setState, getInitialState) => {
 			}
 		},
 		[CATEGORIES]: {
+			updateBroadSelection: (expenditureId, selectedCategoryName) => {
+				
+				const broadSelectionsMap = { ...state[CATEGORIES].broadSelectionsMap }
+				broadSelectionsMap[expenditureId] = selectedCategoryName;
+
+				const newState = {
+					...state,
+					[CATEGORIES]: {
+						...state[CATEGORIES],
+						broadSelectionsMap,
+					},
+				};
+				update(newState);			
+			},
 			handleGetCategoriesSuccess: (successPayload) => {
 				const { data: categories } = successPayload;
 				const newState = {

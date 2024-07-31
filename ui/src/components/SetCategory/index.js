@@ -31,7 +31,10 @@ const SetCategory = (props) => {
     const submit = () => {
       update(expenditureDescription, categoryName, expenditureId);
     };
-    const handleSelect = (e) => select(expenditureId, e.target.value);
+    const handleSelect = (e) => {
+      console.log('select\'s expenditureId, e.target.value', expenditureId, e.target.value);
+      select(expenditureId, e.target.value);
+    }
 
     return (
       <React.Fragment>

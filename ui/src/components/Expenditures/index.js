@@ -66,7 +66,7 @@ const Expenditures = ({ stateManager }) => {
           {expenditures.length} results
         </div>
         {expenditures.length ? <div>Page {expenditurePage}</div> : null}
-        <ul class="expenditure-list">
+        <ul className="expenditure-list">
           {expenditures.map((ex, index) => {
 
             const { value, description, ['category_name']: categoryName } = ex;
