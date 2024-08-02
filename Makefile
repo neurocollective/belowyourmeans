@@ -17,7 +17,7 @@ serve/local:
 # 	ENVIRONMENT=dev go run -mod vendor ./server/main.go ./server/password/password.go ./server/structs/structs.go ./server/cookie.go ./server/structs/sql/*.go 
 	@ENVIRONMENT=dev go run -mod vendor ./server/main.go
 parse/test:
-	@go test -v ./server/parsing
+	@go test -v ./server/parsing -count=1
 psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
 serve/ui:
