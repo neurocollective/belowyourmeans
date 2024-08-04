@@ -40,10 +40,6 @@ const Expenditures = ({ stateManager }) => {
     getExpenditures();
   }, [month]);
 
-  useEffect(() => {
-    getCategories();
-  }, [categories]);
-
   if (loading) {
     return (
       <section className="flex centered header-nav">

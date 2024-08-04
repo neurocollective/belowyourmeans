@@ -44,6 +44,7 @@ const Categorizer = ({ stateManager, categoryName, expenditureId, expenditureDes
       </div>
       <div>
         <SetCategory
+          allowPatterns={false}
           notCategorized={notCategorized}
           categoryName={categoryName}
           select={setSelectedCategory}

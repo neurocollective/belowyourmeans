@@ -9,10 +9,17 @@ const Categories = ({ stateManager }) => {
         [CATEGORIES]: {
           getUncategorizedExpenditures,
           getCategories,
-          setSelectedBroadCategory,
+          // updatePreAssignmentFullNameSelection,
+          updatePreAssignmentPattern,
+          // setSelectedBroadCategory,
           applyCategoryItem
           // setExpenditurePage,
         }
+      },
+      changes: {
+        [CATEGORIES]: {
+          updatePreAssignmentFullNameSelection,
+        },
       },
       state: {
         [CATEGORIES]: {
@@ -21,22 +28,25 @@ const Categories = ({ stateManager }) => {
           categories,
           expenditureNames,
           expenditureNamePage,
-          broadSelectionsMap,
+          preAssignmentMap,
         }
       }
     } = stateManager;
 
   useEffect(() => {
+    console.log('useEffect 1 in Categories.js');
     getUncategorizedExpenditures();
-  }, []);
+  }, [JSON.stringify(expenditureNames)]);
 
-  useEffect(() => {
-    getCategories();
-  }, []);
+  console.log(`size of expenditureNames: ${expenditureNames.length}`);
 
   const pageTimesTen = 10 * expenditureNamePage;
 
-  const expenditurePage = expenditureNames.slice(pageTimesTen, pageTimesTen + 10);
+  const expenditurePageList = expenditureNames.slice(expenditureNamePage, expenditureNamePage + pageTimesTen);
+
+  console.log(`expenditureNamePage: ${expenditureNamePage} pageTimesTen: ${pageTimesTen} expenditureNamePage + pageTimesTen: ${expenditureNamePage + pageTimesTen}`);
+
+  console.log(`expenditurePageList size: ${expenditurePageList.length}`);
 
   if (loading) {
     return (
@@ -46,23 +56,33 @@ const Categories = ({ stateManager }) => {
     );
   }
 
+  const applyCategories = (expenditureDescription, categoryName, expenditureId) => {
+    console.log(expenditureDescription, categoryName, expenditureId);
+    applyCategoryItem(expenditureDescription, categoryName, expenditureId);
+  };
+
+  const select = (id, value) => {
+    updatePreAssignmentFullNameSelection(id, value);
+  };
+
+  const backPage = () => {
+
+  };
+
+  const forwardPage = () => {
+
+  };
+
   return (
     <div className="flex centered header-nav">
       <div>
         <div>
           <ul style={{ "listStyle": "none" }}>
-            {expenditurePage.map((expenditure) => {
+            {expenditurePageList.map((expenditure) => {
 
               const { description } = expenditure;
 
-              const select = (id, value) => {
-                setSelectedBroadCategory(id, value);
-              };
-
-              const applyCategories = (expenditureDescription, categoryName, expenditureId) => {
-                console.log(expenditureDescription, categoryName, expenditureId);
-                applyCategoryItem(expenditureDescription, categoryName, expenditureId);
-              };
+              const assignmentMapEntry = preAssignmentMap?.[expenditure.id] ?? {};
 
               return (
                 <li key={expenditure.id}>
@@ -72,13 +92,16 @@ const Categories = ({ stateManager }) => {
                   <div>
                     <SetCategory
                       notCategorized={true}
-                      categoryName={broadSelectionsMap[expenditure.id] || "default"}
+                      categoryName={assignmentMapEntry.name || "default"}
+                      categoryPattern={assignmentMapEntry.pattern ?? description}
+                      fullName={assignmentMapEntry.fullName}
                       select={select}
                       update={applyCategories}
+                      updatePattern={updatePreAssignmentPattern}
                       categories={categories}
                       expenditureId={expenditure.id}
                       expenditureDescription={description}
-                      selectionsMap={broadSelectionsMap}
+                      selectionsMap={preAssignmentMap}
                     />
                   </div>
                 </li>
@@ -87,11 +110,11 @@ const Categories = ({ stateManager }) => {
           </ul>       
         </div>
         <div>
-          <button>{"<-"}</button>
+          {expenditureNamePage > 1 && <button onClick={backPage}>{"<-"}</button>}
           &nbsp;
-          Page: {String(expenditureNamePage + 1)}
+          Page: {String(expenditureNamePage)}
           &nbsp;
-          <button>{"->"}</button>
+          <button onClick={forwardPage}>{"->"}</button>
         </div>
       </div>
     </div>

@@ -2,7 +2,12 @@ import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES } from '../../constan
 
 const buildStateChanges = (state, setState, getInitialState) => {
 
-	const update = newState => setState(oldState => ({ ...oldState, ...newState }));
+	const update = (newState, callback) => {
+		if (callback) {
+			callback(newState);
+		}
+		return setState(newState);
+	};
 
 	return {
 		[LOGIN]: {
@@ -150,16 +155,37 @@ const buildStateChanges = (state, setState, getInitialState) => {
 			}
 		},
 		[CATEGORIES]: {
-			updateBroadSelection: (expenditureId, selectedCategoryName) => {
+			updatePreAssignmentFullNameSelection: (expenditureId, selectedCategoryName) => {
 				
-				const broadSelectionsMap = { ...state[CATEGORIES].broadSelectionsMap }
-				broadSelectionsMap[expenditureId] = selectedCategoryName;
+				const preAssignmentMap = { ...state[CATEGORIES].preAssignmentMap }
+				preAssignmentMap[expenditureId] = {
+					name: selectedCategoryName,
+					fullName: true,
+				};
 
 				const newState = {
 					...state,
 					[CATEGORIES]: {
 						...state[CATEGORIES],
-						broadSelectionsMap,
+						preAssignmentMap,
+					},
+				};
+				update(newState);			
+			},
+			updatePreAssignmentPattern: (expenditureId, pattern) => {
+				
+				const preAssignmentMap = { ...state[CATEGORIES].preAssignmentMap }
+				preAssignmentMap[expenditureId] = {
+					name: null,
+					fullName: false,
+					pattern,
+				};
+
+				const newState = {
+					...state,
+					[CATEGORIES]: {
+						...state[CATEGORIES],
+						preAssignmentMap,
 					},
 				};
 				update(newState);			
@@ -173,7 +199,8 @@ const buildStateChanges = (state, setState, getInitialState) => {
 						categories,
 					},
 				};
-				update(newState);
+				setState(newState);
+				// update(newState);
 			},
 			handleGetCategoriesFailure: (failurePayload) => {
 				console.error('ruh roh error payload in handleGetCategoriesFailure:', failurePayload);
@@ -213,7 +240,13 @@ const buildStateChanges = (state, setState, getInitialState) => {
 						expenditureNames,
 					},
 				};
-				update(newState);
+				const print = (newState) => {
+					console.log(`handleGetUncategorizedExpendituresSuccess has list size: ${expenditureNames.length}`);
+					console.log('newState will be:', newState)
+				}
+				print();
+				setState(newState);
+				//update(newState, print);
 			},
 			handleGetUncategorizedExpendituresFailure: (failurePayload) => {
 				const { error } = failurePayload;

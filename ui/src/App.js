@@ -22,15 +22,42 @@ function App() {
     ops: {
       [LOGIN]: {
         checkIfLoggedIn,
+      },
+      [CATEGORIES]: {
+        getCategories,
+        getUncategorizedExpenditures,
+      },
+      [EXPENDITURES]: {
+        getExpenditures,       
+      }
+    },
+    state: {
+      [LOGIN]: {
+        user: userId,
+      },
+      [EXPENDITURES]: {
+        month,
+      },
+      [CATEGORIES]: {
+        categories,
       }
     }
   } = stateManager;
 
   useEffect(() => {
+    console.log('useEffect 1 in App.js');
     checkIfLoggedIn();
   }, []);
 
-  console.log("state in App.js:", state);
+  useEffect(() => {
+    console.log('useEffect 2 in App.js');
+    if (userId) {
+      // getUncategorizedExpenditures();
+      getCategories();
+    }
+  }, [userId]);
+
+  console.log("state in App.js:", state[CATEGORIES]?.expenditureNames);
 
   return (
     <>

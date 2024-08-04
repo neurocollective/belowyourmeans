@@ -3,12 +3,11 @@ db/local:
 	@sleep 3
 	@psql -f db/create_tables.sql "postgresql://postgres:postgres@localhost:5432/postgres" 
 	@psql -f db/initial_seed.sql "postgresql://postgres:postgres@localhost:5432/postgres"
+	@make parse
 db/local/down:
 	@docker rm local-pg -f
 ahab:
 	@docker rm -f local-pg
-test/parse:
-	@go test -v ./server/parsing
 react/build:
 	@npm run build --prefix ./ui
 	@cp -r ./ui/build ./server/
@@ -16,7 +15,8 @@ react/build:
 serve/local:
 # 	ENVIRONMENT=dev go run -mod vendor ./server/main.go ./server/password/password.go ./server/structs/structs.go ./server/cookie.go ./server/structs/sql/*.go 
 	@ENVIRONMENT=dev go run -mod vendor ./server/main.go
-parse/test:
+parse:
+	@go clean -testcache
 	@go test -v ./server/parsing -count=1
 psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -31,8 +31,8 @@ signup:
 	@curl -d '{ "email": "$(email)", "lastName": "$(lastName)", "firstName": "$(firstName)", "password": "$(password)" }' -H 'Accept: application/json' -H 'Content-Type: application/json' localhost:8080/signup
 fmt:
 	@go fmt ./server/ ./server/constants ./server/structs ./server/password ./server/constants ./server/cookie
-parse:
-	@go run -mod vendor ./server/parse.go
+# parse:
+# 	@go run -mod vendor ./server/parse.go
 install:
 	@rm -rf vendor/github.com/neurocollective/go_utils
 	@cp -r ../go_utils vendor/github.com/neurocollective/
