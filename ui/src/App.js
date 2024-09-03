@@ -57,7 +57,7 @@ function App() {
     }
   }, [userId]);
 
-  console.log("state in App.js:", state[CATEGORIES]?.expenditureNames);
+  console.log("state in App.js:", state);
 
   return (
     <>

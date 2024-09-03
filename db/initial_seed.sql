@@ -96,3 +96,14 @@ insert into budget_category_preassignment (category_id, description) values
 	(11,'Debit: Check #350 Cashed'),
 	(11,'Debit: Check #352 Cashed'),
 	(15,'Debit: Debit Card Purchase - CISCO SYSTEMS INC 9193922254 CA');
+
+WITH pairs as (
+    SELECT ex.id, bcp.category_id
+    FROM expenditure as ex
+    JOIN budget_category_preassignment as bcp
+    ON bcp.description = ex.description
+)
+UPDATE expenditure as e
+SET category_id = pairs.category_id
+FROM pairs
+WHERE e.id = pairs.id;

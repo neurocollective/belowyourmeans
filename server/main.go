@@ -511,6 +511,8 @@ func main() {
 			return
 		}
 
+		log.Println("updated expenditures where cat_id is", payload.CategoryId, "userId is", userId, "description: ", payload.Description)
+
 		args = []any{payload.CategoryId, userId, payload.Description}
 		err = db.ApplyBudgetCategoryItems(args)
 
