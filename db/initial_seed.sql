@@ -104,6 +104,6 @@ WITH pairs as (
     ON bcp.description = ex.description
 )
 UPDATE expenditure as e
-SET category_id = pairs.category_id
+SET category_id = pairs.category_id, modified_date = now()
 FROM pairs
-WHERE e.id = pairs.id;
+WHERE e.id = pairs.id and e.category_id is null;
