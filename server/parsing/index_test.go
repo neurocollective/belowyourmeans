@@ -2,64 +2,49 @@ package parsing
 
 import (
 	"testing"
-	"os"
-	"log"
-	ncsql "github.com/neurocollective/go_utils/sql"
+	// "os"
+	// "log"
+	// ncsql "github.com/neurocollective/go_utils/sql"
 )
 
-func TestParseCapitalOneCSV(t *testing.T) {
+// func TestSplitOnCommaOne(t *testing.T) {
 
-	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")		
+// 	line := "0452,\"ATM Withdrawal - WALGREENS # -X00 AX002278 BROOKLYN, NY\",12/19/24,Debit,300,10338.61"
+// 	columns, err := SplitOnComma(line)
 
-	// connect to the db to test if connection is valid
+// 	if err != nil {
+// 		t.Fatal("expected no err, got an err: " + err.Error())
+// 	}
 
-	if getClientError != nil {
-		log.Fatal("error getting client")
-	}
+// 	if columns[0] != "0452" {
+// 		t.Fatalf("expected first column to be %v but got %v", "0452", columns[0])
+// 	}
+// }
 
-	cwd, _ := os.Getwd()
+// func TestSplitOnCommaTwo(t *testing.T) {
 
-	transactions, err := ParseCapitalOneCSV(cwd + "/../../sample_files/capone_checking_2023.csv")
+// 	line := "0452,Withdrawal from VENMO PAYMENT,12/20/24,Debit,1500,8838.61"
+// 	columns, err := SplitOnComma(line)
 
-	if err != nil {
-		t.Fatal("error!" + err.Error())
-	}
+// 	if err != nil {
+// 		t.Fatal("expected no err, got an err: " + err.Error())
+// 	}
 
-	// if len(transactions) > 10 {
-	// 	log.Println("trimming transactions")
-	// 	transactions = transactions[:9]
-		
-	// 	for _, transaction := range transactions {
-	// 		log.Println(transaction.TransactionDate)
-	// 		log.Println(transaction.TransactionDate)
-	// 	}
-	// } else {
-	// 	log.Println(transactions)
-	// }
+// 	if columns[0] != "0452" {
+// 		t.Fatalf("expected first column to be %v but got %v", "0452", columns[0])
+// 	}
+// }
 
-	userId := 1
+func TestSplitOnCommaThree(t *testing.T) {
 
-	expenditures, err := CapOneTransactionsToExpenditures(transactions, &userId)
-
-	if err != nil {
-		t.Fatal("error!" + err.Error())
-	}
-
-	insert := ncsql.Insert[ncsql.Expenditure]
-
-	err = insert(client, expenditures)
+	line := "1,\"Dude, sup\",3,4,5,6"
+	columns, err := SplitOnComma(line)
 
 	if err != nil {
-		t.Fatal("error!" + err.Error())		
+		t.Fatal("expected no err, got an err: " + err.Error())
 	}
 
-	// create query to insert transactions
-
-	// run query
-
-	// get all categories & category labels
-
-	// see which transactions ids match to a category id
-
-	// insert categories to relevant transactions
+	if columns[0] != "1" {
+		t.Fatalf("expected first column to be %v but got %v", "1", columns[0])
+	}
 }
