@@ -2,9 +2,6 @@ package parsing
 
 import (
 	"testing"
-	// "os"
-	// "log"
-	// ncsql "github.com/neurocollective/go_utils/sql"
 )
 
 func TestSplitOnCommaOne(t *testing.T) {
