@@ -84,28 +84,25 @@ func SplitOnComma(line string) ([]string, error) {
 
 	for index, rune := range line {
 		char := string(rune)
-		log.Println("char:", char)
+		//log.Println("char:", char)
 		if char == QUOTE {
 			insideQuotes = !insideQuotes
 		}
 		if char == COMMA && !insideQuotes {
-			lastCommaIndex = index
 			column := line[lastCommaIndex:index]
-			log.Println("column:", column)
+			//log.Println("column:", column)
 			columns = append(columns, column)
 			columnCount += 1
+			lastCommaIndex = index + 1
 			continue
 		}
 		// ASCII
 	}
-
-	log.Println("lastCommaIndex", lastCommaIndex)
-	log.Println("columnCount", columnCount)
-	log.Println("columns", columns)
+	column := line[lastCommaIndex:]
+	columns = append(columns, column)	
 
 	lines := []string{}
 	for _, columnEntries := range columns{
-		log.Println("columnEntries", columnEntries)
 		lines = append(lines, columnEntries)
 	}
 	return lines, nil
