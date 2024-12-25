@@ -23,7 +23,7 @@ const getURL = (path) => {
 	if (hostname === "localhost") {
 		return `http://${hostname}:8080${path}`;
 	}
-	return origin + path;
+	return `${origin}/api${path}`;
 }
 
 const buildNavigate = (stateChanges) => {

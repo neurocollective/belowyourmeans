@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"neurocollective.io/neurocollective/belowyourmeans/server/constants"
+	"neurocollective.io/neurocollective/belowyourmeans/server/parsing"
 	"neurocollective.io/neurocollective/belowyourmeans/server/cookie"
 	"neurocollective.io/neurocollective/belowyourmeans/server/db"
 	"neurocollective.io/neurocollective/belowyourmeans/server/db/queries"
@@ -94,6 +95,8 @@ func main() {
 
 	router := gin.Default()
 
+	apiRouter := router.Group("/api")
+
 	router.LoadHTMLGlob("server/templates/*")
 
 	connectionString := "user=postgres password=postgres dbname=postgres sslmode=disable"
@@ -121,6 +124,7 @@ func main() {
 		c.Next()
 	}
 
+	// router.Static("/", "./public")
 	router.Use(corsMiddleware)
 
 	router.GET("/", func(c *gin.Context) {
@@ -129,11 +133,11 @@ func main() {
 		})
 	})
 
-	router.GET("/cache", func(c *gin.Context) {
+	apiRouter.GET("/cache", func(c *gin.Context) {
 		c.JSON(http.StatusOK, FAKE_REDIS)
 	})
 
-	router.POST("/login", func(c *gin.Context) {
+	apiRouter.POST("/login", func(c *gin.Context) {
 
 		jsonBytes, err := io.ReadAll(c.Request.Body)
 		if err != nil {
@@ -193,7 +197,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"data": returnJson})
 	})
 
-	router.POST("/signup", func(c *gin.Context) {
+	apiRouter.POST("/signup", func(c *gin.Context) {
 
 		payload, err := password.GetSignupPayload(c)
 
@@ -226,12 +230,12 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "success"})
 	})
 
-	router.GET("/auth", authMiddleware, func(c *gin.Context) {
+	apiRouter.GET("/auth", authMiddleware, func(c *gin.Context) {
 		userId := c.GetString(constants.USER_ID)
 		c.JSON(http.StatusOK, gin.H{"status": "loggedIn", "userId": userId})
 	})
 
-	router.GET("/user", authMiddleware, func(c *gin.Context) {
+	apiRouter.GET("/user", authMiddleware, func(c *gin.Context) {
 		query := db.USER_QUERY
 
 		userInURLQuery := c.Query("id")
@@ -262,7 +266,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"data": users[0]})
 	})
 
-	router.POST("/password/hash", func(c *gin.Context) {
+	apiRouter.POST("/password/hash", func(c *gin.Context) {
 
 		payload, err := password.GetSignupPayload(c)
 
@@ -284,7 +288,7 @@ func main() {
 	})
 
 	// old version
-	router.GET("/ex", fakeAuthMiddleware, func(c *gin.Context) {
+	apiRouter.GET("/ex", fakeAuthMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
@@ -322,7 +326,7 @@ func main() {
 	})
 
 	// TODO - use `authMiddleware`
-	router.GET("/expenditure", func(c *gin.Context) {
+	apiRouter.GET("/expenditure", fakeAuthMiddleware, func(c *gin.Context) {
 
 		userIdString := c.Query("userId")
 
@@ -369,7 +373,7 @@ func main() {
 		return
 	})
 
-	router.PUT("/expenditure", authMiddleware, func(c *gin.Context) {
+	apiRouter.PUT("/expenditure", authMiddleware, func(c *gin.Context) {
 
 		jsonBytes, err := io.ReadAll(c.Request.Body)
 		if err != nil {
@@ -401,7 +405,7 @@ func main() {
 		return
 	})
 
-	router.GET("/categories", func(c *gin.Context) {
+	apiRouter.GET("/categories", func(c *gin.Context) {
 
 		userIdString := c.Query("userId")
 
@@ -427,7 +431,7 @@ func main() {
 		return
 	})
 
-	router.GET("/categories/expenditures/names", authMiddleware, func(c *gin.Context) {
+	apiRouter.GET("/categories/expenditures/names", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
@@ -463,7 +467,7 @@ func main() {
 
 	// not just creaeting a new row - creating it and then running
 	// an update in expenditure table
-	router.POST("/category-preassignment/apply", authMiddleware, func(c *gin.Context) {
+	apiRouter.POST("/category-preassignment/apply", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
@@ -527,7 +531,7 @@ func main() {
 		return
 	})
 
-	router.PUT("/category-preassignment", func(c *gin.Context) {
+	apiRouter.PUT("/category-preassignment", func(c *gin.Context) {
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
 
@@ -555,7 +559,7 @@ func main() {
 		return
 	})
 
-	router.DELETE("/category-preassignment", func(c *gin.Context) {
+	apiRouter.DELETE("/category-preassignment", func(c *gin.Context) {
 
 		bodyBytes, err := io.ReadAll(c.Request.Body)
 
@@ -577,7 +581,7 @@ func main() {
 		return
 	})
 
-	router.POST("/expenditure", authMiddleware, func(c *gin.Context) {
+	apiRouter.POST("/expenditure", authMiddleware, func(c *gin.Context) {
 
 		user := c.PostForm("user")
 		category := c.PostForm("category")
@@ -599,54 +603,123 @@ func main() {
 
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
-	router.POST("/upload", authMiddleware, func(c *gin.Context) {
-		// single file
-		file, err := c.FormFile("file")
+	// TODO - this saves a file, then reads the file.
+	// Inefficient, but trying to get the file as raw `[]byte` was failing, with
+	// `fileHeader.Open() -> File -> File.Read()` getting me 0 bytes
+	apiRouter.POST("/upload", fakeAuthMiddleware, func(c *gin.Context) {
+
+		userIdString, err := GetFromContext[string](c, constants.USER_ID)
+
+		log.Println("userId:", userIdString)
 
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+			log.Println("userId not received from auth middleware for POST /upload")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		userId, err := strconv.Atoi(userIdString)
+		if err != nil {
+			log.Println("userId un-convertable from string to int for POST /upload")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		// single file
+		fileHeader, err := c.FormFile("file")
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		month := c.PostForm("month")
 
-		if month != "" {
-			c.JSON(http.StatusOK, gin.H{"error": "empty month"})
+		if month == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "empty month"})
 			return
 		}
 
 		year := c.PostForm("year")
 
-		if year != "" {
-			c.JSON(http.StatusOK, gin.H{"error": "empty year"})
+		if year == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "empty year"})
 			return
+		}
+
+		isCapOneField := c.PostForm("capone")
+		var isCapOne bool
+
+		if strings.ToLower(isCapOneField) != "false" {
+			isCapOne = true
 		}
 
 		cwd, err := os.Getwd()
 
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-			return
-		}
-
-		userIdString, err := GetFromContext[string](c, constants.USER_ID)
-
-		if err != nil {
-			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		destinationPath := cwd + "/uploaded/" + userIdString + "_" + month + "_" + year + "_uploaded.csv"
 
 		// Upload the file to specific dst.
-		err = c.SaveUploadedFile(file, destinationPath)
+		err = c.SaveUploadedFile(fileHeader, destinationPath)
 
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"data": file.Filename + " uploaded!"})
+		log.Println("saved...")
+
+		var expenditures []ncsql.Expenditure
+
+		if isCapOne {
+			transactions, err := parsing.ParseCapitalOneCSV(destinationPath)
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			log.Println("transactions size", len(transactions))
+
+			expenditures, err = parsing.CapOneTransactionsToExpenditures(transactions, &userId)
+
+			log.Println("expenditures size", len(expenditures))
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "amex not yet supported"})
+			return
+		}
+
+		insert := ncsql.Insert[ncsql.Expenditure]
+
+		err = insert(client, expenditures)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// fileBytes, err := os.ReadFile(destinationPath)
+
+		// if err != nil {
+		// 	c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		// 	return
+		// }
+
+		// // parse fileBytes
+		// // `isCapOne` bool
+		log.Println(isCapOne)
+		// log.Println(string(fileBytes))
+
+		c.JSON(http.StatusOK, gin.H{"data": fileHeader.Filename + " uploaded!"})
 	})
 
 	router.Run()

@@ -3,7 +3,7 @@ db/local:
 	@sleep 3
 	@psql -f db/create_tables.sql "postgresql://postgres:postgres@localhost:5432/postgres" 
 	@psql -f db/initial_seed.sql "postgresql://postgres:postgres@localhost:5432/postgres"
-	@make parse
+	#@make parse
 db/local/down:
 	@docker rm local-pg -f
 ahab:
@@ -18,8 +18,11 @@ serve/local:
 parse:
 	@go clean -testcache
 	@go test -v ./server/parsing/parse_test.go -count=1
-test:
+test/unit:
 	@go test -v ./server/parsing ./server/cookie
+# make test/upload month=1 year=2024 capone=false
+test/upload:
+	@curl -v -X POST http://localhost:8080/api/upload -F "capone=$(capone)" -F "month=$(month)" -F "year=$(year)" -F "file=@sample_files/$(file)" -H 'Content-Type: multipart/form-data'
 psql:
 	@psql "postgresql://postgres:postgres@localhost:5432/postgres"
 serve/ui:
