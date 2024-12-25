@@ -1,10 +1,10 @@
 package main
 
 import (
-	"os"
-	"log"
 	ncsql "github.com/neurocollective/go_utils/sql"
+	"log"
 	"neurocollective.io/neurocollective/belowyourmeans/server/parsing"
+	"os"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 
 	// fileName := args[1]
 
-	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")		
+	client, getClientError := ncsql.BuildPostgresClient("user=postgres password=postgres dbname=postgres sslmode=disable")
 
 	// connect to the db to test if connection is valid
 
@@ -32,7 +32,7 @@ func main() {
 	// if len(transactions) > 10 {
 	// 	log.Println("trimming transactions")
 	// 	transactions = transactions[:9]
-		
+
 	// 	for _, transaction := range transactions {
 	// 		log.Println(transaction.TransactionDate)
 	// 		log.Println(transaction.TransactionDate)
@@ -54,7 +54,7 @@ func main() {
 	err = insert(client, expenditures)
 
 	if err != nil {
-		log.Fatal("error!" + err.Error())		
+		log.Fatal("error!" + err.Error())
 	}
 
 	amexTransactions, err := parsing.ParseAmexCreditCardCSV(cwd + "/../../sample_files/amex_2024_november.csv")
@@ -74,7 +74,7 @@ func main() {
 	err = insert(client, expenditures)
 
 	if err != nil {
-		log.Fatal("error!" + err.Error())		
+		log.Fatal("error!" + err.Error())
 	}
 
 }

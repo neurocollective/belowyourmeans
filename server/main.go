@@ -12,6 +12,7 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/server/cookie"
 	"neurocollective.io/neurocollective/belowyourmeans/server/db"
 	"neurocollective.io/neurocollective/belowyourmeans/server/db/queries"
+	"os"
 	// "neurocollective.io/neurocollective/belowyourmeans/server/parsing"
 	// "bytes"
 	"errors"
@@ -594,6 +595,58 @@ func main() {
 			log.Fatal("error!", parseError.Error())
 		}
 		c.JSON(http.StatusOK, gin.H{"data": expenditures})
+	})
+
+	router.MaxMultipartMemory = 8 << 20 // 8 MiB
+
+	router.POST("/upload", authMiddleware, func(c *gin.Context) {
+		// single file
+		file, err := c.FormFile("file")
+
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+			return
+		}
+
+		month := c.PostForm("month")
+
+		if month != "" {
+			c.JSON(http.StatusOK, gin.H{"error": "empty month"})
+			return
+		}
+
+		year := c.PostForm("year")
+
+		if year != "" {
+			c.JSON(http.StatusOK, gin.H{"error": "empty year"})
+			return
+		}
+
+		cwd, err := os.Getwd()
+
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+			return
+		}
+
+		userIdString, err := GetFromContext[string](c, constants.USER_ID)
+
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+			return
+		}
+
+		destinationPath := cwd + "/uploaded/" + userIdString + "_" + month + "_" + year + "_uploaded.csv"
+
+		// Upload the file to specific dst.
+		err = c.SaveUploadedFile(file, destinationPath)
+
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": file.Filename + " uploaded!"})
 	})
 
 	router.Run()
