@@ -129,6 +129,17 @@ func (t CapOneTransaction) ToExpenditure(userId *int) (*ncsql.Expenditure, error
 	return &e, nil
 }
 
+func StripEmptyLines(lines []string) []string {
+	strippedLines := []string{}
+
+	for _, line := range lines {
+		if line != "" {
+			strippedLines = append(strippedLines, line)
+		}
+	}
+	return strippedLines
+}
+
 func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
 
 	fileBytes, readError := os.ReadFile(path)
@@ -141,15 +152,21 @@ func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
 
 	fileLines := strings.Split(fileAsString, "\n")
 
-	transactionCount := len(fileLines)
+	if len(fileLines) < 2 {
+		return []CapOneTransaction{}, nil
+	}
 
-	log.Println("capone transactionCount:", transactionCount)
+	dataLines := StripEmptyLines(fileLines[1:])
+
+	if len(dataLines) == 0 {
+		return []CapOneTransaction{}, nil
+	}
+
+	transactionCount := len(dataLines)
 
 	transactions := make([]CapOneTransaction, transactionCount, transactionCount)
 
-	log.Println("fileLines[0]:", fileLines[0])
-
-	for index, line := range fileLines[1:] {
+	for index, line := range dataLines {
 
 		transaction := CapOneTransaction{}
 

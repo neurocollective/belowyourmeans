@@ -2,6 +2,7 @@ package parsing
 
 import (
 	"testing"
+	"os"
 )
 
 func TestSplitOnCommaOne(t *testing.T) {
@@ -122,4 +123,50 @@ func TestSplitOnCommaThree(t *testing.T) {
 	if columns[5] != expectedSix {
 		t.Fatalf("expected sixth column to be %v but got %v", expectedSix, columns[5])
 	}
+}
+
+func TestParseCapitalOneCSV(t *testing.T) {
+
+	cwd, err := os.Getwd()
+
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	transactions, err := ParseCapitalOneCSV(cwd + "/capone_test.csv")
+
+	if err != nil {
+		t.Fatal("got an error running ParseCapitalOneCSV: " + err.Error())
+	}
+
+	if len(transactions) != 1 {
+		t.Fatalf("expected transactions to be length 1 but got %d", len(transactions))	
+	}
+
+	first := transactions[0]
+
+	if first.AccountNumber != "0452" {
+		t.Fatalf("expected transactions to be `0452` but got %v", first.AccountNumber)	
+	}
+
+	if first.TransactionDate != "12/20/24" {
+		t.Fatalf("expected transactions to be `12/20/24` but got %v", first.TransactionDate)	
+	}
+
+	if first.TransactionAmount != "11.43" {
+		t.Fatalf("expected transactions to be `11.43` but got %v", first.TransactionAmount)	
+	}
+
+	if first.TransactionType != "Debit" {
+		t.Fatalf("expected transactions to be `Debit` but got %v", first.TransactionType)	
+	}
+
+	if first.TransactionDescription != "Debit Card Purchase - SQ GS COFFEE BROOKLYN NY" {
+		t.Fatalf("expected transactions to be `Debit Card Purchase - SQ GS COFFEE BROOKLYN NY` but got %v", first.TransactionDescription)	
+	}
+
+	if first.Balance != "8827.18" {
+		t.Fatalf("expected transactions to be `8827.18` but got %v", len(transactions))	
+	}
+
 }
