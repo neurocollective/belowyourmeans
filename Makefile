@@ -21,6 +21,7 @@ serve/local:
 test/unit:
 	@go test -v ./server/parsing ./server/cookie
 # make test/upload month=9 year=2024 file=capone_test.csv
+# make test/upload month=9 year=2024 capone=false file=amex_test.csv
 test/upload:
 	@curl -v -X POST http://localhost:8080/api/upload -F "capone=$(capone)" -F "month=$(month)" -F "year=$(year)" -F "file=@sample_files/$(file)" -H 'Content-Type: multipart/form-data'
 psql:

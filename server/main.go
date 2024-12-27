@@ -665,7 +665,13 @@ func main() {
 			return
 		}
 
-		destinationPath := cwd + "/uploaded/" + userIdString + "_" + month + "_" + year + "_uploaded.csv"
+		accountId := "capone"
+
+		if !isCapOne {
+			accountId = "amex"
+		}
+
+		destinationPath := cwd + "/uploaded/" + accountId + "_" + userIdString + "_" + month + "_" + year + "_uploaded.csv"
 
 		// Upload the file to specific dst.
 		err = c.SaveUploadedFile(fileHeader, destinationPath)

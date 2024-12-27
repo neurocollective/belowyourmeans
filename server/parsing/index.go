@@ -196,8 +196,9 @@ func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
 			} else if columnName == CAPONE_BALANCE {
 				transaction.Balance = column
 			}
-			transactions[index] = transaction
+			// transactions[index] = transaction
 		}
+		transactions[index] = transaction
 	}
 	return transactions, nil
 }
@@ -260,6 +261,8 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 
 	fileAsString := string(fileBytes)
 
+	log.Println("fileAsString:", fileAsString)
+
 	fileLines := strings.Split(fileAsString, "\n")
 
 	if len(fileLines) < 2 {
@@ -271,6 +274,8 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 	if len(dataLines) == 0 {
 		return []AmexTransaction{}, nil
 	}
+
+	log.Println("dataLines:", dataLines)
 
 	transactionCount := len(dataLines)
 
@@ -285,6 +290,7 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 			columnsNames := GetAmexCardCSVColumns()
 
 			columnName := columnsNames[columnIndex]
+			log.Println("columnName", columnName)
 			// transaction[columnName] = column
 
 			if columnName == AMEX_ACCOUNT_NUMBER {
@@ -296,10 +302,11 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 			} else if columnName == AMEX_DESCRIPTION {
 				transaction.Description = column
 			}
-			transactions[index] = transaction
+			//transactions[index] = transaction
 		}
+		transactions[index] = transaction
 	}
-	return transactions[1:], nil
+	return transactions, nil
 }
 
 func CapOneTransactionsToExpenditures(transactions []CapOneTransaction, userId *int) ([]ncsql.Expenditure, error) {
