@@ -275,8 +275,6 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 		return []AmexTransaction{}, nil
 	}
 
-	log.Println("dataLines:", dataLines)
-
 	transactionCount := len(dataLines)
 
 	transactions := make([]AmexTransaction, transactionCount, transactionCount)
@@ -285,13 +283,26 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 
 		transaction := AmexTransaction{}
 
-		for columnIndex, column := range strings.Split(line, ",") {
+		columns, err := SplitOnComma(line)
 
-			columnsNames := GetAmexCardCSVColumns()
+		if err != nil {
+			log.Println(err.Error(), "skipping index", index, "of", path)
+			continue
+		}
 
-			columnName := columnsNames[columnIndex]
-			log.Println("columnName", columnName)
-			// transaction[columnName] = column
+		for columnIndex, column := range columns {
+
+			columnNames := GetAmexCardCSVColumns()
+
+			if len(columnNames) != len(columns) {
+				log.Println("column vs column name mis-match at index", index)
+				log.Println("columnNames:", columnNames)
+				log.Println("len(columnNames)", len(columnNames))
+				log.Println("columns:", columns)
+				log.Println("len(columns):", len(columns))
+			}
+
+			columnName := columnNames[columnIndex]
 
 			if columnName == AMEX_ACCOUNT_NUMBER {
 				transaction.AccountNumber = column

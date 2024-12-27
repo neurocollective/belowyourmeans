@@ -48,11 +48,11 @@ insert into budget_category (
 -- use this when a new user is created
 -- insert into budget_category (select nextval('budget_category_id_seq'), $1, sbc.display_name, sbc.description, now(), now() from starter_budget_category sbc);
 
-insert into expenditure values 
-	(nextval('expenditure_id_seq'), 1, null, 20.99, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA', to_timestamp(1699920860387), now(), now()),
-	(nextval('expenditure_id_seq'), 1, null, 800.00, 'NOT cocaine', to_timestamp(1699920848387), now(), now()),
-	(nextval('expenditure_id_seq'), 1, null, 20000.00, 'Darkweb Gambling', to_timestamp(1699920836387), now(), now()
-);
+-- insert into expenditure values 
+-- 	(nextval('expenditure_id_seq'), 1, null, 20.99, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA', to_timestamp(1699920860387), now(), now()),
+-- 	(nextval('expenditure_id_seq'), 1, null, 800.00, 'NOT cocaine', to_timestamp(1699920848387), now(), now()),
+-- 	(nextval('expenditure_id_seq'), 1, null, 20000.00, 'Darkweb Gambling', to_timestamp(1699920836387), now(), now()
+-- );
 
 insert into budget_category_preassignment (category_id, description) values
 	(1, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA'),
