@@ -33,6 +33,7 @@ serve/node:
 dev:
 	@docker start local-pg
 	@node dev.js
+# make signup email=david@neurocollective.io firstName=Dude lastName=Duder password=pw
 signup:
 	@curl -d '{ "email": "$(email)", "lastName": "$(lastName)", "firstName": "$(firstName)", "password": "$(password)" }' -H 'Accept: application/json' -H 'Content-Type: application/json' localhost:8080/signup
 fmt:
@@ -43,3 +44,7 @@ install:
 	@rm -rf vendor/github.com/neurocollective/go_utils
 	@cp -r ../go_utils vendor/github.com/neurocollective/
 	@rm -rf vendor/github.com/neurocollective/go_utils/.git
+dump/local:
+	pg_dump -f dump.sql -d postgres -h localhost -p 5432 -U postgres
+restore/local:
+	psql -U postgres -d postgres -f "dump.sql"
