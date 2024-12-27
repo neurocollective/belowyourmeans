@@ -15,9 +15,9 @@ react/build:
 serve/local:
 # 	ENVIRONMENT=dev go run -mod vendor ./server/main.go ./server/password/password.go ./server/structs/structs.go ./server/cookie.go ./server/structs/sql/*.go 
 	@ENVIRONMENT=dev go run -mod vendor ./server/main.go
-parse:
-	@go clean -testcache
-	@go test -v ./server/parsing/parse_test.go -count=1
+# parse:
+# 	@go clean -testcache
+# 	@go test -v ./server/parsing/parse_test.go -count=1
 test/unit:
 	@go test -v ./server/parsing ./server/cookie
 # make test/upload month=9 year=2024 file=capone_test.csv

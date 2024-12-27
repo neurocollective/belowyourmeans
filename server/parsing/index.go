@@ -19,8 +19,7 @@ const (
 	CAPONE_BALANCE = "Balance"
 	AMEX_DATE = "Date"
 	AMEX_DESCRIPTION = "Description"
-	AMEX_CARD = "Card"
-	AMEX_MEMBER = "Member"
+	AMEX_CARD_MEMBER = "Card Member"
 	AMEX_ACCOUNT_NUMBER = "Account #"
 	AMEX_AMOUNT = "Amount"
 	QUOTE = "\""
@@ -114,7 +113,7 @@ func (t CapOneTransaction) ToExpenditure(userId *int) (*ncsql.Expenditure, error
 	value, err := strconv.ParseFloat(t.TransactionAmount, 32)
 
 	if err != nil {
-		log.Println("CapOneTransactionsToExpenditures failed to parse value:", t.TransactionAmount)
+		log.Println("CapOneTransaction.ToExpenditure() failed to parse value:", t.TransactionAmount)
 		return nil, err
 	}
 
@@ -203,17 +202,6 @@ func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
 	return transactions, nil
 }
 
-// func GetCustomAmexCheckingCSVColumns() []string {
-// 	return []string{
-// 		AMEX_DATE,
-// 		AMEX_DESCRIPTION,
-// 		AMEX_CARD,
-// 		AMEX_MEMBER,
-// 		AMEX_ACCOUNT_NUMBER,
-// 		AMEX_AMOUNT,
-// 	}
-// }
-
 type CustomAmexCheckingTransaction struct {
 	Date string
 	Description string
@@ -222,60 +210,11 @@ type CustomAmexCheckingTransaction struct {
 	Amount string
 }
 
-// func ParseCustomAmexCheckingCSV(path string) ([]AmexTransaction, error) {
-
-// 	// read file
-// 	fileBytes, readError := os.ReadFile(path)
-
-// 	if readError != nil {
-// 		return nil, readError
-// 	}
-
-// 	fileAsString := string(fileBytes)
-
-// 	fileLines := strings.Split(fileAsString, "\n")
-
-// 	transactionCount := len(fileLines)
-
-// 	transactions := make([]AmexTransaction, transactionCount, transactionCount)
-
-// 	for index, line := range fileLines {
-
-// 		transaction := CapOneTransaction{}
-
-// 		for columnIndex, column := range strings.Split(line, ",") {
-
-// 			columnsNames := GetAmexCardCSVColumns()
-
-// 			columnName := columnsNames[columnIndex]
-// 			// transaction[columnName] = column
-
-// 			if columnName == AMEX {
-// 				transaction.AccountNumber = column
-// 			} else if columnName == CAPONE_TRANSACTION_DATE {
-// 				transaction.TransactionDate = column
-// 			} else if columnName == CAPONE_TRANSACTION_AMOUNT {
-// 				transaction.TransactionAmount = column
-// 			} else if columnName == CAPONE_TRANSACTION_TYPE {
-// 				transaction.TransactionType = column
-// 			} else if columnName == CAPONE_TRANSACTION_DESCRIPTION {
-// 				transaction.TransactionDescription = column
-// 			} else if columnName == CAPONE_BALANCE {
-// 				transaction.Balance = column
-// 			}
-// 			transactions[index] = transaction
-// 		}
-// 	}
-
-// 	return []AmexTransaction{}, nil
-// }
-
 func GetAmexCardCSVColumns() []string {
 	return []string{
 		AMEX_DATE,
 		AMEX_DESCRIPTION,
-		AMEX_CARD,
-		AMEX_MEMBER,
+		AMEX_CARD_MEMBER,
 		AMEX_ACCOUNT_NUMBER,
 		AMEX_AMOUNT,
 	}
@@ -295,7 +234,7 @@ func (t AmexTransaction) ToExpenditure(userId *int) (*ncsql.Expenditure, error) 
 	value, err := strconv.ParseFloat(t.Amount, 32)
 
 	if err != nil {
-		log.Println("CapOneTransactionsToExpenditures failed to parse value:", t.Amount)
+		log.Println("AmexTransaction.ToExpenditure() failed to parse value:", t.Amount)
 		return nil, err
 	}
 
@@ -323,11 +262,21 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 
 	fileLines := strings.Split(fileAsString, "\n")
 
-	transactionCount := len(fileLines)
+	if len(fileLines) < 2 {
+		return []AmexTransaction{}, nil
+	}
+
+	dataLines := StripEmptyLines(fileLines[1:])
+
+	if len(dataLines) == 0 {
+		return []AmexTransaction{}, nil
+	}
+
+	transactionCount := len(dataLines)
 
 	transactions := make([]AmexTransaction, transactionCount, transactionCount)
 
-	for index, line := range fileLines {
+	for index, line := range dataLines {
 
 		transaction := AmexTransaction{}
 
@@ -355,8 +304,6 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 
 func CapOneTransactionsToExpenditures(transactions []CapOneTransaction, userId *int) ([]ncsql.Expenditure, error) {
 	size := len(transactions)
-
-	log.Println("size", size)
 
 	expenditures := make([]ncsql.Expenditure, size, size)
 

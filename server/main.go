@@ -648,11 +648,15 @@ func main() {
 		}
 
 		isCapOneField := c.PostForm("capone")
-		var isCapOne bool
+		var isCapOne bool = true
 
-		if strings.ToLower(isCapOneField) != "false" {
-			isCapOne = true
+		log.Println("isCapOneField:", isCapOneField)
+
+		if strings.ToLower(isCapOneField) == "false" {
+			isCapOne = false
 		}
+
+		log.Println("isCapOne:", isCapOne)
 
 		cwd, err := os.Getwd()
 
@@ -676,6 +680,7 @@ func main() {
 		var expenditures []ncsql.Expenditure
 
 		if isCapOne {
+			log.Println("Parsing csv as CAP ONE...")
 			transactions, err := parsing.ParseCapitalOneCSV(destinationPath)
 
 			if err != nil {
@@ -694,8 +699,24 @@ func main() {
 				return
 			}
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "amex not yet supported"})
-			return
+			log.Println("Parsing csv as AMEX...")
+			transactions, err := parsing.ParseAmexCreditCardCSV(destinationPath)
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			log.Println("transactions size", len(transactions))
+
+			expenditures, err = parsing.AmexTransactionsToExpenditures(transactions, &userId)
+
+			log.Println("expenditures size", len(expenditures))
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 		}
 
 		insert := ncsql.Insert[ncsql.Expenditure]
