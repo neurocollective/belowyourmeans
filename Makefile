@@ -48,3 +48,5 @@ dump/local:
 	pg_dump -f dump.sql -d postgres -h localhost -p 5432 -U postgres
 restore/local:
 	psql -U postgres -d postgres -f "dump.sql"
+exec/psql:
+	docker exec -it local-pg bash "/db_scripts/setup.sh"
