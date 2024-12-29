@@ -45,6 +45,14 @@ func GetFromContext[T any](c *gin.Context, key string) (T, error) {
 func main() {
 
 	FAKE_REDIS := make(map[string]string)
+	FAKE_AUTH := os.Getenv("FAKE_AUTH")
+
+	var fakeAuth bool
+	if strings.ToLower(FAKE_AUTH) == "true" {
+		fakeAuth = true
+	} else {
+		fakeAuth = false
+	}
 
 	authMiddleware := func(c *gin.Context) {
 		headers := c.Request.Header
@@ -89,6 +97,10 @@ func main() {
 	fakeAuthMiddleware := func(c *gin.Context) {
 		c.Set(constants.USER_ID, "1")
 		c.Next()
+	}
+
+	if fakeAuth {
+		authMiddleware = fakeAuthMiddleware
 	}
 
 	log.Println("booting server...")
@@ -288,7 +300,7 @@ func main() {
 	})
 
 	// old version
-	apiRouter.GET("/ex", fakeAuthMiddleware, func(c *gin.Context) {
+	apiRouter.GET("/ex", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
@@ -326,7 +338,7 @@ func main() {
 	})
 
 	// TODO - use `authMiddleware`
-	apiRouter.GET("/expenditure", fakeAuthMiddleware, func(c *gin.Context) {
+	apiRouter.GET("/expenditure", authMiddleware, func(c *gin.Context) {
 
 		userIdString := c.Query("userId")
 
@@ -606,7 +618,7 @@ func main() {
 	// TODO - this saves a file, then reads the file.
 	// Inefficient, but trying to get the file as raw `[]byte` was failing, with
 	// `fileHeader.Open() -> File -> File.Read()` getting me 0 bytes
-	apiRouter.POST("/upload", fakeAuthMiddleware, func(c *gin.Context) {
+	apiRouter.POST("/upload", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
 

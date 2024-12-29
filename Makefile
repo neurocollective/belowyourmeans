@@ -14,7 +14,7 @@ react/build:
 	@mv ./server/build ./server/public
 serve/local:
 # 	ENVIRONMENT=dev go run -mod vendor ./server/main.go ./server/password/password.go ./server/structs/structs.go ./server/cookie.go ./server/structs/sql/*.go 
-	@ENVIRONMENT=dev go run -mod vendor ./server/main.go
+	@ENVIRONMENT=dev FAKE_AUTH=true go run -mod vendor ./server/main.go
 # parse:
 # 	@go clean -testcache
 # 	@go test -v ./server/parsing/parse_test.go -count=1

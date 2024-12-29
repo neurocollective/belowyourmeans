@@ -21,7 +21,7 @@ const getURL = (path) => {
 	} = window;
 
 	if (hostname === "localhost") {
-		return `http://${hostname}:8080${path}`;
+		return `http://${hostname}:8080/api${path}`;
 	}
 	return `${origin}/api${path}`;
 }
