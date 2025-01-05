@@ -14,18 +14,18 @@ insert into starter_budget_category (display_name, description) values
 	('Groceries', 'food for home'),
 	('Transportation', 'cars, maintenance, mass transit'),
 	('Restaurants', 'sitdown, food truck, cart, stall, whatever'),
-	('Coffee', 'Rich, wakey goodness'),
-	('Beverages', 'Suite Suite Refreshment'),
-	('Alcohol', 'I need a night off'),
-	('Cigarettes', 'I need a day off right now'),
+	('Coffee', 'rich, wakey goodness'),
+	('Beverages', 'suite suite Refreshment'),
+	('Alcohol', 'stirred, not shaken'),
+	('Cigarettes', 'now film me in black & white'),
 	('Clothing', 'utility or fashion, maybe both?'),
 	('Other', 'whatever doesn''t fit anywhere else'),
 	('Kids', 'they need a lot, every day'),
-	('Spouse', 'Smoochie smoochie'),
+	('Spouse', 'smoochie smoochie'),
 	('Home Maintenance', 'keep the castle'),
 	('Business', 'hustlin'),
 	('Pets', 'furry/feathered/scaled children'),
-	('Hobby', 'just for fun'),
+	('Recreation', 'hobbies, glee, enjoyment'),
 	('Taxes', 'when ur rich u wont pay em'),
 	('Fees', 'death, taxes, and fees'),
 	('Fitness and Wellness', 'sharpen the axe'),
@@ -39,7 +39,7 @@ insert into starter_budget_category (display_name, description) values
 	('Streaming Video', 'remember DVDs?'),
 	('Savings', 'inflation hates me but i don''t care')
 	('Discretionary Purchase', 'i saw it, i wanted it'),
-	('Self-care', 'haircuts, massages, ');
+	('Self-care', 'haircuts, massages, nails, whatever your well-being requires');
 
 insert into budget_category (
 	select nextval('budget_category_id_seq'),
