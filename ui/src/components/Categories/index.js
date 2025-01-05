@@ -38,15 +38,15 @@ const Categories = ({ stateManager }) => {
     getUncategorizedExpenditures();
   }, [JSON.stringify(expenditureNames)]);
 
-  console.log(`size of expenditureNames: ${expenditureNames.length}`);
+  // console.log(`size of expenditureNames: ${expenditureNames.length}`);
 
   const pageTimesTen = 10 * expenditureNamePage;
 
   const expenditurePageList = expenditureNames.slice(expenditureNamePage, expenditureNamePage + pageTimesTen);
 
-  console.log(`expenditureNamePage: ${expenditureNamePage} pageTimesTen: ${pageTimesTen} expenditureNamePage + pageTimesTen: ${expenditureNamePage + pageTimesTen}`);
+  // console.log(`expenditureNamePage: ${expenditureNamePage} pageTimesTen: ${pageTimesTen} expenditureNamePage + pageTimesTen: ${expenditureNamePage + pageTimesTen}`);
 
-  console.log(`expenditurePageList size: ${expenditurePageList.length}`);
+  // console.log(`expenditurePageList size: ${expenditurePageList.length}`);
 
   if (loading) {
     return (

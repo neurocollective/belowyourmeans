@@ -30,7 +30,7 @@ const SetCategory = (props) => {
 
   if (notCategorized) {
 
-    const selectedCategory = selectionsMap?.[expenditureId]?.name || "default";
+    const selectedCategory = selectionsMap?.[expenditureId] || "default";
 
     const submit = () => {
       update(expenditureDescription, categoryName, expenditureId);
