@@ -37,7 +37,9 @@ insert into starter_budget_category (display_name, description) values
 	('Streaming Video', 'remember DVDs?'),
 	('Laundry', 'i am going to pretend i did''t see this stain'),
 	('Streaming Video', 'remember DVDs?'),
-	('Savings', 'inflation hates me but i don''t care');
+	('Savings', 'inflation hates me but i don''t care')
+	('Discretionary Purchase', 'i saw it, i wanted it'),
+	('Self-care', 'haircuts, massages, ');
 
 insert into budget_category (
 	select nextval('budget_category_id_seq'),
@@ -111,3 +113,6 @@ insert into budget_category (
 -- SET category_id = pairs.category_id, modified_date = now()
 -- FROM pairs
 -- WHERE e.id = pairs.id and e.category_id is null;
+
+-- set a float to only two demical places precision
+-- SELECT TRUNC(14.568666666666666666666666,2); -> 14.56

@@ -24,7 +24,7 @@ func SelectExpendituresWithCategoryNameByUserUnique() string {
 	return `select distinct on (description) id, description from expenditure
 		where user_id = $1
 		and category_id IS NULL
-		and value < 0
+		and value > 0
 		GROUP BY description, id;`
 }
 

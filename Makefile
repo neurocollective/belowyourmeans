@@ -45,10 +45,12 @@ install:
 	@cp -r ../go_utils vendor/github.com/neurocollective/
 	@rm -rf vendor/github.com/neurocollective/go_utils/.git
 db/dump:
-	pg_dump -f ./dumps/uploaded_amex_and_capone_jan_thru_nov_2024_dump_no_schema.sql -d postgres -h localhost -p 5432 -U postgres --data-only
+	pg_dump -f ./dumps/dump.sql -d postgres -h localhost -p 5432 -U postgres --data-only
 db/restore:
-	psql -f ./dumps/uploaded_amex_and_capone_jan_thru_nov_2024_dump_no_schema.sql "postgresql://postgres:postgres@localhost:5432/postgres"
+	psql -f ./dumps/dump.sql "postgresql://postgres:postgres@localhost:5432/postgres"
 exec/psql:
 	docker exec -it local-pg bash "/db_scripts/setup.sh"
 test:
 	@echo "hi there $$(date)"
+make db/dump/upload:
+	aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$ENDPOINT

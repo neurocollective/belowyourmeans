@@ -36,7 +36,7 @@ const Categories = ({ stateManager }) => {
   useEffect(() => {
     console.log('useEffect 1 in Categories.js');
     getUncategorizedExpenditures();
-  }, [JSON.stringify(expenditureNames)]);
+  }, []);
 
   // console.log(`size of expenditureNames: ${expenditureNames.length}`);
 
@@ -57,8 +57,11 @@ const Categories = ({ stateManager }) => {
   }
 
   const applyCategories = (expenditureDescription, categoryName, expenditureId) => {
-    console.log(expenditureDescription, categoryName, expenditureId);
-    applyCategoryItem(expenditureDescription, categoryName, expenditureId);
+    console.log('applyCategories...');
+    applyCategoryItem(expenditureDescription, categoryName, expenditureId).then(() => {
+      console.log('applyCategoryItem() done, now refreshing w/ getUncategorizedExpenditures()');
+      getUncategorizedExpenditures();
+    });
   };
 
   const select = (id, value) => {

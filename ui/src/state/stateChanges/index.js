@@ -244,7 +244,7 @@ const buildStateChanges = (state, setState, getInitialState) => {
 					console.log(`handleGetUncategorizedExpendituresSuccess has list size: ${expenditureNames.length}`);
 					console.log('newState will be:', newState)
 				}
-				print();
+				print(newState);
 				setState(newState);
 				//update(newState, print);
 			},
@@ -259,11 +259,12 @@ const buildStateChanges = (state, setState, getInitialState) => {
 				};
 				update(newState);
 			},
-			handleApplyCategoryItemSuccess: () => {
-
+			handleApplyCategoryItemSuccess: (successPayload) => {
+				console.log('successPayload for handleApplyCategoryItemSuccess', successPayload);
+				// update state?
 			},
-			handleApplyCategoryItemFailure: () => {
-
+			handleApplyCategoryItemFailure: (failurePayload) => {
+				console.log('failurePayload for handleApplyCategoryItemFailure', failurePayload);
 			},
 		}
 	};
