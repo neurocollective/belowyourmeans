@@ -10,10 +10,10 @@ insert into budget_user values (
 
 insert into starter_budget_category (display_name, description) values 
 	('Entertainment', 'anything and everything fun'),
-	('Healthcare', 'keeping your self healthy'),
+	('Healthcare', 'keeping your body and mind healthy'),
 	('Groceries', 'food for home'),
 	('Transportation', 'cars, maintenance, mass transit'),
-	('Restaurants', 'anything and everything fun'),
+	('Restaurants', 'sitdown, food truck, cart, stall, whatever'),
 	('Coffee', 'Rich, wakey goodness'),
 	('Beverages', 'Suite Suite Refreshment'),
 	('Alcohol', 'I need a night off'),
@@ -33,7 +33,11 @@ insert into starter_budget_category (display_name, description) values
 	('Rent', 'gotta sleep somewhere'),
 	('Mortgage', 'gotta sleep somewhere - with the bank''s permission'),
 	('Utilities', 'keep the lights on'),
-	('IGNORED', 'expenditures that should not be included in totals');
+	('IGNORED', 'expenditures that should not be included in totals'),
+	('Streaming Video', 'remember DVDs?'),
+	('Laundry', 'i am going to pretend i did''t see this stain'),
+	('Streaming Video', 'remember DVDs?'),
+	('Savings', 'inflation hates me but i don''t care');
 
 insert into budget_category (
 	select nextval('budget_category_id_seq'),
@@ -54,56 +58,56 @@ insert into budget_category (
 -- 	(nextval('expenditure_id_seq'), 1, null, 20000.00, 'Darkweb Gambling', to_timestamp(1699920836387), now(), now()
 -- );
 
-insert into budget_category_preassignment (category_id, description) values
-	(1, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA'),
-	(2,'Debit: Withdrawal from AMEX EPAYMENT ACH PMT'),
-	(15,'Debit: Digital Card Purchase - DIGITALOCEAN COM NEW YORK CIT NY'),
-	(15,'Debit: Debit Card Purchase - GOOGLE GOOGLE STORAGE 650 253 0000 CA'),
-	(11,'Debit: Preauthorized Withdrawal to AMERICAN EXPRESS NATIONAL BANK savings account XXXXXXXX3012'),
-	(1,'Debit: Digital Card Purchase - HELP MAX COM NEW YORK NY'),
-	(15,'Debit: Digital Card Purchase - MEETUP ORG SUB 1M NEW YORK NY'),
-	(19,'Debit: Digital Card Purchase - 1PASSWORD TORONTO ON'),
-	(14,'Debit: Digital Card Purchase - BUBBLESANDSUDSLAUNDRO BROOKLYN NY'),
-	(1,'Debit: Digital Card Purchase - NETFLIX COM LOS GATOS CA'),
-	(22,'Debit: Bill payment to Narrows Bayview LLC'),
-	(11,'Debit: Withdrawal from VENMO PAYMENT'),
-	(15,'Debit: Debit Card Purchase - GOOGLE GSUITE NEUROCO 650 253 0000 CA'),
-	(24,'Debit: Withdrawal from CON ED OF NY XXXXXXXXXX'),
-	(24,'Debit: Debit Card Purchase - VZWRLSS APOCC VISN 800 922 0204 FL'),
-	(22,'Debit: Paper Payment to Narrows Bayview LLC'),
-	(5,'Debit: Debit Card Purchase - TST J P GIFFORD MARK KENT CT'),
-	(14,'Debit: Debit Card Purchase - BUBBLESANDSUDSLAUNDRO BROOKLYN NY'),
-	(11,'Debit: Withdrawal to Capital One Bank  XXXXXX1903'),
-	(15,'Debit: Debit Card Purchase - GOOGLE GSUITE NEUROCO MOUNTAIN VIE CA'),
-	(11,'Debit: Check #0 Cashed'),
-	(11,'Debit: ATM Withdrawal - 000000000206341 TX032510 NEWARK  NJ'),
-	(11,'Debit: ATM Withdrawal - WALGREENS # -XE1 AXE10344 BROOKLYN  NY'),
-	(11,'Debit: ATM Withdrawal - WALGREENS #1-000 A0004950 CANAAN  CT'),
-	(11,'Debit: ATM Withdrawal - FORT HAMILTO-111272 P111272 BROOKLYN   NY'),
-	(11,'Debit: ATM Withdrawal - CUMBERLAND F-U560054 CU560054 BENNINGTON  VT'),
-	(11,'Debit: ATM Withdrawal - CU560827 CU560827 WILLIAMSTOWN  MA'),
-	(11,'Debit: ATM Withdrawal - CITIBAN0020293 00202093 BROOKLYN  NY'),
-	(11,'Debit: ATM Withdrawal - 7ELEVEN-FCTI 7E003049 BROOKLYN  NY'),
-	(11,'Debit: ATM Withdrawal - 502-512 86TH ST 00978091 BRKLYN  NY'),
-	(11,'Debit: Check #338 Cashed'),
-	(11,'Debit: Check #340 Cashed'),
-	(11,'Debit: Check #341 Cashed'),
-	(11,'Debit: Check #343 Cashed'),
-	(11,'Debit: Check #344 Cashed'),
-	(11,'Debit: Check #345 Cashed'),
-	(11,'Debit: Check #346 Cashed'),
-	(11,'Debit: Check #348 Cashed'),
-	(11,'Debit: Check #350 Cashed'),
-	(11,'Debit: Check #352 Cashed'),
-	(15,'Debit: Debit Card Purchase - CISCO SYSTEMS INC 9193922254 CA');
+-- insert into budget_category_preassignment (category_id, description) values
+-- 	(1, 'Digital Card Purchase - NETFLIX COM LOS GATOS CA'),
+-- 	(2,'Debit: Withdrawal from AMEX EPAYMENT ACH PMT'),
+-- 	(15,'Debit: Digital Card Purchase - DIGITALOCEAN COM NEW YORK CIT NY'),
+-- 	(15,'Debit: Debit Card Purchase - GOOGLE GOOGLE STORAGE 650 253 0000 CA'),
+-- 	(11,'Debit: Preauthorized Withdrawal to AMERICAN EXPRESS NATIONAL BANK savings account XXXXXXXX3012'),
+-- 	(1,'Debit: Digital Card Purchase - HELP MAX COM NEW YORK NY'),
+-- 	(15,'Debit: Digital Card Purchase - MEETUP ORG SUB 1M NEW YORK NY'),
+-- 	(19,'Debit: Digital Card Purchase - 1PASSWORD TORONTO ON'),
+-- 	(14,'Debit: Digital Card Purchase - BUBBLESANDSUDSLAUNDRO BROOKLYN NY'),
+-- 	(1,'Debit: Digital Card Purchase - NETFLIX COM LOS GATOS CA'),
+-- 	(22,'Debit: Bill payment to Narrows Bayview LLC'),
+-- 	(11,'Debit: Withdrawal from VENMO PAYMENT'),
+-- 	(15,'Debit: Debit Card Purchase - GOOGLE GSUITE NEUROCO 650 253 0000 CA'),
+-- 	(24,'Debit: Withdrawal from CON ED OF NY XXXXXXXXXX'),
+-- 	(24,'Debit: Debit Card Purchase - VZWRLSS APOCC VISN 800 922 0204 FL'),
+-- 	(22,'Debit: Paper Payment to Narrows Bayview LLC'),
+-- 	(5,'Debit: Debit Card Purchase - TST J P GIFFORD MARK KENT CT'),
+-- 	(14,'Debit: Debit Card Purchase - BUBBLESANDSUDSLAUNDRO BROOKLYN NY'),
+-- 	(11,'Debit: Withdrawal to Capital One Bank  XXXXXX1903'),
+-- 	(15,'Debit: Debit Card Purchase - GOOGLE GSUITE NEUROCO MOUNTAIN VIE CA'),
+-- 	(11,'Debit: Check #0 Cashed'),
+-- 	(11,'Debit: ATM Withdrawal - 000000000206341 TX032510 NEWARK  NJ'),
+-- 	(11,'Debit: ATM Withdrawal - WALGREENS # -XE1 AXE10344 BROOKLYN  NY'),
+-- 	(11,'Debit: ATM Withdrawal - WALGREENS #1-000 A0004950 CANAAN  CT'),
+-- 	(11,'Debit: ATM Withdrawal - FORT HAMILTO-111272 P111272 BROOKLYN   NY'),
+-- 	(11,'Debit: ATM Withdrawal - CUMBERLAND F-U560054 CU560054 BENNINGTON  VT'),
+-- 	(11,'Debit: ATM Withdrawal - CU560827 CU560827 WILLIAMSTOWN  MA'),
+-- 	(11,'Debit: ATM Withdrawal - CITIBAN0020293 00202093 BROOKLYN  NY'),
+-- 	(11,'Debit: ATM Withdrawal - 7ELEVEN-FCTI 7E003049 BROOKLYN  NY'),
+-- 	(11,'Debit: ATM Withdrawal - 502-512 86TH ST 00978091 BRKLYN  NY'),
+-- 	(11,'Debit: Check #338 Cashed'),
+-- 	(11,'Debit: Check #340 Cashed'),
+-- 	(11,'Debit: Check #341 Cashed'),
+-- 	(11,'Debit: Check #343 Cashed'),
+-- 	(11,'Debit: Check #344 Cashed'),
+-- 	(11,'Debit: Check #345 Cashed'),
+-- 	(11,'Debit: Check #346 Cashed'),
+-- 	(11,'Debit: Check #348 Cashed'),
+-- 	(11,'Debit: Check #350 Cashed'),
+-- 	(11,'Debit: Check #352 Cashed'),
+-- 	(15,'Debit: Debit Card Purchase - CISCO SYSTEMS INC 9193922254 CA');
 
-WITH pairs as (
-    SELECT ex.id, bcp.category_id
-    FROM expenditure as ex
-    JOIN budget_category_preassignment as bcp
-    ON bcp.description = ex.description
-)
-UPDATE expenditure as e
-SET category_id = pairs.category_id, modified_date = now()
-FROM pairs
-WHERE e.id = pairs.id and e.category_id is null;
+-- WITH pairs as (
+--     SELECT ex.id, bcp.category_id
+--     FROM expenditure as ex
+--     JOIN budget_category_preassignment as bcp
+--     ON bcp.description = ex.description
+-- )
+-- UPDATE expenditure as e
+-- SET category_id = pairs.category_id, modified_date = now()
+-- FROM pairs
+-- WHERE e.id = pairs.id and e.category_id is null;
