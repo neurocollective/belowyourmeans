@@ -463,7 +463,8 @@ func main() {
 		}
 
 		args := []any{userId}
-		query := queries.SelectExpendituresWithCategoryNameByUserUnique()
+		// query := queries.SelectExpendituresWithCategoryNameByUserUnique()
+		query := queries.SelectExpendituresMissingCategoryNameByUserUnique()
 		execute := db.ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
 		categories, err := execute(query, args, "mapExpenditures")
 

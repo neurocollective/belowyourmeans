@@ -30,7 +30,12 @@ const SetCategory = (props) => {
 
   if (notCategorized) {
 
-    const selectedCategory = selectionsMap?.[expenditureId] || "default";
+    let selectedCategory = selectionsMap?.[expenditureId] || "default";
+
+    // TODO- this is terrible, make this the same shape for everything
+    if (typeof selectedCategory === 'object') {
+      selectedCategory = selectedCategory.name;
+    }
 
     const submit = () => {
       update(expenditureDescription, categoryName, expenditureId);
