@@ -37,7 +37,7 @@ insert into starter_budget_category (display_name, description) values
 	('Streaming Video', 'remember DVDs?'),
 	('Laundry', 'i am going to pretend i did''t see this stain'),
 	('Streaming Video', 'remember DVDs?'),
-	('Savings', 'inflation hates me but i don''t care')
+	('Savings', 'inflation hates me but i don''t care'),
 	('Discretionary Purchase', 'i saw it, i wanted it'),
 	('Self-care', 'haircuts, massages, nails, whatever your well-being requires');
 
