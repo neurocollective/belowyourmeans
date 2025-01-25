@@ -35,8 +35,18 @@ func SelectMonthlyAverageExpendituresByCategoryByUser() string {
 	return `select round(sum(value) / 12, 2) as total, category_id, bc.display_name as name from expenditure e
 		join budget_category bc
 		on bc.id = e.category_id
-		where e.user_id = 1
+		where e.user_id = $1
 		and value > 0
+		and e.category_id != 25
 		GROUP BY e.category_id, name;`
+}
+
+func SelectMonthlyAverageExpendituresByUser() string {
+	// "select DISTINCT ON (description), id, description, category_id from expenditure where user_id = $1;"
+	//"select description from expenditure where user_id = $1 and category_id IS NULL GROUP BY description HAVING count(description) > 1;"
+	return `select round(sum(value) / 12, 2) as total from expenditure e
+		where e.user_id = $1
+		and value > 0
+		and e.category_id != 25;`
 }
 
