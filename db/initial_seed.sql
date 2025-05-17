@@ -42,7 +42,8 @@ insert into starter_budget_category (display_name, description) values
 	('Self-care', 'haircuts, massages, nails, whatever your well-being requires'),
 	('Education', 'lurnin'),
 	('Hotels & Lodging', 'no one will miss this bathrobe...'),
-	('Insurance', 'my stuff can resurrect into money');
+	('Insurance', 'my stuff can resurrect into money'),
+	('Cars', 'vroom');
 
 insert into budget_category (
 	select nextval('budget_category_id_seq'),
