@@ -48,9 +48,15 @@ db/dump:
 	pg_dump -f ./dumps/dump.sql -d postgres -h localhost -p 5432 -U postgres --data-only
 db/restore:
 	psql -f ./dumps/dump.sql "postgresql://postgres:postgres@localhost:5432/postgres"
+db/rebuild:
+	@docker run --name local-pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
+	@sleep 3
+	@psql -f db/create_tables.sql "postgresql://postgres:postgres@localhost:5432/postgres"
+	make db/restore
 exec/psql:
 	docker exec -it local-pg bash "/db_scripts/setup.sh"
 test:
 	@echo "hi there $$(date)"
 make db/dump/upload:
 	aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$ENDPOINT
+	aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$VENDPOINT

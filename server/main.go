@@ -13,9 +13,11 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/server/db"
 	"neurocollective.io/neurocollective/belowyourmeans/server/db/queries"
 	"neurocollective.io/neurocollective/belowyourmeans/server/parsing"
+	//"neurocollective.io/neurocollective/belowyourmeans/server/sqlv2"
 	"os"
 	// "neurocollective.io/neurocollective/belowyourmeans/server/parsing"
 	// "bytes"
+	"io/ioutil"
 	"errors"
 	"neurocollective.io/neurocollective/belowyourmeans/server/password"
 	"neurocollective.io/neurocollective/belowyourmeans/server/structs"
@@ -375,13 +377,27 @@ func main() {
 		args := []any{userId, month}
 		expenditures, err := executeQuery(query, args, "mapExpenditures")
 
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
-			return
-		}
-
 		c.JSON(http.StatusOK, gin.H{"data": expenditures})
+
+		// log.Println("user", userId, "month", month)
+		// expenditures, err := sqlv2.SelectExpenditures(client, userId, month)
+
+		// if err != nil {
+		// 	log.Println(err)
+		// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
+		// 	return
+		// }
+
+		// size := len(expenditures)
+		// expendituresForJson := make([]sqlv2.ExpenditureForJSON, size, size)
+
+		// for _, expenditure := range expenditures {
+		// 	forJson := (*expenditure).ForJson()
+		// 	expendituresForJson = append(expendituresForJson, forJson)
+		// }
+
+		// c.JSON(http.StatusOK, gin.H{"data": expendituresForJson})
+
 		return
 	})
 
@@ -671,39 +687,47 @@ func main() {
 
 		log.Println("isCapOne:", isCapOne)
 
-		cwd, err := os.Getwd()
+		// cwd, err := os.Getwd()
+
+		// if err != nil {
+		// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// 	return
+		// }
+
+		// accountId := "capone"
+
+		// if !isCapOne {
+		// 	accountId = "amex"
+		// }
+
+		file, err := fileHeader.Open()
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			message := err.Error()
+			log.Println("could not open fileHeader:", message)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": message})
 			return
 		}
 
-		accountId := "capone"
-
-		if !isCapOne {
-			accountId = "amex"
-		}
-
-		destinationPath := cwd + "/uploaded/" + accountId + "_" + userIdString + "_" + month + "_" + year + "_uploaded.csv"
-
-		// Upload the file to specific dst.
-		err = c.SaveUploadedFile(fileHeader, destinationPath)
+		bytes, err := ioutil.ReadAll(file)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			message := err.Error()
+			log.Println("could not read file:", message)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": message})
 			return
 		}
-
-		log.Println("saved...")
 
 		var expenditures []ncsql.Expenditure
 
 		if isCapOne {
 			log.Println("Parsing csv as CAP ONE...")
-			transactions, err := parsing.ParseCapitalOneCSV(destinationPath)
+			transactions, err := parsing.ParseCapitalOneCSV(bytes)
 
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				message := err.Error()
+				log.Println("error parsing cap one file:", message)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": message})
 				return
 			}
 
@@ -714,15 +738,19 @@ func main() {
 			log.Println("expenditures size", len(expenditures))
 
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				message := err.Error()
+				log.Println("error parsing cap one transaction to expenditures:", message)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": message})
 				return
 			}
 		} else {
 			log.Println("Parsing csv as AMEX...")
-			transactions, err := parsing.ParseAmexCreditCardCSV(destinationPath)
+			transactions, err := parsing.ParseAmexCreditCardCSV(bytes)
 
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				message := err.Error()
+				log.Println("error parsing amex csv:", message)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": message})
 				return
 			}
 
@@ -733,7 +761,9 @@ func main() {
 			log.Println("expenditures size", len(expenditures))
 
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				message := err.Error()
+				log.Println("error parsing amex transactions to expenditures:", message)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": message})
 				return
 			}
 		}
@@ -742,22 +772,12 @@ func main() {
 
 		err = insert(client, expenditures)
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		// fileBytes, err := os.ReadFile(destinationPath)
-
-		// if err != nil {
-		// 	c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-		// 	return
-		// }
-
-		// // parse fileBytes
-		// // `isCapOne` bool
-		log.Println(isCapOne)
-		// log.Println(string(fileBytes))
+			if err != nil {
+				message := err.Error()
+				log.Println("error inserting expenditures:", message)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": message})
+				return
+			}
 
 		c.JSON(http.StatusOK, gin.H{"data": fileHeader.Filename + " uploaded!"})
 	})

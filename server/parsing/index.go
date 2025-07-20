@@ -1,7 +1,7 @@
 package parsing
 
 import (
-	"os"
+	//"os"
 	//"fmt"
 	"errors"
 	"strings"
@@ -17,6 +17,8 @@ const (
 	CAPONE_TRANSACTION_TYPE = "Transaction Type"
 	CAPONE_TRANSACTION_DESCRIPTION = "Transaction Description"
 	CAPONE_BALANCE = "Balance"
+	CAPONE_CREDIT = "Credit"
+	CAPONE_DEBIT = "Debit"
 	AMEX_DATE = "Date"
 	AMEX_DESCRIPTION = "Description"
 	AMEX_CARD_MEMBER = "Card Member"
@@ -118,7 +120,14 @@ func (t CapOneTransaction) ToExpenditure(userId *int) (*ncsql.Expenditure, error
 	}
 
 	asFloat32 := float32(value)
-	description := t.TransactionType + ": " + t.TransactionDescription
+
+	isCredit := t.TransactionType == CAPONE_CREDIT
+
+	if isCredit && asFloat32 > 0 {
+		asFloat32 *= -1
+	}
+
+	description := t.TransactionDescription
 
 	e.Value = &asFloat32
 	e.UserId = userId
@@ -139,13 +148,13 @@ func StripEmptyLines(lines []string) []string {
 	return strippedLines
 }
 
-func ParseCapitalOneCSV(path string) ([]CapOneTransaction, error) {
+func ParseCapitalOneCSV(fileBytes []byte) ([]CapOneTransaction, error) {
 
-	fileBytes, readError := os.ReadFile(path)
+	// fileBytes, readError := os.ReadFile(path)
 
-	if readError != nil {
-		return nil, readError
-	}
+	// if readError != nil {
+	// 	return nil, readError
+	// }
 
 	fileAsString := string(fileBytes)
 
@@ -250,14 +259,14 @@ func (t AmexTransaction) ToExpenditure(userId *int) (*ncsql.Expenditure, error) 
 	return &e, nil
 }
 
-func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
+func ParseAmexCreditCardCSV(fileBytes []byte) ([]AmexTransaction, error) {
 
 	// read file
-	fileBytes, readError := os.ReadFile(path)
+	// fileBytes, readError := os.ReadFile(path)
 
-	if readError != nil {
-		return nil, readError
-	}
+	// if readError != nil {
+	// 	return nil, readError
+	// }
 
 	fileAsString := string(fileBytes)
 
@@ -286,7 +295,7 @@ func ParseAmexCreditCardCSV(path string) ([]AmexTransaction, error) {
 		columns, err := SplitOnComma(line)
 
 		if err != nil {
-			log.Println(err.Error(), "skipping index", index, "of", path)
+			log.Println(err.Error(), "skipping file index", index, "in amex csv")
 			continue
 		}
 
