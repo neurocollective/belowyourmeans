@@ -45,13 +45,12 @@ install:
 	@cp -r ../go_utils vendor/github.com/neurocollective/
 	@rm -rf vendor/github.com/neurocollective/go_utils/.git
 db/dump:
-	pg_dump -f ./dumps/dump.sql -d postgres -h localhost -p 5432 -U postgres --data-only
+	pg_dump -f ./dumps/dump.sql -d postgres -h localhost -p 5432 -U postgres
 db/restore:
 	psql -f ./dumps/dump.sql "postgresql://postgres:postgres@localhost:5432/postgres"
 db/rebuild:
 	@docker run --name local-pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
 	@sleep 3
-	@psql -f db/create_tables.sql "postgresql://postgres:postgres@localhost:5432/postgres"
 	make db/restore
 exec/psql:
 	docker exec -it local-pg bash "/db_scripts/setup.sh"
