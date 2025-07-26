@@ -15,8 +15,6 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/server/parsing"
 	//"neurocollective.io/neurocollective/belowyourmeans/server/sqlv2"
 	"os"
-	// "neurocollective.io/neurocollective/belowyourmeans/server/parsing"
-	// "bytes"
 	"io/ioutil"
 	"errors"
 	"neurocollective.io/neurocollective/belowyourmeans/server/password"
@@ -302,42 +300,42 @@ func main() {
 	})
 
 	// old version
-	apiRouter.GET("/ex", authMiddleware, func(c *gin.Context) {
+	// apiRouter.GET("/ex", authMiddleware, func(c *gin.Context) {
 
-		userIdString, err := GetFromContext[string](c, constants.USER_ID)
+	// 	userIdString, err := GetFromContext[string](c, constants.USER_ID)
 
-		log.Println("userId:", userIdString)
+	// 	log.Println("userId:", userIdString)
 
-		if err != nil {
-			log.Println("userId not received from auth middleware")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
-			return
-		}
+	// 	if err != nil {
+	// 		log.Println("userId not received from auth middleware")
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+	// 		return
+	// 	}
 
-		userId, err := strconv.Atoi(userIdString)
-		if err != nil {
-			log.Println("userId un-convertable from string to int")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
-			return
-		}
+	// 	userId, err := strconv.Atoi(userIdString)
+	// 	if err != nil {
+	// 		log.Println("userId un-convertable from string to int")
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+	// 		return
+	// 	}
 
-		if userId == 0 {
-			userId = 1
-		}
+	// 	if userId == 0 {
+	// 		userId = 1
+	// 	}
 
-		query := "select * from expenditure limit 1;"
-		args := make([]any, 0)
+	// 	query := "select * from expenditure limit 1;"
+	// 	args := make([]any, 0)
 
-		expenditures, err := ncsql.Select[ncsql.Expenditure](client, query, args)
+	// 	expenditures, err := ncsql.Select[ncsql.Expenditure](client, query, args)
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
-			return
-		}
+	// 	if err != nil {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to reach db"})
+	// 		return
+	// 	}
 
-		c.JSON(http.StatusOK, gin.H{"data": expenditures})
-		return
-	})
+	// 	c.JSON(http.StatusOK, gin.H{"data": expenditures})
+	// 	return
+	// })
 
 	// TODO - use `authMiddleware`
 	apiRouter.GET("/expenditure", authMiddleware, func(c *gin.Context) {
@@ -372,9 +370,24 @@ func main() {
 			return
 		}
 
+		yearString := c.Query("year")
+
+		if yearString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "yearString required"})
+			return
+		}
+
+		year, err := strconv.Atoi(yearString)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad year"})
+			return
+		}
+
 		query := queries.SelectExpendituresWithCategoryNameByUserAndMonth()
 		executeQuery := db.ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
-		args := []any{userId, month}
+		args := []any{userId, month, year}
 		expenditures, err := executeQuery(query, args, "mapExpenditures")
 
 		c.JSON(http.StatusOK, gin.H{"data": expenditures})
@@ -478,7 +491,22 @@ func main() {
 			return
 		}
 
-		args := []any{userId}
+		yearString := c.Query("year")
+
+		if yearString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "yearString required"})
+			return
+		}
+
+		year, err := strconv.Atoi(yearString)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad year"})
+			return
+		}
+
+		args := []any{userId, year}
 		// query := queries.SelectExpendituresWithCategoryNameByUserUnique()
 		query := queries.SelectExpendituresMissingCategoryNameByUserUnique()
 		execute := db.ExecuteNodeQuery[structs.ExpenditureWithCategoryName]
@@ -632,9 +660,6 @@ func main() {
 
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
-	// TODO - this saves a file, then reads the file.
-	// Inefficient, but trying to get the file as raw `[]byte` was failing, with
-	// `fileHeader.Open() -> File -> File.Read()` getting me 0 bytes
 	apiRouter.POST("/upload", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
