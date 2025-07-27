@@ -1,4 +1,5 @@
 export const LOGIN = "login";
+export const HEADER = "header";
 export const EXPENDITURE = "expenditure";
 export const NAVIGATION = "navigation";
 export const HOME = "home";

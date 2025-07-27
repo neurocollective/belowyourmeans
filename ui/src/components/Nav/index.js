@@ -1,7 +1,17 @@
 import React from 'react';
-import { NAVIGATION, HOME, EXPENDITURES, LOGIN, REPORTS, CATEGORIES } from '../../constants';
+import {
+  HEADER,
+  NAVIGATION,
+  HOME,
+  EXPENDITURES,
+  LOGIN,
+  REPORTS,
+  CATEGORIES,
+} from '../../constants';
 
 const Nav = ({ stateManager }) => {
+
+  console.log('stateManager.state[HEADER]', stateManager.state[HEADER]);
 
   const {
     ops: {
@@ -10,33 +20,57 @@ const Nav = ({ stateManager }) => {
       },
       [LOGIN]: {
         logout,
-      }
+      },
+    },
+    changes: {
+      [HEADER]: {
+        handleYearSelect,
+      } = {}
+    },
+    state: {
+      [HEADER]: {
+        years,
+        selectedYear = '2024',
+      } = {}
     },
   } = stateManager;
 
+  const goto = category => e => {
+    e.preventDefault();
+    navigate(category);
+  };
+
   return (
-    <nav className="flex centered header-nav">
-      <div className="nav-link-container">
-        <a className="nav-link" href="#" onClick={(e) => {e.preventDefault(); navigate(CATEGORIES);}}>
-          Categories
-        </a>
-      </div>
-      <div className="nav-link-container">
-        <a className="nav-link" href="#" onClick={(e) => {e.preventDefault(); navigate(EXPENDITURES);}}>
-          Expenditures
-        </a>
-      </div>
-      <div className="nav-link-container">
-        <a  className="nav-link" href="#" onClick={(e) => {e.preventDefault(); navigate(REPORTS);}}>
-          Reports
-        </a>
-      </div>
-      <div className="nav-link-container">
-        <a  className="nav-link" href="#" onClick={(e) => {e.preventDefault(); logout();}}>
-          Sign Out
-        </a>
-      </div>
-    </nav>
+    <div>
+      <nav className="flex centered header-nav">
+        <div className="nav-link-container">
+          <a className="nav-link" href="#" onClick={goto(CATEGORIES)}>
+            Categories
+          </a>
+        </div>
+        <div className="nav-link-container">
+          <a className="nav-link" href="#" onClick={goto(EXPENDITURES)}>
+            Expenditures
+          </a>
+        </div>
+        <div className="nav-link-container">
+          <a  className="nav-link" href="#" onClick={goto(REPORTS)}>
+            Reports
+          </a>
+        </div>
+        <div className="nav-link-container">
+          <a  className="nav-link" href="#" onClick={(e) => {e.preventDefault(); logout();}}>
+            Sign Out
+          </a>
+        </div>
+      </nav>
+      <nav className="flex centered header-nav">
+        <label>Year:</label>
+        <select onChange={handleYearSelect} value={selectedYear}>
+          {years.map(year => (<option value={year}>{year}</option>))}
+        </select>
+      </nav>
+    </div>
   );
 }
 

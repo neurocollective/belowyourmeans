@@ -28,7 +28,7 @@ func SelectExpendituresMissingCategoryNameByUserUnique() string {
 	return `
 		select distinct on (description) id, description from expenditure
 		where user_id = $1
-		and EXTRACT(YEAR FROM e.date_occurred) = $2
+		and EXTRACT(YEAR FROM date_occurred) = $2
 		and category_id IS NULL
 		and value > 0
 		GROUP BY description, id;
@@ -88,3 +88,35 @@ func GetAnnualReportQuery() string {
 `
 }
 
+https://www.postgresql.org/docs/current/sql-update.html
+
+// WITH exceeded_max_retries AS (
+//   SELECT w.ctid FROM work_item AS w
+//     WHERE w.status = 'active' AND w.num_retries > 10
+//     ORDER BY w.retry_timestamp
+//     FOR UPDATE
+//     LIMIT 5000
+// )
+// UPDATE work_item SET status = 'failed'
+//   FROM exceeded_max_retries AS emr
+//   WHERE work_item.ctid = emr.ctid;
+
+// { userId, year }
+func ApplyPreAssignmentsToExpendituresForYear(args []any) error {
+
+	return `
+		WITH categorized AS (
+			SELECT e.id, e.user_id, bca.category_id, e.description
+			from expenditure e 
+			JOIN budget_category_preassignment bca
+			on bca.description = e.description
+			WHERE e.user_id = $1 
+			AND e.category_id is null
+			AND extract(year from e.date_occurred) = $2
+		)
+		UPDATE expenditure e
+		SET category_id = categorized.category_id
+		FROM categorized
+		WHERE e.id = categorized.id;
+	`
+}

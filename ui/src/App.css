@@ -36,6 +36,7 @@ body {
 
 .centered {
   justify-content: center;
+  align-items: center;
 }
 
 .nav-link-container {

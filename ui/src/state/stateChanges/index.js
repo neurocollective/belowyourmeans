@@ -1,4 +1,4 @@
-import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES } from '../../constants';
+import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES, HEADER } from '../../constants';
 
 const buildStateChanges = (state, setState, getInitialState) => {
 
@@ -266,7 +266,20 @@ const buildStateChanges = (state, setState, getInitialState) => {
 			handleApplyCategoryItemFailure: (failurePayload) => {
 				console.log('failurePayload for handleApplyCategoryItemFailure', failurePayload);
 			},
-		}
+		},
+		[HEADER]: {
+			handleYearSelect: (e) => {
+				const { target: { value } } = e;
+				const newState = {
+					...state,
+					[HEADER]: {
+						...state[HEADER],
+						selectedYear: value,
+					},
+				};
+				update(newState);
+			},
+		},
 	};
 };
 

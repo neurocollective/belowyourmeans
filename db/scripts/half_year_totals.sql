@@ -1,11 +1,11 @@
 with category_averages as (
         SELECT bc.display_name,
         ROUND(
-                (SUM(e.value) / 12), 0
+                (SUM(e.value) / 6), 0
         ) AS monthly_average
         FROM budget_category bc
         JOIN expenditure e ON e.category_id = bc.id
-        WHERE extract(year from e.date_occurred) = '2024'
+        WHERE extract(year from e.date_occurred) = '2025'
         AND e.user_id = 1
         AND bc.id != 41
         GROUP BY bc.display_name

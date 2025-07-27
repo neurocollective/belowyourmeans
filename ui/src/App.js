@@ -9,7 +9,7 @@ import Loading from './components/Loading';
 import Footer from './components/Footer';
 import Expenditures from './components/Expenditures';
 import Categories from './components/Categories';
-import { LOGIN, LOADING, HOME, EXPENDITURES, CATEGORIES } from './constants';
+import { LOGIN, LOADING, HOME, EXPENDITURES, CATEGORIES, HEADER } from './constants';
 
 const { INITIAL_STATE, buildStateManager } = StateStore;
 
@@ -40,6 +40,9 @@ function App() {
       },
       [CATEGORIES]: {
         categories,
+      },
+      [HEADER]: {
+        selectedYear,
       }
     }
   } = stateManager;
@@ -55,7 +58,7 @@ function App() {
       // getUncategorizedExpenditures();
       getCategories();
     }
-  }, [userId]);
+  }, [userId, selectedYear]);
 
   console.log("state in App.js:", state);
 

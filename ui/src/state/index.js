@@ -1,6 +1,6 @@
 import buildStateChanges from './stateChanges';
 import buildOperations from './operations';
-import { LOADING, LOGIN, EXPENDITURES, NAVIGATION, HOME, CATEGORIES } from '../constants';
+import { HEADER, LOADING, LOGIN, EXPENDITURES, NAVIGATION, HOME, CATEGORIES } from '../constants';
 
 const INITIAL_STATE = {
 	[LOGIN]: {
@@ -26,6 +26,10 @@ const INITIAL_STATE = {
 		current: LOADING,
 		default: HOME,
 	},
+	[HEADER]: {
+		year: '2024',
+		years: ['2024','2025', '2026', '2027', '2028'],
+	}
 };
 
 const getInitialState = () => INITIAL_STATE;

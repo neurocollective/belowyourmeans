@@ -1,5 +1,5 @@
 import jsonRequest from '../../fetching';
-import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES } from '../../constants';
+import { HEADER, LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES } from '../../constants';
 
 const DEFAULT_REQUEST_CONFIG = {
 	headers: {
@@ -51,7 +51,10 @@ const buildOperations = (state, stateChanges) => {
 			},
 			[EXPENDITURES]: {
 				month,
-			}
+			},
+			[HEADER]: {
+				selectedYear: year,
+			},
 		} = state;
 
 		if (!userId) {
@@ -61,11 +64,11 @@ const buildOperations = (state, stateChanges) => {
 			console.log('userId in getExpenditures:', userId);
 		}
 
-		const config = DEFAULT_REQUEST_CONFIG;
+		console.log('year before API call is:', year)
 
-		const fullURL = getURL(`/expenditure?userId=${userId}&month=${month}`);
+		const fullURL = getURL(`/expenditure?userId=${userId}&month=${month}&year=${year}`);
 
-		return jsonRequest(fullURL, config, ok, fail);
+		return jsonRequest(fullURL, DEFAULT_REQUEST_CONFIG, ok, fail);
 	};
 
 	return {
@@ -180,8 +183,11 @@ const buildOperations = (state, stateChanges) => {
 			},
 			getUncategorizedExpenditures: () => {
 				const {
-					[LOGIN]: {
-						user: userId
+					// [LOGIN]: {
+					// 	user: userId
+					// },
+					[HEADER]: {
+						selectedYear: year,
 					}
 				} = state;
 				const {
@@ -190,7 +196,7 @@ const buildOperations = (state, stateChanges) => {
 						handleGetUncategorizedExpendituresFailure: fail,
 					}
 				} = stateChanges;
-				const fullURL = getURL("/categories/expenditures/names");
+				const fullURL = getURL(`/categories/expenditures/names?year=${year}`);
 				return jsonRequest(fullURL, DEFAULT_REQUEST_CONFIG, ok, fail);
 			},
 			getCategories: () => {
