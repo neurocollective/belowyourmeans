@@ -11,8 +11,6 @@ import {
 
 const Nav = ({ stateManager }) => {
 
-  console.log('stateManager.state[HEADER]', stateManager.state[HEADER]);
-
   const {
     ops: {
       [NAVIGATION]: {
@@ -64,7 +62,7 @@ const Nav = ({ stateManager }) => {
           </a>
         </div>
       </nav>
-      <nav className="flex centered header-nav">
+      <nav className="flex centered upcentered header-nav">
         <label>Year:</label>
         <select onChange={handleYearSelect} value={selectedYear}>
           {years.map(year => (<option value={year}>{year}</option>))}

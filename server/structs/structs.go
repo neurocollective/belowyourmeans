@@ -43,3 +43,8 @@ type ApplyBudgetCategoryItemPayload struct {
 	CategoryId    int    `json:"categoryId"`
 	ExpenditureId int    `json:"expenditureId"`
 }
+
+type Report struct {
+	DisplayName    string `json:"display_name"`
+	MonthlyAverage string `json:"monthly_average"`
+}

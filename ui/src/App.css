@@ -36,6 +36,9 @@ body {
 
 .centered {
   justify-content: center;
+}
+
+.upcentered {
   align-items: center;
 }
 

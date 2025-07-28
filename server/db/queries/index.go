@@ -66,19 +66,19 @@ func SelectMonthlyAverageExpendituresByUser() string {
 }
 
 // pass arguments:
-// userId as int, year as string
-func GetAnnualReportQuery() string {
+// userId as int, year, months as string
+func GetAnnualizedReportQuery() string {
 	return `
 		with category_averages as (
 	        SELECT bc.display_name,
 	        ROUND(
-	                (SUM(e.value) / 12), 0
+	                (SUM(e.value) / $3), 0
 	        ) AS monthly_average
 	        FROM budget_category bc
 	        JOIN expenditure e ON e.category_id = bc.id
-	        WHERE extract(year from e.date_occurred) = $1
+	        WHERE extract(year from e.date_occurred) = $2
 	        AND bc.id != 41
-	        AND bc.user_id = $2
+	        AND bc.user_id = $1
 	        GROUP BY bc.display_name
 		)
 		select * from category_averages
@@ -88,7 +88,7 @@ func GetAnnualReportQuery() string {
 `
 }
 
-https://www.postgresql.org/docs/current/sql-update.html
+// https://www.postgresql.org/docs/current/sql-update.html
 
 // WITH exceeded_max_retries AS (
 //   SELECT w.ctid FROM work_item AS w
@@ -102,7 +102,7 @@ https://www.postgresql.org/docs/current/sql-update.html
 //   WHERE work_item.ctid = emr.ctid;
 
 // { userId, year }
-func ApplyPreAssignmentsToExpendituresForYear(args []any) error {
+func ApplyPreAssignmentsToExpendituresForYear() string {
 
 	return `
 		WITH categorized AS (

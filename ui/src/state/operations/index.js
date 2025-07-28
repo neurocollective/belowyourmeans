@@ -1,5 +1,5 @@
 import jsonRequest from '../../fetching';
-import { HEADER, LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES } from '../../constants';
+import { HEADER, LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES, REPORTS } from '../../constants';
 
 const DEFAULT_REQUEST_CONFIG = {
 	headers: {
@@ -265,6 +265,51 @@ const buildOperations = (state, stateChanges) => {
 			setMonth: (monthIndex) => {
 				const { [EXPENDITURES]: { setMonth } } = stateChanges;
 				setMonth(monthIndex);
+			},
+		},
+		[REPORTS]: {
+			getReports: () => {
+				const {
+					// [LOGIN]: {
+					// 	user: userId
+					// },
+					[HEADER]: {
+						selectedYear: year,
+						years,
+					},
+					// [REPORTS]: {
+					// 	categories,
+					// }
+				} = state;
+				const {
+					[REPORTS]: {
+						handleGetReportSuccess: ok,
+						handleGetReportFailure: fail,
+						handleGetPriorReportSuccess: priorOk,
+						handleGetPriorReportFailure: priorFail,
+					}
+				} = stateChanges;
+
+				let months = year === '2025' ? '6' : '12';
+
+				const fullURL = getURL(`/report/annualized?year=${year}&months=${months}`);
+				const config = DEFAULT_REQUEST_CONFIG;
+
+				const one = jsonRequest(fullURL, config, ok, fail).then(() => {
+
+					const currentYearIndex = years.findIndex((yearValue) => yearValue === year);
+					const priorYear = years[currentYearIndex - 1]
+
+					if (priorYear) {
+
+						months = priorYear === '2025' ? '6' : '12';
+
+						const fullURLTwo = getURL(`/report/annualized?year=${priorYear}&months=${months}`);
+						const config = DEFAULT_REQUEST_CONFIG;
+
+						const two = jsonRequest(fullURLTwo, config, priorOk, priorFail);
+					}
+				});
 			},
 		},
 	};

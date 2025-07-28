@@ -9,7 +9,8 @@ import Loading from './components/Loading';
 import Footer from './components/Footer';
 import Expenditures from './components/Expenditures';
 import Categories from './components/Categories';
-import { LOGIN, LOADING, HOME, EXPENDITURES, CATEGORIES, HEADER } from './constants';
+import Reports from './components/Reports';
+import { LOGIN, LOADING, HOME, EXPENDITURES, CATEGORIES, HEADER, REPORTS } from './constants';
 
 const { INITIAL_STATE, buildStateManager } = StateStore;
 
@@ -60,7 +61,7 @@ function App() {
     }
   }, [userId, selectedYear]);
 
-  console.log("state in App.js:", state);
+  // console.log("state in App.js:", state);
 
   return (
     <>
@@ -71,6 +72,7 @@ function App() {
           <Home stateManager={stateManager} navigation={HOME} />
           <Loading stateManager={stateManager} navigation={LOADING} />
           <Expenditures stateManager={stateManager} navigation={EXPENDITURES} />
+          <Reports stateManager={stateManager} navigation={REPORTS} />
           <Categories stateManager={stateManager} navigation={CATEGORIES} />
         </Router>
       </main>

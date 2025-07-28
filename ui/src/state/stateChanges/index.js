@@ -1,4 +1,4 @@
-import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES, HEADER } from '../../constants';
+import { LOGIN, NAVIGATION, HOME, EXPENDITURES, CATEGORIES, HEADER, REPORTS } from '../../constants';
 
 const buildStateChanges = (state, setState, getInitialState) => {
 
@@ -280,6 +280,36 @@ const buildStateChanges = (state, setState, getInitialState) => {
 				update(newState);
 			},
 		},
+		[REPORTS]: {
+			handleGetReportSuccess: ({ data: report }) => {
+				const newState = {
+					...state,
+					[REPORTS]: {
+						...state[REPORTS],
+						report,
+					},
+				};
+				console.log('handleGetReportSuccess setting new state:', newState[REPORTS]);
+				setState(newState);				
+			},
+			handleGetReportFailure: (failurePayload) => {
+				console.log('failurePayload for handleGetReportFailure', failurePayload);
+			},
+			handleGetPriorReportSuccess: ({ data: priorReport }) => {
+				const newState = {
+					...state,
+					[REPORTS]: {
+						...state[REPORTS],
+						priorReport,
+					},
+				};
+				console.log('handleGetPriorReportSuccess setting new state:', newState[REPORTS]);
+				setState(newState);
+			},
+			handleGetPriorReportFailure: (failurePayload) => {
+				console.log('failurePayload for handleGetPriorReportFailure', failurePayload);
+			},
+		}
 	};
 };
 

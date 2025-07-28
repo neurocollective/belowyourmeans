@@ -14,12 +14,12 @@ import (
 	"neurocollective.io/neurocollective/belowyourmeans/server/db/queries"
 	"neurocollective.io/neurocollective/belowyourmeans/server/parsing"
 	//"neurocollective.io/neurocollective/belowyourmeans/server/sqlv2"
-	"os"
-	"io/ioutil"
 	"errors"
+	"io/ioutil"
 	"neurocollective.io/neurocollective/belowyourmeans/server/password"
 	"neurocollective.io/neurocollective/belowyourmeans/server/structs"
 	bymsql "neurocollective.io/neurocollective/belowyourmeans/server/structs/sql"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -472,6 +472,65 @@ func main() {
 		return
 	})
 
+	apiRouter.GET("/report/annualized", authMiddleware, func(c *gin.Context) {
+
+		userIdString, err := GetFromContext[string](c, constants.USER_ID)
+
+		if err != nil {
+			log.Println("userId not received from auth middleware for POST /upload")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		userId, err := strconv.Atoi(userIdString)
+		if err != nil {
+			log.Println("userId un-convertable from string to int for POST /upload")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			return
+		}
+
+		year := c.Query("year")
+
+		if year == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "year parameter required"})
+			return
+		}
+
+		monthsString := c.Query("months")
+
+		if monthsString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "months parameter required"})
+			return
+		}
+
+		months, err := strconv.Atoi(monthsString)
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "bad months value"})
+			return
+		}
+
+		query := queries.GetAnnualizedReportQuery()
+		log.Println("query", query)
+
+		args := []any{userId, year, months}
+		log.Println("args", args)
+
+		execute := db.ExecuteNodeQuery[structs.Report]
+		report, err := execute(query, args, "")
+
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "did not reach db"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": report})
+		return
+
+	})
+
 	apiRouter.GET("/categories/expenditures/names", authMiddleware, func(c *gin.Context) {
 
 		userIdString, err := GetFromContext[string](c, constants.USER_ID)
@@ -797,12 +856,12 @@ func main() {
 
 		err = insert(client, expenditures)
 
-			if err != nil {
-				message := err.Error()
-				log.Println("error inserting expenditures:", message)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": message})
-				return
-			}
+		if err != nil {
+			message := err.Error()
+			log.Println("error inserting expenditures:", message)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": message})
+			return
+		}
 
 		c.JSON(http.StatusOK, gin.H{"data": fileHeader.Filename + " uploaded!"})
 	})
