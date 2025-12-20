@@ -1,5 +1,3 @@
-
-	#@make parse
 db/local/down:
 	@docker rm local-pg -f
 ahab:
@@ -54,9 +52,9 @@ db/rebuild:
 	@sleep 3
 	make db/restore
 exec/psql:
-	docker exec -it local-pg bash "/db_scripts/setup.sh"
-test:
-	@echo "hi there $$(date)"
-make db/dump/upload:
+	docker exec -it local-pg psql "postgresql://postgres:postgres@localhost:5432/postgres"
+db/dump/upload:
 	aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$ENDPOINT
 	aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$VENDPOINT
+db/dump/download:
+	aws s3 cp s3://neurocollective/dumps/dump.sql ./dumps/dump.sql $$ENDPOINT
