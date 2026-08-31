@@ -1,0 +1,106 @@
+.App {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.App-footer {
+  background-color: #282c34;
+  min-height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+body {
+  margin: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.header-nav {
+  margin: 10px;
+}
+
+.centered {
+  justify-content: center;
+}
+
+.upcentered {
+  align-items: center;
+}
+
+.nav-link-container {
+  padding: 0 20px;
+}
+
+.nav-link {
+  color: white;
+}
+
+.expenditure-list {
+  list-style: none;
+}
+
+.expenditure-list-item {
+  min-width: 40vw; /* good idea? */
+  max-width: 70vw;
+  margin-bottom: 10px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.expenditure-list-item-details-container {
+  display: flex;
+}
+
+.expenditure-amount {
+  font-size: 30px;
+}
+
+.expenditure-line {
+  margin: 5px 0;
+}
+
+.set-category-button {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+.set-category-button:hover {
+  background-color: #006600;
+}
+
+.set-category-dropdown {
+  font-size: 18px;
+  padding: 10px;
+}
+
+.display-category {
+  margin-bottom: 5px;
+}
+
+.display-category-default {
+  font-size: 14px;
+}
+
+.display-category-uncategorized {
+  font-size: 16px;
+  font-style: italic;
+}
