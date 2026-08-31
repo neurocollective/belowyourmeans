@@ -55,6 +55,6 @@ exec/psql:
 	docker exec -it local-pg psql "postgresql://postgres:postgres@localhost:5432/postgres"
 db/dump/upload:
 	aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$ENDPOINT
-	aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$VENDPOINT
+	#aws s3 cp ./dumps/dump.sql s3://neurocollective/dumps/dump.sql $$VENDPOINT
 db/dump/download:
 	aws s3 cp s3://neurocollective/dumps/dump.sql ./dumps/dump.sql $$ENDPOINT
